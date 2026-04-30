@@ -1,0 +1,17 @@
+# arquivos compilados
+__pycache__/
+*.pyc
+
+# ambiente virtual (se usar depois)
+venv/
+.env/
+
+# arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# dados locais (IMPORTANTE)
+data.json
