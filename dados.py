@@ -18,7 +18,7 @@ def carregarDados(caminho):
             "gastosCartao":0,
         }
 
-#para gastos que ja existiam, para adicionar um novo gasto ou parcelamento, tem que usar as funcoes abaixo para atualizar os dados
+#para gastos que ja existiam
 def adicionarParcelamento(dados, nome, valorParcela, quantidadeParcelas):
     parcelamento = {
         "nome": nome,
@@ -36,10 +36,11 @@ def adicionarGastoCartao(dados, valor):
 def adicionarGastoParcelado(dados, nome, valorTotal, quantidadeParcelas):
     valorParcela = valorTotal / quantidadeParcelas
 
+
     parcelamento = {
         "nome": nome,
-        "parcela": valorParcela,
-        "restante": quantidadeParcelas
+        "valorParcela": valorParcela,
+        "quantidadeParcelas": quantidadeParcelas
         }
     
     #salvar como parcelamento futuro
@@ -51,16 +52,15 @@ def adicionarGastoParcelado(dados, nome, valorTotal, quantidadeParcelas):
 
 #fechammmento das faturas,
 def fecharFatura(dados):
+    novosParcelamentos = []
+    gastosProximaFatura = 0
+
     for parcelamento in dados["parcelamentos"]:
-        novosParcelamentos = []
-        gastosProximaFatura = 0
+            parcelamento["quantidadeParcelas"] -= 1
 
-        for parcelamento in dados["parcelamentos"]:
-            parcelamento["restante"] -= 1
-
-            if parcelamento["restante"] > 0:
+            if parcelamento["quantidadeParcelas"] > 0:
                 novosParcelamentos.append(parcelamento)
-                gastosProximaFatura += parcelamento["parcela"]  #adiciona a parcela restante para a proxima fatura
+                gastosProximaFatura += parcelamento["valorParcela"]  #adiciona a parcela restante para a proxima fatura
 
     dados["parcelamentos"] = novosParcelamentos #atualiza a lista de parcelamentos, removendo os que ja foram pagos
     dados["gastosCartao"] = gastosProximaFatura #atualiza os gastos do cartao para a proxima fatura, considerando as parcelas restantes

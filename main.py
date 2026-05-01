@@ -1,4 +1,5 @@
 from dados import (
+    adicionarParcelamento,
     carregarDados,
     salvarDados,
     adicionarGastoCartao,
@@ -12,39 +13,69 @@ CAMINHO = "data.json"  # caminho do arquivo de dados
 dados = carregarDados(CAMINHO)
 
 
-# -------- TESTE MÊS 1 --------
+#loop principal do programa
+while True:
+    print("\n--- Menu ---")
+    print("1- adiconar  parcelamento existente")
+    print("2. Adicionar gasto no cartão a vista")
+    print("3. Adicionar gasto parcelado")
+    print("4. Ver dados atuais")
+    print("5. Fechar fatura")
+    print("0. Sair")
 
-print("MÊS 1")
-
-adicionarGastoCartao(dados, 500)  # gasto à vista
-adicionarGastoParcelado(dados, "Compra teste", 1000, 5)  # parcelado
-
-print("Antes de fechar fatura:", dados)
-
-# salva estado atual
-salvarDados(CAMINHO, dados)
-
-# fecha a fatura (vira o ciclo)
-fecharFatura(dados)
-
-print("Depois de fechar fatura:", dados)
-
-# salva após fechamento
-salvarDados(CAMINHO, dados)
+    opção = input("Escolha uma opção: ")
+    if opção == "0":
+        print("Saindo...")
+        break
+    
+    elif opção == "1":
+        nome = input("Digite o nome do parcelamento existente: ")
+        valorParcela = float(input("Digite o valor da parcela: "))
+        quantidadeParcelas = int(input("Digite a quantidade de parcelas restantes: "))
+        adicionarParcelamento(dados, nome, valorParcela, quantidadeParcelas)
+        salvarDados(CAMINHO, dados)
+    
 
 
-# -------- TESTE MÊS 2 --------
+    elif opção == "2":
+        valor = float(input("Digite o valor do gasto no cartão: "))
+        adicionarGastoCartao(dados, valor)
+        salvarDados(CAMINHO, dados)
+        print("Gasto adicionado ao cartão.")
 
-print("\nMÊS 2")
 
-adicionarGastoCartao(dados, 300)
+    elif opção == "3":
+        nome = input("Digite o nome da nova compra parcelada: ")
+        valorTotal = float(input("Digite o valor total do gasto: "))
+        quantidadeParcelas = int(input("Digite a quantidade de parcelas: "))
+        adicionarGastoParcelado(dados, nome, valorTotal, quantidadeParcelas)
+        salvarDados(CAMINHO, dados)
+        print("compra parcelada adicionada com parcelas.")
 
-print("Antes de fechar fatura:", dados)
+    elif opção == "4":
+        print("\n--- Dados Atuais ---")
 
-# fecha novamente
-fecharFatura(dados)
+        print("gastos no cartao a vista:", dados["gastosCartao"])
 
-print("Depois de fechar fatura:", dados)
+        print ("parcelamentos:")
+        for parcela in dados["parcelamentos"]:
+            print(f"{parcela['nome']} - parcela: {parcela['valorParcela']} : quantidade de parcelas:{parcela['quantidadeParcelas']}")
+    
+    elif opção == "5":
+        fecharFatura(dados)
+        salvarDados(CAMINHO, dados)
+        print("Fatura fechada. Gastos do cartão a vista e parcelas foram processados.")
 
-# salva estado final
-salvarDados(CAMINHO, dados)
+    else:
+        print("Opção inválida. Tente novamente.")
+
+
+
+
+
+    
+
+
+
+
+    
