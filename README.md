@@ -19,36 +19,36 @@ O objetivo principal é auxiliar no controle de gastos, especialmente no uso de 
 
 ---
 
-## 📦 Versão Atual - v0.1 (Controle de Cartão)
+## 📦 Versão Atual - v0.2 (Usabilidade)
 
-Esta versão implementa a base do sistema focada no controle de gastos via cartão de crédito.
+Esta versão melhora a experiência do usuário e a robustez do sistema.
 
 ### Funcionalidades:
-* Adição de gastos no cartão à vista
-* Adição de compras parceladas
-* Controle de parcelas restantes
-* Fechamento de fatura mensal
-* Persistência de dados em JSON
-* Menu interativo no terminal
+* Validação de entrada de dados (números e textos)
+* Bloqueio de valores inválidos (negativos ou zero)
+* Formatação de valores no padrão brasileiro (R$)
+* Melhor organização do código (utils.py)
+* Melhor exibição das informações no terminal
 
-👉 Esta versão representa a estrutura inicial do sistema.
+👉 Esta versão foca na usabilidade e na clareza do sistema.
 
 ---
 
 ## 📈 Histórico de Versões
 
-### 🟢 v0.1 — Controle de cartão (atual)
+### 🟢 v0.1 — Controle de cartão 
 * Sistema base funcionando
 * Controle de gastos à vista
 * Controle de parcelamentos
 * Lógica de fechamento de fatura
 
-### 🟡 v0.2 — Usabilidade (planejado)
+### 🟡 v0.2 — Usabilidade (atual)
 * Validação de entrada de dados
 * Formatação de valores (R$)
-* Melhorias nas mensagens e menu
+* Melhorias nas mensagens e exibição
+* Organização do código em módulos
 
-### 🔵 v0.3 — Cálculo financeiro completo
+### 🔵 v0.3 — Cálculo financeiro completo (planejado)
 * Integração com `calculos.py`
 * Receita mensal
 * Gastos fixos
