@@ -11,11 +11,36 @@ O objetivo principal é auxiliar no controle de gastos, especialmente no uso de 
 * Simulação de fechamento de fatura
 
 ---
+▶️ Como executar o projeto
+sistema executavel via terminal (CLI)
+
+Siga os passos abaixo para rodar o sistema localmente:
+
+📥 1. Clonar o repositório
+git clone https://github.com/mateus22assis/MeuControle_Financeiro.git
+📂 2. Acessar a pasta do projeto
+cd MeuControle_Financeiro
+▶️ 3. Executar o programa
+python main.py
+🧪 4. Testar funcionalidades
+
+No menu interativo, você poderá:
+
+Adicionar gastos no cartão à vista
+Criar compras parceladas
+Visualizar o resumo da fatura
+Fechar a fatura mensal
+⚠️ Observações
+O sistema utiliza o arquivo data.json para salvar os dados
+Caso queira reiniciar os testes, basta apagar ou limpar esse arquivo
+Certifique-se de ter o Python instalado (versão 3.x)
+
+---
 
 ## 🚧 Status do Projeto
 
 🚀 Em desenvolvimento  
-📌 Versão atual: **v0.1**
+📌 Versão atual: **v0.2**
 
 ---
 
