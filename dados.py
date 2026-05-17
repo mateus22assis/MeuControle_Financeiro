@@ -10,12 +10,14 @@ def carregarDados(caminho):
     try:
         with open(caminho, 'r') as arquivo:
             return json.load(arquivo)
-    except FileNotFoundError:
-        return {}
     except json.JSONDecodeError:
         return {
             "parcelamentos":[],
             "gastosCartao":0,
+            "receitaMensal":0,
+            "gastosFixos":0,
+            "percentualReserva":30,
+            
         }
 
 #para gastos que ja existiam
@@ -64,6 +66,19 @@ def fecharFatura(dados):
 
     dados["parcelamentos"] = novosParcelamentos #atualiza a lista de parcelamentos, removendo os que ja foram pagos
     dados["gastosCartao"] = gastosProximaFatura #atualiza os gastos do cartao para a proxima fatura, considerando as parcelas restantes
+
+
+#receita mensal
+def definirReceitaMensal(dados, valor):
+    dados["receitaMensal"] = valor
+
+#gastos fixos
+def definirGastosFixos(dados, valor):
+    dados["gastosFixos"] = valor
+
+#percentual de reserva
+def definirPercentualReserva(dados, valor):
+    dados["percentualReserva"] = valor
 
 
 

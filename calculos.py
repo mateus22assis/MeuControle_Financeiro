@@ -1,27 +1,43 @@
 #calcular quanto vai guardar com base no que vc recebeu no mes somando tudo(salario, renda extra, etc) 
-def calcularValorGuardado(receita):
-    percentual= 30
-    valor = receita * percentual / 100
-    return valor
+
+
+def calcularValorGuardar(dados):
+    return dados["receitaMensal"] * (dados["percentualReserva"] / 100)
+
 
 #calcular o valor total das parcelas futuras, somando todas as parcelas que tem que pagar
-def calcularParcelasFuturas(parcelamentos):
+def somarParcelasMensais(parcelamentos):
     total = 0
     for parcela in parcelamentos:
-        total += parcela["parcela"]
+        total += parcela["valorParcela"]
     return total
 
 
-#funçao para calcular limite que pode ser gasto no cartao para proxima fatura
-def calcularLimite(receita, gastosFixos, investimentos, gastosCartao,pracelamentos):
-    valorGuardado = calcularValorGuardado(receita)
-    ParcelasFuturas = calcularParcelasFuturas(pracelamentos)
-    limiteBase = receita - gastosFixos - valorGuardado - investimentos
+   
 
-    limiteReal = limiteBase - gastosCartao
-    return{
-        "valorGuardado": valorGuardado,
-        "ParcelasFuturas": ParcelasFuturas,
-        "limiteBase": limiteBase,
-        "limiteReal": limiteReal
+#quanto sobra depois de pagar os gastos fixos e o valor guardado, para gastar no cartao ou investir
+def calcularSaldoDisponivel(dados):
+    valorAGuardar = calcularValorGuardar(dados)
+
+    return (
+        dados["receitaMensal"]
+        - valorAGuardar
+        - dados["gastosFixos"]
+        - dados["gastosCartao"]
+    )
+
+#resumoFinal, quanto guardar, quanto sobra para gastar no cartao ou investir
+
+def mostrarResumo(dados):
+    valorGuardar = calcularValorGuardar(dados)    
+    saldoDisponivel = calcularSaldoDisponivel (dados)
+  
+
+    return {
+        "valorGuardar": valorGuardar,
+        "saldoDisponivel": saldoDisponivel,
+         "gastosCartao": dados["gastosCartao"],
+        "gastosFixos": dados["gastosFixos"],
+        "receitaMensal": dados["receitaMensal"]
+        
     }

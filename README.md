@@ -6,9 +6,15 @@ Este projeto é um sistema simples de controle financeiro desenvolvido em Python
 
 O objetivo principal é auxiliar no controle de gastos, especialmente no uso de cartão de crédito, incluindo:
 
-* Controle de gastos na fatura
-* Gerenciamento de compras parceladas
-* Simulação de fechamento de fatura
+* Registrar gastos no cartão de crédito à vista.
+* Registrar compras parceladas.
+* Controlar parcelamentos já existentes.
+* Simular o fechamento da fatura.
+* informmar receita mensal.
+* registrar gastos fixos.
+* Configurar um percentual de reserva financeira.
+* Calcular automaticamente quanto deve ser guardado.
+* Mostrar o saldo disponível após considerar todas as obrigações.
 
 ---
 ▶️ Como executar o projeto
@@ -40,22 +46,24 @@ Certifique-se de ter o Python instalado (versão 3.x)
 ## 🚧 Status do Projeto
 
 🚀 Em desenvolvimento  
-📌 Versão atual: **v0.2**
+📌 Versão atual: **v0.3**
 
 ---
 
-## 📦 Versão Atual - v0.2 (Usabilidade)
+## 📦 Versão Atual - v0.3 (Cálculo Financeiro)
 
-Esta versão melhora a experiência do usuário e a robustez do sistema.
+Esta versão adiciona recursos de planejamento financeiro mensal.
 
 ### Funcionalidades:
-* Validação de entrada de dados (números e textos)
-* Bloqueio de valores inválidos (negativos ou zero)
-* Formatação de valores no padrão brasileiro (R$)
-* Melhor organização do código (utils.py)
-* Melhor exibição das informações no terminal
+* Definição da receita mensal
+* Registro dos gastos fixos
+* Configuração do percentual de reserva financeira
+* Cálculo automático do valor a ser guardado
+* Cálculo do saldo disponível após despesas e fatura
+* Exibição de resumo financeiro consolidado
 
-👉 Esta versão foca na usabilidade e na clareza do sistema.
+👉 Esta versão transforma o sistema em uma ferramenta de planejamento financeiro pessoal.
+
 
 ---
 
@@ -67,18 +75,19 @@ Esta versão melhora a experiência do usuário e a robustez do sistema.
 * Controle de parcelamentos
 * Lógica de fechamento de fatura
 
-### 🟡 v0.2 — Usabilidade (atual)
+### 🟡 v0.2 — Usabilidade 
 * Validação de entrada de dados
 * Formatação de valores (R$)
 * Melhorias nas mensagens e exibição
 * Organização do código em módulos
 
-### 🔵 v0.3 — Cálculo financeiro completo (planejado)
-* Integração com `calculos.py`
+### 🔵 v0.3 — Cálculo financeiro completo (atual)
 * Receita mensal
 * Gastos fixos
 * Percentual para guardar
-* Cálculo de saldo disponível
+* Cálculo do valor a ser guardado
+* Cálculo do saldo disponível
+* Resumo financeiro consolidado
 
 ### 🟣 v0.4 — Outros tipos de pagamento
 * PIX

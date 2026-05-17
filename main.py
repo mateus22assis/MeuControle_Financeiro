@@ -4,8 +4,13 @@ from dados import (
     salvarDados,
     adicionarGastoCartao,
     adicionarGastoParcelado,
-    fecharFatura
+    fecharFatura,
+    definirReceitaMensal,
+    definirGastosFixos,
+    definirPercentualReserva
+
 )
+from calculos import mostrarResumo
 
 from utils import lerFloat, lerInt, formatarReal, lerTexto
 
@@ -23,6 +28,10 @@ while True:
     print("3. Adicionar gasto parcelado")
     print("4. Ver dados atuais")
     print("5. Fechar fatura")
+    print("6. Definir receita mensal")
+    print("7. Definir gastos fixos")
+    print("8. Definir percentual de reserva")
+    print("9. ver resumo financeiro")
     print("0. Sair")
 
     opção = input("Escolha uma opção: ")
@@ -73,6 +82,33 @@ while True:
         fecharFatura(dados)
         salvarDados(CAMINHO, dados)
         print("Fatura fechada. Gastos do cartão a vista e parcelas foram processados.")
+
+    elif opção == "6":
+        valor = lerFloat("Digite o valor da receita mensal: ")
+        definirReceitaMensal(dados, valor)
+        salvarDados(CAMINHO, dados)
+        print("Receita mensal definida com sucesso.")
+
+    elif opção == "7":
+        valor = lerFloat("Digite o valor dos gastos fixos: ")
+        definirGastosFixos(dados, valor)
+        salvarDados(CAMINHO, dados)
+        print("Gastos fixos definidos com sucesso.")
+
+    elif opção == "8":
+        valor = lerInt("Digite o percentual para guardar(%): ")
+        definirPercentualReserva(dados, valor)
+        salvarDados(CAMINHO, dados)
+        print("Percentual de reserva definido com sucesso.")
+
+    elif opção == "9":
+        resumo = mostrarResumo(dados)
+        print("\n--- Resumo Financeiro ---")
+        print("receita mensal:", formatarReal(resumo["receitaMensal"]))
+        print("gastos fixos:", formatarReal(resumo["gastosFixos"]))
+        print("fatura atual:", formatarReal(resumo["gastosCartao"]))
+        print("valor a ser guardado:", formatarReal(resumo["valorGuardar"]))
+        print("saldo disponível:", formatarReal(resumo["saldoDisponivel"]))
 
     else:
         print("Opção inválida. Tente novamente.")
