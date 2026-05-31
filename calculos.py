@@ -24,6 +24,10 @@ def calcularSaldoDisponivel(dados):
         - valorAGuardar
         - dados["gastosFixos"]
         - dados["gastosCartao"]
+        - dados["gastosPix"]
+        - dados["gastosDebito"]
+        - dados["gastosDinheiro"]
+
     )
 
 #resumoFinal, quanto guardar, quanto sobra para gastar no cartao ou investir
@@ -31,12 +35,16 @@ def calcularSaldoDisponivel(dados):
 def mostrarResumo(dados):
     valorGuardar = calcularValorGuardar(dados)    
     saldoDisponivel = calcularSaldoDisponivel (dados)
+
+    gastosAvista = (
+    dados ["gastosPix"] + dados["gastosDebito"] + dados["gastosDinheiro"])
   
 
     return {
         "valorGuardar": valorGuardar,
         "saldoDisponivel": saldoDisponivel,
-         "gastosCartao": dados["gastosCartao"],
+        "gastosCartao": dados["gastosCartao"],
+        "gastosAvista": gastosAvista,
         "gastosFixos": dados["gastosFixos"],
         "receitaMensal": dados["receitaMensal"]
         

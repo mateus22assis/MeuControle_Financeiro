@@ -10,10 +10,13 @@ def carregarDados(caminho):
     try:
         with open(caminho, 'r') as arquivo:
             return json.load(arquivo)
-    except json.JSONDecodeError:
+    except (FileNotFoundError, json.JSONDecodeError):
         return {
             "parcelamentos":[],
             "gastosCartao":0,
+            "gastosPix":0,
+            "gastosDebito":0,
+            "gastosDinheiro":0,
             "receitaMensal":0,
             "gastosFixos":0,
             "percentualReserva":30,
@@ -79,6 +82,18 @@ def definirGastosFixos(dados, valor):
 #percentual de reserva
 def definirPercentualReserva(dados, valor):
     dados["percentualReserva"] = valor
+
+#pix
+def adicionarGastoPix(dados, valor):
+    dados["gastosPix"] += valor
+#debito
+def adicionarGastoDebito(dados, valor):
+    dados["gastosDebito"] += valor
+#dinheiro
+def adicionarGastoDinheiro(dados, valor):
+    dados["gastosDinheiro"] += valor
+
+
 
 
 

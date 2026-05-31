@@ -46,23 +46,29 @@ Certifique-se de ter o Python instalado (versão 3.x)
 ## 🚧 Status do Projeto
 
 🚀 Em desenvolvimento  
-📌 Versão atual: **v0.3**
+📌 Versão atual: **v0.4**
 
 ---
 
-## 📦 Versão Atual - v0.3 (Cálculo Financeiro)
+## 📦 Versão Atual - v0.4 (Múltiplas formas de pagamento)
 
-Esta versão adiciona recursos de planejamento financeiro mensal.
+Esta versão amplia o controle financeiro além do cartão de crédito.
 
 ### Funcionalidades:
-* Definição da receita mensal
-* Registro dos gastos fixos
-* Configuração do percentual de reserva financeira
-* Cálculo automático do valor a ser guardado
-* Cálculo do saldo disponível após despesas e fatura
-* Exibição de resumo financeiro consolidado
+* Controle de gastos no cartão de crédito à vista
+* Controle de compras parceladas
+* Controle de parcelamentos já existentes
+* Fechamento de fatura
+* Controle de gastos via PIX
+* Controle de gastos via débito
+* Controle de gastos em dinheiro
+* Definição de receita mensal
+* Definição de gastos fixos
+* Configuração de percentual de reserva
+* Cálculo automático do valor a guardar
+* Cálculo de saldo disponível
 
-👉 Esta versão transforma o sistema em uma ferramenta de planejamento financeiro pessoal.
+👉 Esta versão permite acompanhar melhor o orçamento mensal considerando diferentes formas de pagamento.
 
 
 ---
@@ -81,7 +87,7 @@ Esta versão adiciona recursos de planejamento financeiro mensal.
 * Melhorias nas mensagens e exibição
 * Organização do código em módulos
 
-### 🔵 v0.3 — Cálculo financeiro completo (atual)
+### 🔵 v0.3 — Cálculo financeiro completo 
 * Receita mensal
 * Gastos fixos
 * Percentual para guardar
@@ -89,7 +95,7 @@ Esta versão adiciona recursos de planejamento financeiro mensal.
 * Cálculo do saldo disponível
 * Resumo financeiro consolidado
 
-### 🟣 v0.4 — Outros tipos de pagamento
+### 🟣 v0.4 — Outros tipos de pagamento (atual)
 * PIX
 * Débito
 * Dinheiro
