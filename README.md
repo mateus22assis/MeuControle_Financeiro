@@ -46,13 +46,13 @@ Certifique-se de ter o Python instalado (versão 3.x)
 ## 🚧 Status do Projeto
 
 🚀 Em desenvolvimento  
-📌 Versão atual: **v0.4**
+📌 Versão atual: **v0.5**
 
 ---
 
-## 📦 Versão Atual - v0.4 (Múltiplas formas de pagamento)
+## 📦 Versão Atual - v0.5 (Histórico de Movimentações)
 
-Esta versão amplia o controle financeiro além do cartão de crédito.
+Esta versão amplia o sistema registrando o histórico detalhado das movimentações financeiras.
 
 ### Funcionalidades:
 * Controle de gastos no cartão de crédito à vista
@@ -67,8 +67,12 @@ Esta versão amplia o controle financeiro além do cartão de crédito.
 * Configuração de percentual de reserva
 * Cálculo automático do valor a guardar
 * Cálculo de saldo disponível
+* Registro de movimentações financeiras
+* Registro automático de data
+* Registro de descrição dos gastos
+* Consulta de movimentações pelo menu
 
-👉 Esta versão permite acompanhar melhor o orçamento mensal considerando diferentes formas de pagamento.
+👉 Esta versão prepara a estrutura do sistema para futura integração com Excel e dashboards.
 
 
 ---
@@ -95,18 +99,24 @@ Esta versão amplia o controle financeiro além do cartão de crédito.
 * Cálculo do saldo disponível
 * Resumo financeiro consolidado
 
-### 🟣 v0.4 — Outros tipos de pagamento (atual)
-* PIX
+### 🟣 v0.4 — Outros tipos de pagamento 
 * Débito
 * Dinheiro
 
-### 🟠 v0.5 — Organização interna
-* Refatoração do código
-* Melhor separação de responsabilidades
+### 🟣 v0.5 — Histórico de movimentações (atual)
 
-### 🔥 v0.6 — Integração com Excel
-* Leitura de dados via Excel
-* Geração de relatórios
+* Registro de movimentações financeiras
+* Registro automático de data
+* Registro de descrição dos gastos
+* Histórico de PIX, Débito, Dinheiro e Cartão
+* Consulta de movimentações
+* Preparação para integração com Excel e dashboards
+
+### 🟠 v0.6 — Estrutura para Excel e Dashboard
+* Categorias de gastos
+* Estruturação dos dados para Excel
+* Planejamento dos indicadores
+* Base para gráficos e relatórios
 
 ### 🚀 v1.0 — Versão final (produto)
 * Sistema utilizável por terceiros
