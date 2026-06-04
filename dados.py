@@ -1,5 +1,6 @@
 import json
 
+from datetime import datetime
 #funcoes para tranformar os dados em json
 def salvarDados(caminho, dados):
     with open(caminho, 'w') as arquivo:
@@ -13,6 +14,7 @@ def carregarDados(caminho):
     except (FileNotFoundError, json.JSONDecodeError):
         return {
             "parcelamentos":[],
+            "movimentacoes":[],
             "gastosCartao":0,
             "gastosPix":0,
             "gastosDebito":0,
@@ -92,6 +94,17 @@ def adicionarGastoDebito(dados, valor):
 #dinheiro
 def adicionarGastoDinheiro(dados, valor):
     dados["gastosDinheiro"] += valor
+
+
+#mdescriçao das movimentacoes
+def adicionarMovimentacao(dados, tipo, descricao, valor):
+    movimentacao = {
+        "tipo": tipo,
+        "descricao": descricao,
+        "valor": valor,
+        "data": datetime.now().strftime("%d/%m/%Y")
+    }
+    dados["movimentacoes"].append(movimentacao)
 
 
 

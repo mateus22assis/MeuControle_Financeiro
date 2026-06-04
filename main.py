@@ -10,7 +10,8 @@ from dados import (
     fecharFatura,
     definirReceitaMensal,
     definirGastosFixos,
-    definirPercentualReserva
+    definirPercentualReserva,
+    adicionarMovimentacao
 
 
 )
@@ -39,6 +40,7 @@ while True:
     print("10. Definir gastos fixos")
     print("11. Definir percentual de reserva")
     print("12. ver resumo financeiro")
+    print("13. ver movimentações")
     print("0. Sair")
 
     opção = input("Escolha uma opção: ")
@@ -56,8 +58,10 @@ while True:
 
 
     elif opção == "2":
+        descricao = lerTexto("Digite a descrição do gasto no cartão: ")
         valor = lerFloat("Digite o valor do gasto no cartão: ")
         adicionarGastoCartao(dados, valor)
+        adicionarMovimentacao(dados, "cartao", descricao, valor)
         salvarDados(CAMINHO, dados)
         print("Gasto adicionado ao cartão.")
 
@@ -67,26 +71,33 @@ while True:
         valorTotal = lerFloat("Digite o valor total do gasto: ")
         quantidadeParcelas = lerInt("Digite a quantidade de parcelas: ")
         adicionarGastoParcelado(dados, nome, valorTotal, quantidadeParcelas)
+        adicionarMovimentacao(dados, "cartao", nome, valorTotal)
         salvarDados(CAMINHO, dados)
         print("compra parcelada adicionada com sucesso.")
 
     elif opção == "4":
+        descricao = lerTexto("Digite a descrição do gasto no pix: ")
         valor = lerFloat("Digite o valor do gasto no pix: ")
         adicionarGastoPix(dados, valor)
+        adicionarMovimentacao(dados, "pix", descricao, valor)
         salvarDados(CAMINHO, dados)
         print("Gasto no pix adicionado com sucesso.")
 
 
     elif opção == "5":
+        descricao = lerTexto("Digite a descrição do gasto no debito: ")
         valor = lerFloat("Digite o valor do gasto no debito: ")
         adicionarGastoDebito(dados, valor)
+        adicionarMovimentacao(dados, "debito", descricao, valor)
         salvarDados(CAMINHO, dados)
         print("Gasto no debito adicionado com sucesso.")
 
 
     elif opção == "6":
+        descricao = lerTexto("Digite a descrição do gasto no dinheiro: ")
         valor = lerFloat("Digite o valor do gasto no dinheiro: ")
         adicionarGastoDinheiro(dados, valor)
+        adicionarMovimentacao(dados, "dinheiro", descricao, valor)
         salvarDados(CAMINHO, dados)
         print("Gasto no dinheiro adicionado com sucesso.")
 
@@ -139,6 +150,19 @@ while True:
         print("gastos à vista:", formatarReal(resumo["gastosAvista"]))
         print("valor a ser guardado:", formatarReal(resumo["valorGuardar"]))
         print("saldo disponível:", formatarReal(resumo["saldoDisponivel"]))
+
+    elif opção == "13":
+        print("\n--- Movimentações ---")
+
+        if len(dados["movimentacoes"]) == 0:
+            print("Nenhuma movimentação registrada.")
+        else:
+            for mov in dados["movimentacoes"]:
+                print("-" * 50)
+                print("Data:", mov["data"])
+                print("Tipo:", mov["tipo"])
+                print("Descrição:", mov["descricao"])
+                print("Valor:", formatarReal(mov["valor"]))
 
     else:
         print("Opção inválida. Tente novamente.")

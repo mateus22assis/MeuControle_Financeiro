@@ -1,6 +1,4 @@
 #calcular quanto vai guardar com base no que vc recebeu no mes somando tudo(salario, renda extra, etc) 
-
-
 def calcularValorGuardar(dados):
     return dados["receitaMensal"] * (dados["percentualReserva"] / 100)
 
