@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 
-# ambiente virtual (se usar depois)
+# ambiente virtual
 venv/
 .env/
 
@@ -13,5 +13,5 @@ Thumbs.db
 # VS Code
 .vscode/
 
-# dados locais (IMPORTANTE)
+# dados locais do usuário
 data.json

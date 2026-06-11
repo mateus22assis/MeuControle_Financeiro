@@ -1,3 +1,15 @@
+'''
+funçoes ja migradas para o excel
+#def definirPercentualReserva
+#definirGastosFixos
+#definirReceitaMensal
+
+ as funçoes acima por funçoes do excel_manager, que salva os dados diretamente no excel, sem precisar passar pelo json. foram subistituídas por:
+ #salvarReceitaMensal(valor)
+ #salvarGastosFixos(valor)
+ #salvarPercentualReserva(valor)
+
+'''
 import json
 
 from datetime import datetime

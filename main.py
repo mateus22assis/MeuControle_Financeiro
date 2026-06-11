@@ -19,12 +19,44 @@ from calculos import mostrarResumo
 
 from utils import lerFloat, lerInt, formatarReal, lerTexto
 
+'''
+#teste de leitura da aba de configuracoes
+from excel_manager import lerConfiguracoes
+
+configuracoes = lerConfiguracoes()
+
+print(configuracoes)
+
+
+#tests adiçao de valores na aba de configuracoes
+from excel_manager import (salvarGastosFixos, salvarPercentualReserva, salvarReceitaMensal)
+
+salvarReceitaMensal(5000.0)
+salvarGastosFixos(1500.0)
+salvarPercentualReserva(30.0)
+
+
+#teste de leitura da aba de compromissos mensais
+from excel_manager import lerCompromissosMensais
+
+compromissos = lerCompromissosMensais()
+
+print(compromissos)
+
+
+
+from excel_manager import somarCompromissosMensais
+
+totalCompromissos = somarCompromissosMensais()
+
+print(totalCompromissos)
+'''
 CAMINHO = "data.json"  # caminho do arquivo de dados
 
 # carrega os dados do arquivo
 dados = carregarDados(CAMINHO)
 
-
+'''
 #loop principal do programa
 while True:
     print("\n--- Menu ---")
@@ -166,6 +198,8 @@ while True:
 
     else:
         print("Opção inválida. Tente novamente.")
+
+'''
 
 
 
