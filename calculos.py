@@ -1,49 +1,93 @@
-#calcular quanto vai guardar com base no que vc recebeu no mes somando tudo(salario, renda extra, etc) 
-def calcularValorGuardar(dados):
-    return dados["receitaMensal"] * (dados["percentualReserva"] / 100)
+from excel_manager import (
+    lerConfiguracoes,
+    somarCompromissosMensais,
+    somarReceitas,
+    lerMovimentacoes
+)
+
+# ==========================
+# RECEITAS
+# ==========================
+
+def calcularValorGuardar():
+
+    configuracoes = lerConfiguracoes()
+
+    receitaMensal = configuracoes["receitaMensal"]
+    percentualReserva = configuracoes["percentualReserva"]
+
+    return receitaMensal * (percentualReserva / 100)
 
 
-#calcular o valor total das parcelas futuras, somando todas as parcelas que tem que pagar
-def somarParcelasMensais(parcelamentos):
+# ==========================
+# MOVIMENTAÇÕES
+# ==========================
+
+def calcularGastosMovimentacoes():
+
+    movimentacoes = lerMovimentacoes()
+
     total = 0
-    for parcela in parcelamentos:
-        total += parcela["valorParcela"]
+
+    for mov in movimentacoes:
+
+        valor = mov["valor"]
+
+        if valor is not None:
+            total += valor
+
     return total
 
 
-   
+# ==========================
+# SALDO
+# ==========================
 
-#quanto sobra depois de pagar os gastos fixos e o valor guardado, para gastar no cartao ou investir
-def calcularSaldoDisponivel(dados):
-    valorAGuardar = calcularValorGuardar(dados)
+def calcularSaldoDisponivel():
+
+    configuracoes = lerConfiguracoes()
+
+    receitaMensal = configuracoes["receitaMensal"]
+
+    valorGuardar = calcularValorGuardar()
+
+    gastosFixos = somarCompromissosMensais()
+
+    gastosMovimentacoes = calcularGastosMovimentacoes()
 
     return (
-        dados["receitaMensal"]
-        - valorAGuardar
-        - dados["gastosFixos"]
-        - dados["gastosCartao"]
-        - dados["gastosPix"]
-        - dados["gastosDebito"]
-        - dados["gastosDinheiro"]
-
+        receitaMensal
+        - valorGuardar
+        - gastosFixos
+        - gastosMovimentacoes
     )
 
-#resumoFinal, quanto guardar, quanto sobra para gastar no cartao ou investir
 
-def mostrarResumo(dados):
-    valorGuardar = calcularValorGuardar(dados)    
-    saldoDisponivel = calcularSaldoDisponivel (dados)
+# ==========================
+# RESUMO
+# ==========================
 
-    gastosAvista = (
-    dados ["gastosPix"] + dados["gastosDebito"] + dados["gastosDinheiro"])
-  
+def mostrarResumo():
+
+    configuracoes = lerConfiguracoes()
 
     return {
-        "valorGuardar": valorGuardar,
-        "saldoDisponivel": saldoDisponivel,
-        "gastosCartao": dados["gastosCartao"],
-        "gastosAvista": gastosAvista,
-        "gastosFixos": dados["gastosFixos"],
-        "receitaMensal": dados["receitaMensal"]
-        
+
+        "receitaMensal":
+            configuracoes["receitaMensal"],
+
+        "gastosFixos":
+            somarCompromissosMensais(),
+
+        "valorGuardar":
+            calcularValorGuardar(),
+
+        "gastosMovimentacoes":
+            calcularGastosMovimentacoes(),
+
+        "saldoDisponivel":
+            calcularSaldoDisponivel()
     }
+
+if __name__ == "__main__":
+    print(mostrarResumo())
