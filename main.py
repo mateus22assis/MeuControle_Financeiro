@@ -27,6 +27,10 @@ from excel_manager import (
     adicionarMovimentacao
 )
 
+
+
+
+
 # ==========================
 # DADOS LEGADOS (JSON)
 # ==========================
@@ -344,3 +348,4 @@ while True:
     else:
 
         print("Opção inválida.")
+

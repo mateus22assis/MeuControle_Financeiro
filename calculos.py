@@ -13,10 +13,11 @@ def calcularValorGuardar():
 
     configuracoes = lerConfiguracoes()
 
-    receitaMensal = configuracoes["receitaMensal"]
+    receitaTotal = somarReceitas()
+
     percentualReserva = configuracoes["percentualReserva"]
 
-    return receitaMensal * (percentualReserva / 100)
+    return receitaTotal * (percentualReserva / 100)
 
 
 # ==========================
@@ -30,10 +31,12 @@ def calcularGastosMovimentacoes():
     total = 0
 
     for mov in movimentacoes:
+        
+        if mov ["Natureza"] == "despesa":
 
-        valor = mov["valor"]
+          valor = mov["Valor"]
 
-        if valor is not None:
+          if valor is not None:
             total += valor
 
     return total
@@ -47,7 +50,7 @@ def calcularSaldoDisponivel():
 
     configuracoes = lerConfiguracoes()
 
-    receitaMensal = configuracoes["receitaMensal"]
+    receitaTotal = somarReceitas()
 
     valorGuardar = calcularValorGuardar()
 
@@ -56,7 +59,7 @@ def calcularSaldoDisponivel():
     gastosMovimentacoes = calcularGastosMovimentacoes()
 
     return (
-        receitaMensal
+        receitaTotal
         - valorGuardar
         - gastosFixos
         - gastosMovimentacoes
@@ -73,8 +76,8 @@ def mostrarResumo():
 
     return {
 
-        "receitaMensal":
-            configuracoes["receitaMensal"],
+        "receitaTotal":
+            somarReceitas(),
 
         "gastosFixos":
             somarCompromissosMensais(),

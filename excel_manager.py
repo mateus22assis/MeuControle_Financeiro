@@ -75,19 +75,25 @@ def lerMovimentacoes():
     for linha in aba_movimentacoes.iter_rows(min_row=2, values_only=True):
 
         data = linha[0]
-        tipo = linha[1]
-        categoria = linha[2]
-        descricao = linha[3]
-        valor = linha[4]
+        natureza = linha[1]
+        meio = linha[2]
+        categoria = linha[3]
+        descricao = linha[4]
+        valor = linha[5]
+        parcelas = linha[6]
+        valorParcela = linha[7]
 
         if descricao is not None:
 
             movimentacoes.append({
                 "data": data,
-                "tipo": tipo,
-                "categoria": categoria,
-                "descricao": descricao,
-                "valor": valor
+                "Natureza": natureza,
+                "Meio": meio,
+                "Categoria": categoria,
+                "Descricao": descricao,
+                "Valor": valor,
+                "Parcelas": parcelas,
+                "ValorParcela": valorParcela
             })
 
     return movimentacoes
@@ -119,7 +125,8 @@ def salvarPercentualReserva(valor):
 # aba Movimentacoes
 
 def adicionarMovimentacao(
-    tipo,
+    natureza,
+    meio,
     categoria,
     descricao,
     valorTotal,
@@ -133,12 +140,13 @@ def adicionarMovimentacao(
     proximaLinha = aba_movimentacoes.max_row + 1
 
     aba_movimentacoes[f"A{proximaLinha}"] = datetime.now().strftime("%d/%m/%Y")
-    aba_movimentacoes[f"B{proximaLinha}"] = tipo
-    aba_movimentacoes[f"C{proximaLinha}"] = categoria
-    aba_movimentacoes[f"D{proximaLinha}"] = descricao
-    aba_movimentacoes[f"E{proximaLinha}"] = valorTotal
-    aba_movimentacoes[f"F{proximaLinha}"] = parcelas
-    aba_movimentacoes[f"G{proximaLinha}"] = valorParcela
+    aba_movimentacoes[f"B{proximaLinha}"] = natureza
+    aba_movimentacoes[f"C{proximaLinha}"] = meio
+    aba_movimentacoes[f"D{proximaLinha}"] = categoria
+    aba_movimentacoes[f"E{proximaLinha}"] = descricao
+    aba_movimentacoes[f"F{proximaLinha}"] = valorTotal
+    aba_movimentacoes[f"G{proximaLinha}"] = parcelas
+    aba_movimentacoes[f"H{proximaLinha}"] = valorParcela
 
     workbook.save(CAMINHO_PLANILHA)
 
@@ -170,9 +178,9 @@ def somarReceitas():
 
     for mov in movimentacoes:
 
-        if mov["tipo"] == "receita":
+        if mov["Natureza"] == "receita":
 
-            valor = mov["valor"]
+            valor = mov["Valor"]
 
             if valor is not None:
                 total += valor
