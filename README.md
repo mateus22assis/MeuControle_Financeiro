@@ -19,11 +19,13 @@ Atualmente o sistema está passando por uma migração gradual do armazenamento 
 * Registro de gastos via PIX
 * Registro de gastos via débito
 * Registro de gastos em dinheiro
-* Definição de receita mensal
-* Definição de percentual de reserva financeira
 * Histórico de movimentações
 * Controle de compromissos mensais
-* Integração inicial com Excel utilizando OpenPyXL
+* Controle de receitas financeiras
+* Separação entre receitas e despesas
+* Controle de percentual de reserva financeira
+* Cálculo automático de saldo disponível
+* Integração com Excel utilizando OpenPyXL
 
 ---
 
@@ -57,34 +59,55 @@ Atualmente o sistema trabalha com as seguintes abas:
 * Dashboard
 * CompromissosMensais
 
+### Estrutura da aba Movimentacoes
+
+Cada movimentação possui:
+
+* Data
+* Natureza (receita ou despesa)
+* Meio (cartão, PIX, débito, dinheiro, salário, investimento etc.)
+* Categoria
+* Descrição
+* Valor
+* Parcelas
+* Valor da Parcela
+
 ---
 
 ## 🚧 Status do Projeto
 
 🚀 Em desenvolvimento
 
-Versão atual: **v0.6**
+Versão atual: **v0.6.1**
 
 ---
 
-## 📦 Versão Atual - v0.6 (Migração para Excel)
+## 📦 Versão Atual - v0.6.1 (Receitas Dinâmicas e Estrutura Financeira)
 
-Esta versão marca o início da transição do sistema para uma arquitetura baseada em planilhas Excel.
+Esta versão consolida a migração da lógica financeira para uma estrutura baseada em movimentações registradas na planilha Excel.
 
 ### Implementado
 
 * Leitura da aba Configuracoes
-* Escrita de configurações na planilha
+* Leitura da aba Movimentacoes
 * Leitura da aba CompromissosMensais
-* Cálculo automático do total de compromissos mensais
-* Separação entre regras de negócio e manipulação da planilha
-* Criação do módulo excel_manager.py
+* Registro de movimentações diretamente na planilha
+* Separação entre receitas e despesas
+* Inclusão dos conceitos de Natureza e Meio
+* Cálculo automático de receitas através das movimentações
+* Cálculo automático dos compromissos mensais
+* Cálculo automático do valor a guardar
+* Cálculo automático do saldo disponível
+* Refatoração do módulo calculos.py
+* Refatoração do módulo excel_manager.py
 
-### Em andamento
+### Preparado para próximas versões
 
-* Migração gradual das funções do dados.py
-* Integração completa das movimentações com Excel
-* Alimentação automática do Dashboard
+* Cadastro de receitas pelo menu
+* Cadastro de compromissos pelo menu
+* Dashboard automático
+* Indicadores financeiros
+* Relatórios gerenciais
 
 ---
 
@@ -123,18 +146,36 @@ Esta versão marca o início da transição do sistema para uma arquitetura base
 
 ### 🟠 v0.6 — Integração com Excel
 
-* Estrutura de planilha criada
+* Estrutura inicial da planilha
 * Leitura e gravação em Excel
 * Compromissos mensais
-* Separação da camada de dados
+* Criação do excel_manager.py
+
+### 🟠 v0.6.1 — Receitas Dinâmicas e Estrutura Financeira
+
+* Separação entre receitas e despesas
+* Inclusão dos conceitos de Natureza e Meio
+* Receitas calculadas pelas movimentações
+* Compromissos integrados aos cálculos
+* Refatoração dos cálculos financeiros
+* Base preparada para dashboards
+
+### 🔴 v0.6.2 — Menus e Cadastros
+
+Planejado:
+
+* Cadastro de receitas pelo menu
+* Cadastro de compromissos pelo menu
+* Consulta de compromissos
+* Início das funções de edição e exclusão
 
 ### 🔴 v0.7 — Integração completa
 
 Planejado:
 
-* Movimentações diretamente no Excel
-* Parcelamentos diretamente no Excel
-* Faturas diretamente no Excel
+* Movimentações totalmente migradas para Excel
+* Parcelamentos totalmente migrados para Excel
+* Faturas totalmente migradas para Excel
 
 ### 🚀 v0.8
 
@@ -175,4 +216,4 @@ Projeto criado para estudo prático de programação, organização financeira p
 
 ## 🤖 Observação
 
-O desenvolvimento do projeto conta com apoio de Inteligência Artificial como ferramenta de aprendizado, revisão e discussão de arquitetura.
+O desenvolvimento do projeto conta com apoio de Inteligência Artificial como ferramenta de aprendizado, revisão de código, discussão de arquitetura e boas práticas de desenvolvimento.

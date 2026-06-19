@@ -7,24 +7,38 @@ from datetime import datetime
 
 CAMINHO_PLANILHA = "ControleFinanceiro_2026_Prototipo_v3.xlsx"
 
+
 # ==========================
-# TESTES
+# UTILITÁRIOS
 # ==========================
 
-def testarPlanilha():
-    workbook = load_workbook(CAMINHO_PLANILHA)
+def abrirPlanilha():
 
-    print("Abas encontradas:")
+    return load_workbook(CAMINHO_PLANILHA)
 
-    for aba in workbook.sheetnames:
-        print("-", aba)
+
+def encontrarPrimeiraLinhaVazia(
+        aba,
+        coluna="A",
+        linhaInicial=2
+):
+
+    linha = linhaInicial
+
+    while aba[f"{coluna}{linha}"].value is not None:
+        linha += 1
+
+    return linha
+
 
 # ==========================
 # LEITURA DA PLANILHA
 # ==========================
 
 def lerConfiguracoes():
-    workbook = load_workbook(CAMINHO_PLANILHA)
+
+    workbook = abrirPlanilha()
+
     aba_configuracoes = workbook["Configuracoes"]
 
     configuracoes = {
@@ -32,26 +46,40 @@ def lerConfiguracoes():
         "percentualReserva": 30.0
     }
 
-    for linha in aba_configuracoes.iter_rows(min_row=2, values_only=True):
+    for linha in aba_configuracoes.iter_rows(
+            min_row=2,
+            values_only=True
+    ):
 
         campo, valor = linha
 
         if campo == "Receita Mensal":
-            configuracoes["receitaMensal"] = valor if valor is not None else 0.0
+
+            configuracoes["receitaMensal"] = (
+                valor if valor is not None else 0.0
+            )
 
         elif campo == "Percentual de Reserva":
-            configuracoes["percentualReserva"] = valor if valor is not None else 30.0
+
+            configuracoes["percentualReserva"] = (
+                valor if valor is not None else 30.0
+            )
 
     return configuracoes
 
 
 def lerCompromissosMensais():
-    workbook = load_workbook(CAMINHO_PLANILHA)
+
+    workbook = abrirPlanilha()
+
     aba_compromissos = workbook["CompromissosMensais"]
 
     compromissos = []
 
-    for linha in aba_compromissos.iter_rows(min_row=5, values_only=True):
+    for linha in aba_compromissos.iter_rows(
+            min_row=2,
+            values_only=True
+    ):
 
         descricao = linha[0]
         valor = linha[1]
@@ -59,20 +87,27 @@ def lerCompromissosMensais():
         if descricao is not None:
 
             compromissos.append({
+
                 "descricao": descricao,
                 "valor": valor
+
             })
 
     return compromissos
 
 
 def lerMovimentacoes():
-    workbook = load_workbook(CAMINHO_PLANILHA)
+
+    workbook = abrirPlanilha()
+
     aba_movimentacoes = workbook["Movimentacoes"]
 
     movimentacoes = []
 
-    for linha in aba_movimentacoes.iter_rows(min_row=2, values_only=True):
+    for linha in aba_movimentacoes.iter_rows(
+            min_row=2,
+            values_only=True
+    ):
 
         data = linha[0]
         natureza = linha[1]
@@ -86,26 +121,29 @@ def lerMovimentacoes():
         if descricao is not None:
 
             movimentacoes.append({
+
                 "data": data,
-                "Natureza": natureza,
-                "Meio": meio,
-                "Categoria": categoria,
-                "Descricao": descricao,
-                "Valor": valor,
-                "Parcelas": parcelas,
-                "ValorParcela": valorParcela
+                "natureza": natureza,
+                "meio": meio,
+                "categoria": categoria,
+                "descricao": descricao,
+                "valor": valor,
+                "parcelas": parcelas,
+                "valorParcela": valorParcela
+
             })
 
     return movimentacoes
 
-# ==========================
-# ESCRITA NA PLANILHA
-# ==========================
 
-# aba Configuracoes
+# ==========================
+# ESCRITA DA PLANILHA
+# ==========================
 
 def salvarReceitaMensal(valor):
-    workbook = load_workbook(CAMINHO_PLANILHA)
+
+    workbook = abrirPlanilha()
+
     aba_configuracoes = workbook["Configuracoes"]
 
     aba_configuracoes["B2"] = valor
@@ -114,7 +152,9 @@ def salvarReceitaMensal(valor):
 
 
 def salvarPercentualReserva(valor):
-    workbook = load_workbook(CAMINHO_PLANILHA)
+
+    workbook = abrirPlanilha()
+
     aba_configuracoes = workbook["Configuracoes"]
 
     aba_configuracoes["B4"] = valor
@@ -122,24 +162,28 @@ def salvarPercentualReserva(valor):
     workbook.save(CAMINHO_PLANILHA)
 
 
-# aba Movimentacoes
-
 def adicionarMovimentacao(
-    natureza,
-    meio,
-    categoria,
-    descricao,
-    valorTotal,
-    parcelas="",
-    valorParcela=""
+        natureza,
+        meio,
+        categoria,
+        descricao,
+        valorTotal,
+        parcelas="",
+        valorParcela=""
 ):
 
-    workbook = load_workbook(CAMINHO_PLANILHA)
+    workbook = abrirPlanilha()
+
     aba_movimentacoes = workbook["Movimentacoes"]
 
-    proximaLinha = aba_movimentacoes.max_row + 1
+    proximaLinha = encontrarPrimeiraLinhaVazia(
+        aba_movimentacoes
+    )
 
-    aba_movimentacoes[f"A{proximaLinha}"] = datetime.now().strftime("%d/%m/%Y")
+    aba_movimentacoes[f"A{proximaLinha}"] = (
+        datetime.now().strftime("%d/%m/%Y")
+    )
+
     aba_movimentacoes[f"B{proximaLinha}"] = natureza
     aba_movimentacoes[f"C{proximaLinha}"] = meio
     aba_movimentacoes[f"D{proximaLinha}"] = categoria
@@ -150,39 +194,21 @@ def adicionarMovimentacao(
 
     workbook.save(CAMINHO_PLANILHA)
 
-# ==========================
-# CÁLCULOS BASEADOS NA PLANILHA
-# ==========================
 
-def somarCompromissosMensais():
+def adicionarCompromissoMensal(
+        descricao,
+        valor
+):
 
-    compromissos = lerCompromissosMensais()
+    workbook = abrirPlanilha()
 
-    total = 0
+    aba_compromissos = workbook["CompromissosMensais"]
 
-    for compromisso in compromissos:
+    proximaLinha = encontrarPrimeiraLinhaVazia(
+        aba_compromissos
+    )
 
-        valor = compromisso["valor"]
+    aba_compromissos[f"A{proximaLinha}"] = descricao
+    aba_compromissos[f"B{proximaLinha}"] = valor
 
-        if valor is not None:
-            total += valor
-
-    return total
-
-
-def somarReceitas():
-
-    movimentacoes = lerMovimentacoes()
-
-    total = 0
-
-    for mov in movimentacoes:
-
-        if mov["Natureza"] == "receita":
-
-            valor = mov["Valor"]
-
-            if valor is not None:
-                total += valor
-
-    return total
+    workbook.save(CAMINHO_PLANILHA)
