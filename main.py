@@ -1,16 +1,9 @@
 from dados import (
-    adicionarGastoDebito,
-    adicionarGastoPix,
-    adicionarGastoDinheiro,
-    adicionarParcelamento,
     carregarDados,
     salvarDados,
     adicionarGastoCartao,
     adicionarGastoParcelado,
-    fecharFatura,
-    definirReceitaMensal,
-    definirGastosFixos,
-    definirPercentualReserva
+    fecharFatura
 )
 
 from calculos import mostrarResumo
@@ -24,19 +17,16 @@ from utils import (
 
 from excel_manager import (
     lerMovimentacoes,
-    adicionarMovimentacao
+    adicionarMovimentacao,
+    lerCompromissosMensais,
+    adicionarCompromissoMensal
 )
-
-
-
-
 
 # ==========================
 # DADOS LEGADOS (JSON)
 # ==========================
 
 CAMINHO = "data.json"
-
 dados = carregarDados(CAMINHO)
 
 # ==========================
@@ -45,20 +35,12 @@ dados = carregarDados(CAMINHO)
 
 while True:
 
-    print("\n--- Menu ---")
-    print("1 - Adicionar parcelamento existente")
-    print("2 - Adicionar gasto no cartão de crédito à vista")
-    print("3 - Adicionar gasto parcelado no cartão")
-    print("4 - Adicionar gasto no PIX")
-    print("5 - Adicionar gasto no débito")
-    print("6 - Adicionar gasto no dinheiro")
-    print("7 - Ver dados atuais")
-    print("8 - Fechar fatura")
-    print("9 - Definir receita mensal")
-    print("10 - Definir gastos fixos")
-    print("11 - Definir percentual de reserva")
-    print("12 - Ver resumo financeiro")
-    print("13 - Ver movimentações")
+    print("\n======== CONTROLE FINANCEIRO ========")
+    print("1 - Adicionar movimentação")
+    print("2 - Ver movimentações")
+    print("3 - Ver resumo financeiro")
+    print("4 - Compromissos mensais")
+    print("5 - Cartão de crédito")
     print("0 - Sair")
 
     opcao = input("Escolha uma opção: ")
@@ -72,229 +54,205 @@ while True:
         break
 
     # ==========================
-    # PARCELAMENTOS (JSON)
+    # ADICIONAR MOVIMENTAÇÃO
     # ==========================
 
     elif opcao == "1":
 
-        nome = lerTexto("Digite o nome do parcelamento existente: ")
-        valorParcela = lerFloat("Digite o valor da parcela: ")
-        quantidadeParcelas = lerInt(
-            "Digite a quantidade de parcelas restantes: "
-        )
+        print("\n1 - Receita")
+        print("2 - Despesa")
 
-        adicionarParcelamento(
-            dados,
-            nome,
-            valorParcela,
-            quantidadeParcelas
-        )
+        tipo = input("Escolha: ")
 
-        salvarDados(CAMINHO, dados)
+        # RECEITA
+
+        if tipo == "1":
+
+            meio = lerTexto("Origem da receita: ")
+            categoria = lerTexto("Categoria: ")
+            descricao = lerTexto("Descrição: ")
+            valor = lerFloat("Valor: ")
+
+            adicionarMovimentacao(
+                "receita",
+                meio,
+                categoria,
+                descricao,
+                valor
+            )
+
+            print("Receita registrada.")
+
+        # DESPESA
+
+        elif tipo == "2":
+
+            print("\n1 - PIX")
+            print("2 - Débito")
+            print("3 - Dinheiro")
+            print("4 - Cartão de crédito")
+
+            meioEscolhido = input("Escolha: ")
+
+            categoria = lerTexto("Categoria: ")
+            descricao = lerTexto("Descrição: ")
+            valor = lerFloat("Valor: ")
+
+            # PIX
+
+            if meioEscolhido == "1":
+
+                adicionarMovimentacao(
+                    "despesa",
+                    "pix",
+                    categoria,
+                    descricao,
+                    valor
+                )
+
+            # DÉBITO
+
+            elif meioEscolhido == "2":
+
+                adicionarMovimentacao(
+                    "despesa",
+                    "debito",
+                    categoria,
+                    descricao,
+                    valor
+                )
+
+            # DINHEIRO
+
+            elif meioEscolhido == "3":
+
+                adicionarMovimentacao(
+                    "despesa",
+                    "dinheiro",
+                    categoria,
+                    descricao,
+                    valor
+                )
+
+            # CARTÃO
+
+            elif meioEscolhido == "4":
+
+                print("\n1 - À vista")
+                print("2 - Parcelado")
+
+                tipoCartao = input("Escolha: ")
+
+                # À vista
+
+                if tipoCartao == "1":
+
+                    adicionarGastoCartao(
+                        dados,
+                        valor
+                    )
+
+                    adicionarMovimentacao(
+                        "despesa",
+                        "cartao de credito",
+                        categoria,
+                        descricao,
+                        valor
+                    )
+
+                    salvarDados(
+                        CAMINHO,
+                        dados
+                    )
+
+                # Parcelado
+
+                elif tipoCartao == "2":
+
+                    quantidadeParcelas = lerInt(
+                        "Quantidade de parcelas: "
+                    )
+
+                    adicionarGastoParcelado(
+                        dados,
+                        descricao,
+                        valor,
+                        quantidadeParcelas
+                    )
+
+                    adicionarMovimentacao(
+                        "despesa",
+                        "cartao de credito",
+                        categoria,
+                        descricao,
+                        valor,
+                        quantidadeParcelas
+                    )
+
+                    salvarDados(
+                        CAMINHO,
+                        dados
+                    )
+
+            print("Movimentação registrada.")
+
+    # ==========================
+    # VER MOVIMENTAÇÕES
+    # ==========================
 
     elif opcao == "2":
 
-        descricao = lerTexto(
-            "Digite a descrição do gasto no cartão: "
+        movimentacoes = lerMovimentacoes()
+
+        print("\n--- MOVIMENTAÇÕES ---\n")
+
+        print(
+            f"{'DATA':<12}"
+            f"{'NATUREZA':<12}"
+            f"{'MEIO':<20}"
+            f"{'CATEGORIA':<15}"
+            f"{'VALOR':>12}"
         )
 
-        valor = lerFloat(
-            "Digite o valor do gasto no cartão: "
-        )
+        print("-" * 71)
 
-        adicionarGastoCartao(dados, valor)
+        for mov in movimentacoes:
 
-        salvarDados(CAMINHO, dados)
+            data = str(mov["data"] or "")
+            natureza = str(mov["natureza"] or "")
+            meio = str(mov["meio"] or "")
+            categoria = str(mov["categoria"] or "")
+            valor = mov["valor"] or 0
 
-        print("Gasto adicionado ao cartão.")
+            print(
+                f"{data:<12}"
+                f"{natureza:<12}"
+                f"{meio:<20}"
+                f"{categoria:<15}"
+                f"{formatarReal(valor):>12}"
+    )
+    # ==========================
+    # RESUMO FINANCEIRO
+    # ==========================
 
     elif opcao == "3":
 
-        nome = lerTexto(
-            "Digite o nome da nova compra parcelada: "
-        )
-
-        valorTotal = lerFloat(
-            "Digite o valor total do gasto: "
-        )
-
-        quantidadeParcelas = lerInt(
-            "Digite a quantidade de parcelas: "
-        )
-
-        adicionarGastoParcelado(
-            dados,
-            nome,
-            valorTotal,
-            quantidadeParcelas
-        )
-
-        salvarDados(CAMINHO, dados)
-
-        print("Compra parcelada adicionada com sucesso.")
-
-    # ==========================
-    # MOVIMENTAÇÕES (EXCEL)
-    # ==========================
-
-    elif opcao == "4":
-
-        categoria = lerTexto("Categoria: ")
-        descricao = lerTexto("Descrição: ")
-        valor = lerFloat("Valor: ")
-
-        adicionarMovimentacao(
-            "pix",
-            categoria,
-            descricao,
-            valor
-        )
-
-        print("Movimentação registrada.")
-
-    elif opcao == "5":
-
-        categoria = lerTexto("Categoria: ")
-        descricao = lerTexto("Descrição: ")
-        valor = lerFloat("Valor: ")
-
-        adicionarMovimentacao(
-            "debito",
-            categoria,
-            descricao,
-            valor
-        )
-
-        print("Movimentação registrada.")
-
-    elif opcao == "6":
-
-        categoria = lerTexto("Categoria: ")
-        descricao = lerTexto("Descrição: ")
-        valor = lerFloat("Valor: ")
-
-        adicionarMovimentacao(
-            "dinheiro",
-            categoria,
-            descricao,
-            valor
-        )
-
-        print("Movimentação registrada.")
-
-    # ==========================
-    # CONSULTAS
-    # ==========================
-
-    elif opcao == "7":
-
-        print("\n--- Dados Atuais ---")
-
-        totalFatura = dados["gastosCartao"]
-
-        totalParcelamentos = sum(
-            parcelamento["valorParcela"]
-            for parcelamento in dados["parcelamentos"]
-        )
-
-        gastosAvista = (
-            totalFatura - totalParcelamentos
-        )
-
-        print(
-            "Total da fatura:",
-            formatarReal(totalFatura)
-        )
-
-        print(
-            "Total de parcelamentos:",
-            formatarReal(totalParcelamentos)
-        )
-
-        print(
-            "Gastos à vista:",
-            formatarReal(gastosAvista)
-        )
-
-        print("Parcelamentos:")
-
-        for parcela in dados["parcelamentos"]:
-
-            print(
-                f"{parcela['nome']} - "
-                f"Parcela: {formatarReal(parcela['valorParcela'])} "
-                f"- Quantidade: {parcela['quantidadeParcelas']}"
-            )
-
-    elif opcao == "8":
-
-        fecharFatura(dados)
-
-        salvarDados(CAMINHO, dados)
-
-        print(
-            "Fatura fechada. "
-            "Gastos do cartão processados."
-        )
-
-    # ==========================
-    # CONFIGURAÇÕES (LEGADO)
-    # ==========================
-
-    elif opcao == "9":
-
-        valor = lerFloat(
-            "Digite o valor da receita mensal: "
-        )
-
-        definirReceitaMensal(dados, valor)
-
-        salvarDados(CAMINHO, dados)
-
-        print("Receita mensal definida.")
-
-    elif opcao == "10":
-
-        valor = lerFloat(
-            "Digite o valor dos gastos fixos: "
-        )
-
-        definirGastosFixos(dados, valor)
-
-        salvarDados(CAMINHO, dados)
-
-        print("Gastos fixos definidos.")
-
-    elif opcao == "11":
-
-        valor = lerInt(
-            "Digite o percentual para guardar (%): "
-        )
-
-        definirPercentualReserva(dados, valor)
-
-        salvarDados(CAMINHO, dados)
-
-        print("Percentual definido.")
-
-    # ==========================
-    # RESUMO (EXCEL)
-    # ==========================
-
-    elif opcao == "12":
-
         resumo = mostrarResumo()
 
-        print("\n--- Resumo Financeiro ---")
+        print("\n--- RESUMO FINANCEIRO ---")
 
         print(
-            "Receita mensal:",
-            formatarReal(resumo["receitaMensal"])
+            "Receitas:",
+            formatarReal(
+                resumo["receitaTotal"]
+            )
         )
 
         print(
-            "Compromissos mensais:",
-            formatarReal(resumo["gastosFixos"])
+            "Compromissos:",
+            formatarReal(
+                resumo["gastosFixos"]
+            )
         )
 
         print(
@@ -318,34 +276,129 @@ while True:
             )
         )
 
-    elif opcao == "13":
+    # ==========================
+    # COMPROMISSOS MENSAIS
+    # ==========================
 
-        movimentacoes = lerMovimentacoes()
+    elif opcao == "4":
 
-        print("\n--- Movimentações ---")
+        print("\n1 - Adicionar compromisso")
+        print("2 - Ver compromissos")
 
-        if len(movimentacoes) == 0:
+        escolha = input("Escolha: ")
 
-            print(
-                "Nenhuma movimentação registrada."
+        if escolha == "1":
+
+            descricao = lerTexto(
+                "Descrição do compromisso: "
             )
 
-        else:
+            valor = lerFloat(
+                "Valor: "
+            )
 
-            for mov in movimentacoes:
+            adicionarCompromissoMensal(
+                descricao,
+                valor
+            )
 
-                print("-" * 50)
+            print("Compromisso adicionado.")
 
-                print("Data:", mov["data"])
-                print("Tipo:", mov["tipo"])
-                print("Categoria:", mov["categoria"])
-                print("Descrição:", mov["descricao"])
+        elif escolha == "2":
+
+            compromissos = lerCompromissosMensais()
+
+            total = 0
+
+            print("\n--- COMPROMISSOS MENSAIS ---")
+
+            for compromisso in compromissos:
+
                 print(
-                    "Valor:",
-                    formatarReal(mov["valor"])
+                    compromisso["descricao"],
+                    "-",
+                    formatarReal(
+                        compromisso["valor"]
+                    )
                 )
+
+                total += compromisso["valor"]
+
+            print("-" * 30)
+
+            print(
+                "Total:",
+                formatarReal(
+                    total
+                )
+            )
+
+    # ==========================
+    # CARTÃO DE CRÉDITO
+    # ==========================
+
+    elif opcao == "5":
+
+        print("\n1 - Ver fatura atual")
+        print("2 - Fechar fatura")
+
+        escolha = input("Escolha: ")
+
+        if escolha == "1":
+
+            totalFatura = dados["gastosCartao"]
+
+            totalParcelamentos = sum(
+                parcela["valorParcela"]
+                for parcela in dados["parcelamentos"]
+            )
+
+            gastosAvista = totalFatura - totalParcelamentos
+
+            print(
+                "\nTotal da fatura:",
+                formatarReal(
+                    totalFatura
+                )
+            )
+
+            print(
+                "Parcelamentos:",
+                formatarReal(
+                    totalParcelamentos
+                )
+            )
+
+            print(
+                "Gastos à vista:",
+                formatarReal(
+                    gastosAvista
+                )
+            )
+
+            print("\nParcelamentos:")
+
+            for parcela in dados["parcelamentos"]:
+
+                print(
+                    f"{parcela['nome']} - "
+                    f"{formatarReal(parcela['valorParcela'])} "
+                    f"({parcela['quantidadeParcelas']} parcelas)"
+                )
+
+        elif escolha == "2":
+
+            fecharFatura(
+                dados
+            )
+
+            salvarDados(
+                CAMINHO,
+                dados
+            )
+
+            print("Fatura fechada.")
 
     else:
 
         print("Opção inválida.")
-

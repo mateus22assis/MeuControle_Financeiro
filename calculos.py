@@ -1,12 +1,67 @@
 from excel_manager import (
     lerConfiguracoes,
-    somarCompromissosMensais,
-    somarReceitas,
+    lerCompromissosMensais,
     lerMovimentacoes
 )
 
 # ==========================
-# RECEITAS
+# SOMATÓRIOS
+# ==========================
+
+def somarCompromissosMensais():
+
+    compromissos = lerCompromissosMensais()
+
+    total = 0
+
+    for compromisso in compromissos:
+
+        valor = compromisso["valor"]
+
+        if valor is not None:
+            total += float(valor)
+
+    return total
+
+
+def somarReceitas():
+
+    movimentacoes = lerMovimentacoes()
+
+    total = 0
+
+    for mov in movimentacoes:
+
+        if mov["natureza"] == "receita":
+
+            valor = mov["valor"]
+
+            if valor is not None:
+                total += valor
+
+    return total
+
+
+def somarDespesas():
+
+    movimentacoes = lerMovimentacoes()
+
+    total = 0
+
+    for mov in movimentacoes:
+
+        if mov["natureza"] == "despesa":
+
+            valor = mov["valor"]
+
+            if valor is not None:
+                total += valor
+
+    return total
+
+
+# ==========================
+# RESERVA
 # ==========================
 
 def calcularValorGuardar():
@@ -21,34 +76,10 @@ def calcularValorGuardar():
 
 
 # ==========================
-# MOVIMENTAÇÕES
-# ==========================
-
-def calcularGastosMovimentacoes():
-
-    movimentacoes = lerMovimentacoes()
-
-    total = 0
-
-    for mov in movimentacoes:
-        
-        if mov ["Natureza"] == "despesa":
-
-          valor = mov["Valor"]
-
-          if valor is not None:
-            total += valor
-
-    return total
-
-
-# ==========================
 # SALDO
 # ==========================
 
 def calcularSaldoDisponivel():
-
-    configuracoes = lerConfiguracoes()
 
     receitaTotal = somarReceitas()
 
@@ -56,13 +87,13 @@ def calcularSaldoDisponivel():
 
     gastosFixos = somarCompromissosMensais()
 
-    gastosMovimentacoes = calcularGastosMovimentacoes()
+    despesas = somarDespesas()
 
     return (
         receitaTotal
         - valorGuardar
         - gastosFixos
-        - gastosMovimentacoes
+        - despesas
     )
 
 
@@ -71,8 +102,6 @@ def calcularSaldoDisponivel():
 # ==========================
 
 def mostrarResumo():
-
-    configuracoes = lerConfiguracoes()
 
     return {
 
@@ -86,11 +115,8 @@ def mostrarResumo():
             calcularValorGuardar(),
 
         "gastosMovimentacoes":
-            calcularGastosMovimentacoes(),
+            somarDespesas(),
 
         "saldoDisponivel":
             calcularSaldoDisponivel()
     }
-
-if __name__ == "__main__":
-    print(mostrarResumo())

@@ -1,39 +1,66 @@
-
 # ==========================
-    # testes
+# TESTES
 # ==========================
-from excel_manager import lerMovimentacoes
 
-movimentacoes = lerMovimentacoes()
-
-print(movimentacoes)
-
-from excel_manager import adicionarMovimentacao
-'''
-adicionarMovimentacao(
-    "receita",
-    "salario",
-    "trabalho",
-    "salario junho",
-    5000
+from excel_manager import (
+    abrirPlanilha,
+    lerMovimentacoes,
+    lerCompromissosMensais,
+  
 )
 
-adicionarMovimentacao(
-    "despesa",
-    "cartao de credito",
-    "lazer",
-    "netflix",
-    100
+from calculos import (
+    somarReceitas,
+    somarCompromissosMensais,
+   
+    mostrarResumo
 )
-'''
-from calculos import calcularGastosMovimentacoes
 
-print("Gastos Movimentacoes:", calcularGastosMovimentacoes())
 
-from excel_manager import somarReceitas
+# ==========================
+# TESTE ABRIR PLANILHA
+# ==========================
 
-print("Receitas:", somarReceitas())
+workbook = abrirPlanilha()
 
-from calculos import mostrarResumo
+print("Abas encontradas:")
 
-print("Resumo:", mostrarResumo())
+for aba in workbook.sheetnames:
+    print("-", aba)
+
+# ==========================
+# TESTE MOVIMENTAÇÕES
+# ==========================
+
+print("\nMovimentações:")
+print(lerMovimentacoes())
+
+# ==========================
+# TESTE COMPROMISSOS
+# ==========================
+
+print("\nCompromissos:")
+print(lerCompromissosMensais())
+
+# ==========================
+# TESTE SOMATÓRIOS
+# ==========================
+
+print("\nReceitas:")
+print(somarReceitas())
+
+print("\nCompromissos Mensais:")
+print(somarCompromissosMensais())
+
+
+
+# ==========================
+# TESTE RESUMO
+# ==========================
+
+print("\nResumo:")
+
+resumo = mostrarResumo()
+
+for chave, valor in resumo.items():
+    print(f"{chave}: {valor}")
