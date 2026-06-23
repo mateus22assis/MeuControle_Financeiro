@@ -47,9 +47,14 @@ def filtrarCategoria(categoria):
 
     resultado = []
 
+    categoria = categoria.lower()
+
     for mov in movimentacoes:
 
-        if mov["categoria"].lower() == categoria.lower():
+        if (
+            mov["categoria"] is not None
+            and mov["categoria"].lower() == categoria
+        ):
 
             resultado.append(mov)
 
@@ -62,9 +67,14 @@ def filtrarMeio(meio):
 
     resultado = []
 
+    meio = meio.lower()
+
     for mov in movimentacoes:
 
-        if mov["meio"].lower() == meio.lower():
+        if (
+            mov["meio"] is not None
+            and mov["meio"].lower() == meio
+        ):
 
             resultado.append(mov)
 
@@ -88,9 +98,15 @@ def movimentacoesMes(mes, ano):
         if data is None:
             continue
 
-        data = datetime.strptime(str(data), "%d/%m/%Y")
+        data = datetime.strptime(
+            str(data),
+            "%d/%m/%Y"
+        )
 
-        if data.month == mes and data.year == ano:
+        if (
+            data.month == mes
+            and data.year == ano
+        ):
 
             resultado.append(mov)
 
@@ -101,8 +117,48 @@ def movimentacoesMes(mes, ano):
 # ÚLTIMAS MOVIMENTAÇÕES
 # ==========================
 
-def ultimasMovimentacoes(quantidade=10):
+def ultimasMovimentacoes(
+    quantidade=10
+):
 
     movimentacoes = lerMovimentacoes()
 
-    return movimentacoes[-quantidade:]
+    return movimentacoes[-quantidade:][::-1]
+
+
+# ==========================
+# TOTAIS
+# ==========================
+
+def totalReceitas():
+
+    total = 0
+
+    receitas = listarReceitas()
+
+    for mov in receitas:
+
+        valor = mov["valor"]
+
+        if valor is not None:
+
+            total += valor
+
+    return total
+
+
+def totalDespesas():
+
+    total = 0
+
+    despesas = listarDespesas()
+
+    for mov in despesas:
+
+        valor = mov["valor"]
+
+        if valor is not None:
+
+            total += valor
+
+    return total

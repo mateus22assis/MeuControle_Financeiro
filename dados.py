@@ -1,13 +1,25 @@
 import json
 
 
-# ==========================
+# ======================================
+# ESTRUTURA LEGADA (TEMPORÁRIA)
+#
+# Responsável por:
+# - fatura atual do cartão
+# - parcelamentos futuros
+#
+# Previsto para remoção na v0.7
+# ======================================
+
+
+# ======================================
 # SALVAR E CARREGAR JSON
-# ==========================
+# ======================================
 
 def salvarDados(caminho, dados):
 
     with open(caminho, "w") as arquivo:
+
         json.dump(
             dados,
             arquivo,
@@ -20,6 +32,7 @@ def carregarDados(caminho):
     try:
 
         with open(caminho, "r") as arquivo:
+
             return json.load(arquivo)
 
     except (FileNotFoundError, json.JSONDecodeError):
@@ -30,9 +43,9 @@ def carregarDados(caminho):
         }
 
 
-# ==========================
+# ======================================
 # PARCELAMENTOS EXISTENTES
-# ==========================
+# ======================================
 
 def adicionarParcelamento(
     dados,
@@ -41,20 +54,18 @@ def adicionarParcelamento(
     quantidadeParcelas
 ):
 
-    parcelamento = {
-        "nome": nome,
-        "valorParcela": valorParcela,
-        "quantidadeParcelas": quantidadeParcelas
-    }
-
     dados["parcelamentos"].append(
-        parcelamento
+        {
+            "nome": nome,
+            "valorParcela": valorParcela,
+            "quantidadeParcelas": quantidadeParcelas
+        }
     )
 
 
-# ==========================
+# ======================================
 # GASTO NO CARTÃO À VISTA
-# ==========================
+# ======================================
 
 def adicionarGastoCartao(
     dados,
@@ -64,9 +75,9 @@ def adicionarGastoCartao(
     dados["gastosCartao"] += valor
 
 
-# ==========================
+# ======================================
 # NOVA COMPRA PARCELADA
-# ==========================
+# ======================================
 
 def adicionarGastoParcelado(
     dados,
@@ -79,16 +90,12 @@ def adicionarGastoParcelado(
         valorTotal / quantidadeParcelas
     )
 
-    parcelamento = {
-        "nome": nome,
-        "valorParcela": valorParcela,
-        "quantidadeParcelas": quantidadeParcelas
-    }
-
-    # guarda para as próximas faturas
-
     dados["parcelamentos"].append(
-        parcelamento
+        {
+            "nome": nome,
+            "valorParcela": valorParcela,
+            "quantidadeParcelas": quantidadeParcelas
+        }
     )
 
     # primeira parcela entra na fatura atual
@@ -96,9 +103,9 @@ def adicionarGastoParcelado(
     dados["gastosCartao"] += valorParcela
 
 
-# ==========================
-# FECHAR FATURA
-# ==========================
+# ======================================
+# FECHAMENTO DA FATURA
+# ======================================
 
 def fecharFatura(dados):
 
