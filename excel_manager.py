@@ -1,12 +1,12 @@
 from openpyxl import load_workbook
 from datetime import datetime
+from calendar import monthrange
 
 # ==========================
 # CONFIGURAÇÕES
 # ==========================
 
 CAMINHO_PLANILHA = "ControleFinanceiro_2026_Prototipo_v3.xlsx"
-
 
 # ==========================
 # UTILITÁRIOS
@@ -18,9 +18,9 @@ def abrirPlanilha():
 
 
 def encontrarPrimeiraLinhaVazia(
-        aba,
-        coluna="A",
-        linhaInicial=2
+    aba,
+    coluna="A",
+    linhaInicial=2
 ):
 
     linha = linhaInicial
@@ -29,6 +29,60 @@ def encontrarPrimeiraLinhaVazia(
         linha += 1
 
     return linha
+
+def ordenarMovimentacoesPorData():
+    """
+    Ordena a aba Movimentacoes pela coluna Data.
+    """
+
+    workbook = abrirPlanilha()
+
+    aba = workbook["Movimentacoes"]
+
+    movimentacoes = list(
+        aba.iter_rows(
+            min_row=2,
+            values_only=True
+        )
+    )
+
+    movimentacoes.sort(
+        key=lambda linha: converterData(
+            linha[0]
+        )
+    )
+
+    aba.delete_rows(
+        2,
+        aba.max_row
+    )
+
+    for movimentacao in movimentacoes:
+        aba.append(movimentacao)
+
+    workbook.save(CAMINHO_PLANILHA)
+
+def converterData(data):
+
+    if isinstance(data, datetime):
+        return data
+
+    formatos = [
+        "%d/%m/%Y",
+        "%d/%m/%y",
+        "%d-%m-%Y",
+        "%d-%m-%y",
+    ]
+
+    for formato in formatos:
+        try:
+            return datetime.strptime(data, formato)
+        except ValueError:
+            pass
+
+    raise ValueError(
+        f"Formato de data inválido: {data}"
+    )
 
 
 # ==========================
@@ -43,7 +97,10 @@ def lerConfiguracoes():
 
     configuracoes = {
         "receitaMensal": 0.0,
-        "percentualReserva": 30.0
+        "percentualReserva": 30.0,
+        "limiteCartao": 0.0,
+        "diaFechamento": 3,
+        "diaVencimento": 10
     }
 
     for linha in aba_configuracoes.iter_rows(
@@ -53,16 +110,39 @@ def lerConfiguracoes():
 
         campo, valor = linha
 
-        if campo == "Receita Mensal":
+        if campo is None:
+            continue
+
+        campo = campo.strip().lower()
+
+        if campo == "receita mensal":
 
             configuracoes["receitaMensal"] = (
                 valor if valor is not None else 0.0
             )
 
-        elif campo == "Percentual de Reserva":
+        elif campo == "percentual reserva":
 
             configuracoes["percentualReserva"] = (
                 valor if valor is not None else 30.0
+            )
+
+        elif campo == "limite cartao":
+
+            configuracoes["limiteCartao"] = (
+                valor if valor is not None else 0.0
+            )
+
+        elif campo == "dia fechamento":
+
+            configuracoes["diaFechamento"] = (
+                valor if valor is not None else 0
+            )
+
+        elif campo == "dia vencimento":
+
+            configuracoes["diaVencimento"] = (
+                valor if valor is not None else 0
             )
 
     return configuracoes
@@ -116,7 +196,6 @@ def lerMovimentacoes():
         descricao = linha[4]
         valor = linha[5]
         parcelas = linha[6]
-        valorParcela = linha[7]
 
         if descricao is not None:
 
@@ -128,8 +207,7 @@ def lerMovimentacoes():
                 "categoria": categoria,
                 "descricao": descricao,
                 "valor": valor,
-                "parcelas": parcelas,
-                "valorParcela": valorParcela
+                "parcelas": parcelas
 
             })
 
@@ -157,19 +235,19 @@ def salvarPercentualReserva(valor):
 
     aba_configuracoes = workbook["Configuracoes"]
 
-    aba_configuracoes["B4"] = valor
+    aba_configuracoes["B3"] = valor
 
     workbook.save(CAMINHO_PLANILHA)
 
 
 def adicionarMovimentacao(
-        natureza,
-        meio,
-        categoria,
-        descricao,
-        valorTotal,
-        parcelas="",
-        valorParcela=""
+    natureza,
+    meio,
+    categoria,
+    descricao,
+    valor,
+    parcelas="",
+    dataMovimentacao=None
 ):
 
     workbook = abrirPlanilha()
@@ -180,24 +258,25 @@ def adicionarMovimentacao(
         aba_movimentacoes
     )
 
-    aba_movimentacoes[f"A{proximaLinha}"] = (
-        datetime.now().strftime("%d/%m/%Y")
-    )
+    if dataMovimentacao is None:
+        dataMovimentacao = datetime.now().strftime("%d/%m/%Y")
 
+    aba_movimentacoes[f"A{proximaLinha}"] = dataMovimentacao
     aba_movimentacoes[f"B{proximaLinha}"] = natureza
     aba_movimentacoes[f"C{proximaLinha}"] = meio
     aba_movimentacoes[f"D{proximaLinha}"] = categoria
     aba_movimentacoes[f"E{proximaLinha}"] = descricao
-    aba_movimentacoes[f"F{proximaLinha}"] = valorTotal
+    aba_movimentacoes[f"F{proximaLinha}"] = valor
     aba_movimentacoes[f"G{proximaLinha}"] = parcelas
-    aba_movimentacoes[f"H{proximaLinha}"] = valorParcela
 
     workbook.save(CAMINHO_PLANILHA)
 
+    ordenarMovimentacoesPorData()
+
 
 def adicionarCompromissoMensal(
-        descricao,
-        valor
+    descricao,
+    valor
 ):
 
     workbook = abrirPlanilha()
@@ -212,3 +291,73 @@ def adicionarCompromissoMensal(
     aba_compromissos[f"B{proximaLinha}"] = valor
 
     workbook.save(CAMINHO_PLANILHA)
+
+
+# ==========================
+# REGRAS DO CARTÃO
+# ==========================
+
+def calcularMesFatura(dataCompra):
+    """
+    Recebe uma data (string no formato dd/mm/AAAA)
+    e retorna o mês/ano da fatura correspondente.
+    """
+
+    configuracoes = lerConfiguracoes()
+
+    diaFechamento = configuracoes["diaFechamento"]
+
+    data = datetime.strptime(
+        dataCompra,
+        "%d/%m/%Y"
+    )
+
+    mes = data.month
+    ano = data.year
+
+    if data.day > diaFechamento:
+
+        mes += 1
+
+        if mes > 12:
+            mes = 1
+            ano += 1
+
+    return f"{mes:02d}/{ano}"
+
+
+def adicionarMeses(data, quantidadeMeses):
+    """
+    Recebe uma data (string dd/mm/AAAA)
+    e retorna outra data adicionando meses.
+    """
+
+    data = datetime.strptime(
+        data,
+        "%d/%m/%Y"
+    )
+
+    mes = data.month + quantidadeMeses
+    ano = data.year
+
+    while mes > 12:
+        mes -= 12
+        ano += 1
+
+    ultimoDia = monthrange(
+        ano,
+        mes
+    )[1]
+
+    dia = min(
+        data.day,
+        ultimoDia
+    )
+
+    novaData = datetime(
+        ano,
+        mes,
+        dia
+    )
+
+    return novaData.strftime("%d/%m/%Y")

@@ -1,10 +1,4 @@
-from dados import (
-    carregarDados,
-    salvarDados,
-    adicionarGastoCartao,
-    adicionarGastoParcelado,
-    fecharFatura
-)
+from datetime import datetime
 
 from calculos import mostrarResumo
 
@@ -16,18 +10,12 @@ from utils import (
 )
 
 from excel_manager import (
+    adicionarMeses,
     lerMovimentacoes,
     adicionarMovimentacao,
     lerCompromissosMensais,
     adicionarCompromissoMensal
 )
-
-# ==========================
-# DADOS LEGADOS (JSON)
-# ==========================
-
-CAMINHO = "data.json"
-dados = carregarDados(CAMINHO)
 
 # ==========================
 # MENU PRINCIPAL
@@ -40,7 +28,6 @@ while True:
     print("2 - Ver movimentações")
     print("3 - Ver resumo financeiro")
     print("4 - Compromissos mensais")
-    print("5 - Cartão de crédito")
     print("0 - Sair")
 
     opcao = input("Escolha uma opção: ")
@@ -64,7 +51,9 @@ while True:
 
         tipo = input("Escolha: ")
 
+        # ======================
         # RECEITA
+        # ======================
 
         if tipo == "1":
 
@@ -73,17 +62,28 @@ while True:
             descricao = lerTexto("Descrição: ")
             valor = lerFloat("Valor: ")
 
+            dataMovimentacao = input(
+                "Data (dd/mm/aaaa) [Enter = hoje]: "
+            ).strip()
+
+            if dataMovimentacao == "":
+                dataMovimentacao = datetime.now().strftime("%d/%m/%Y")
+
             adicionarMovimentacao(
                 "receita",
                 meio,
                 categoria,
                 descricao,
-                valor
+                valor,
+                "",
+                dataMovimentacao
             )
 
             print("Receita registrada.")
 
+        # ======================
         # DESPESA
+        # ======================
 
         elif tipo == "2":
 
@@ -98,7 +98,16 @@ while True:
             descricao = lerTexto("Descrição: ")
             valor = lerFloat("Valor: ")
 
+            dataCompra = input(
+                "Data (dd/mm/aaaa) [Enter = hoje]: "
+            ).strip()
+
+            if dataCompra == "":
+                dataCompra = datetime.now().strftime("%d/%m/%Y")
+
+            # ==================
             # PIX
+            # ==================
 
             if meioEscolhido == "1":
 
@@ -107,10 +116,14 @@ while True:
                     "pix",
                     categoria,
                     descricao,
-                    valor
+                    valor,
+                    "",
+                    dataCompra
                 )
 
+            # ==================
             # DÉBITO
+            # ==================
 
             elif meioEscolhido == "2":
 
@@ -119,10 +132,14 @@ while True:
                     "debito",
                     categoria,
                     descricao,
-                    valor
+                    valor,
+                    "",
+                    dataCompra
                 )
 
+            # ==================
             # DINHEIRO
+            # ==================
 
             elif meioEscolhido == "3":
 
@@ -131,68 +148,49 @@ while True:
                     "dinheiro",
                     categoria,
                     descricao,
-                    valor
+                    valor,
+                    "",
+                    dataCompra
                 )
 
+            # ==================
             # CARTÃO
+            # ==================
 
             elif meioEscolhido == "4":
 
-                print("\n1 - À vista")
-                print("2 - Parcelado")
+                quantidadeParcelas = lerInt(
+                    "Quantidade de parcelas: "
+                )
 
-                tipoCartao = input("Escolha: ")
+                if quantidadeParcelas < 1:
+                    quantidadeParcelas = 1
 
-                # À vista
+                valorParcela = round(
+                    valor / quantidadeParcelas,
+                    2
+                )
 
-                if tipoCartao == "1":
+                for parcela in range(quantidadeParcelas):
 
-                    adicionarGastoCartao(
-                        dados,
-                        valor
+                    dataParcela = adicionarMeses(
+                        dataCompra,
+                        parcela
                     )
 
                     adicionarMovimentacao(
                         "despesa",
-                        "cartao de credito",
+                        "credito",
                         categoria,
-                        descricao,
-                        valor
+                        f"{descricao} ({parcela + 1}/{quantidadeParcelas})",
+                        valorParcela,
+                        f"{parcela + 1}/{quantidadeParcelas}",
+                        dataParcela
                     )
 
-                    salvarDados(
-                        CAMINHO,
-                        dados
-                    )
-
-                # Parcelado
-
-                elif tipoCartao == "2":
-
-                    quantidadeParcelas = lerInt(
-                        "Quantidade de parcelas: "
-                    )
-
-                    adicionarGastoParcelado(
-                        dados,
-                        descricao,
-                        valor,
-                        quantidadeParcelas
-                    )
-
-                    adicionarMovimentacao(
-                        "despesa",
-                        "cartao de credito",
-                        categoria,
-                        descricao,
-                        valor,
-                        quantidadeParcelas
-                    )
-
-                    salvarDados(
-                        CAMINHO,
-                        dados
-                    )
+            else:
+                print("Meio de pagamento inválido.")
+                continue
 
             print("Movimentação registrada.")
 
@@ -209,12 +207,12 @@ while True:
         print(
             f"{'DATA':<12}"
             f"{'NATUREZA':<12}"
-            f"{'MEIO':<20}"
-            f"{'CATEGORIA':<15}"
+            f"{'MEIO':<15}"
+            f"{'CATEGORIA':<18}"
             f"{'VALOR':>12}"
         )
 
-        print("-" * 71)
+        print("-" * 70)
 
         for mov in movimentacoes:
 
@@ -227,10 +225,11 @@ while True:
             print(
                 f"{data:<12}"
                 f"{natureza:<12}"
-                f"{meio:<20}"
-                f"{categoria:<15}"
+                f"{meio:<15}"
+                f"{categoria:<18}"
                 f"{formatarReal(valor):>12}"
-    )
+            )
+
     # ==========================
     # RESUMO FINANCEIRO
     # ==========================
@@ -333,72 +332,13 @@ while True:
                 )
             )
 
+        else:
+            print("Opção inválida.")
+
     # ==========================
-    # CARTÃO DE CRÉDITO
+    # OPÇÃO INVÁLIDA
     # ==========================
-
-    elif opcao == "5":
-
-        print("\n1 - Ver fatura atual")
-        print("2 - Fechar fatura")
-
-        escolha = input("Escolha: ")
-
-        if escolha == "1":
-
-            totalFatura = dados["gastosCartao"]
-
-            totalParcelamentos = sum(
-                parcela["valorParcela"]
-                for parcela in dados["parcelamentos"]
-            )
-
-            gastosAvista = totalFatura - totalParcelamentos
-
-            print(
-                "\nTotal da fatura:",
-                formatarReal(
-                    totalFatura
-                )
-            )
-
-            print(
-                "Parcelamentos:",
-                formatarReal(
-                    totalParcelamentos
-                )
-            )
-
-            print(
-                "Gastos à vista:",
-                formatarReal(
-                    gastosAvista
-                )
-            )
-
-            print("\nParcelamentos:")
-
-            for parcela in dados["parcelamentos"]:
-
-                print(
-                    f"{parcela['nome']} - "
-                    f"{formatarReal(parcela['valorParcela'])} "
-                    f"({parcela['quantidadeParcelas']} parcelas)"
-                )
-
-        elif escolha == "2":
-
-            fecharFatura(
-                dados
-            )
-
-            salvarDados(
-                CAMINHO,
-                dados
-            )
-
-            print("Fatura fechada.")
 
     else:
 
-        print("Opção inválida.")
+        print("Opção inválida.")        
