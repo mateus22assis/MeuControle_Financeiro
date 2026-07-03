@@ -184,11 +184,14 @@ def lerMovimentacoes():
 
     movimentacoes = []
 
-    for linha in aba_movimentacoes.iter_rows(
+    for numeroLinha, linha in enumerate(
+        aba_movimentacoes.iter_rows(
             min_row=2,
             values_only=True
+        ),
+        start=2
     ):
-
+        
         data = linha[0]
         natureza = linha[1]
         meio = linha[2]
@@ -200,7 +203,7 @@ def lerMovimentacoes():
         if descricao is not None:
 
             movimentacoes.append({
-
+                "linha": numeroLinha,
                 "data": data,
                 "natureza": natureza,
                 "meio": meio,
@@ -267,7 +270,7 @@ def adicionarMovimentacao(
     aba_movimentacoes[f"D{proximaLinha}"] = categoria
     aba_movimentacoes[f"E{proximaLinha}"] = descricao
     aba_movimentacoes[f"F{proximaLinha}"] = valor
-    aba_movimentacoes[f"G{proximaLinha}"] = parcelas
+    aba_movimentacoes[f"G{proximaLinha}"] = ""
 
     workbook.save(CAMINHO_PLANILHA)
 

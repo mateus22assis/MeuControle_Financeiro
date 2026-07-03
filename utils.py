@@ -2,14 +2,21 @@
 def lerFloat(mensagem):
     while True:
         try:
-            valor = float(input(mensagem))
-            if valor<= 0:
+            valor = input(mensagem).strip()
+
+            valor = valor.replace(",", ".")
+
+            valor = float(valor)
+
+            if valor <= 0:
                 print("valor deve ser maior que zero.")
                 continue
+
             return valor
+
         except ValueError:
-            print("valor inválido. Digite um número."
-                  )
+            print("valor inválido. Digite um número.")
+            
 def lerInt(mensagem):
     while True:
         try:

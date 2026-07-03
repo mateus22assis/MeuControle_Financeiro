@@ -205,14 +205,16 @@ while True:
         print("\n--- MOVIMENTAÇÕES ---\n")
 
         print(
+            f"{'LINHA':<7}"
             f"{'DATA':<12}"
             f"{'NATUREZA':<12}"
-            f"{'MEIO':<15}"
-            f"{'CATEGORIA':<18}"
+            f"{'MEIO':<20}"
+            f"{'DESCRIÇÃO':<30}"
             f"{'VALOR':>12}"
-        )
+            )
+        
 
-        print("-" * 70)
+        print("-" * 76)
 
         for mov in movimentacoes:
 
@@ -220,13 +222,15 @@ while True:
             natureza = str(mov["natureza"] or "")
             meio = str(mov["meio"] or "")
             categoria = str(mov["categoria"] or "")
+            descricao = str(mov["descricao"] or "")
             valor = mov["valor"] or 0
 
             print(
+                f"{mov['linha']:<7}"
                 f"{data:<12}"
                 f"{natureza:<12}"
-                f"{meio:<15}"
-                f"{categoria:<18}"
+                f"{meio:<20}"
+                f"{descricao:<30}"
                 f"{formatarReal(valor):>12}"
             )
 
