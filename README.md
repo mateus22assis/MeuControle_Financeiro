@@ -152,42 +152,37 @@ Exemplos de meios:
 
 Versão atual:
 
-## v0.6.5
+## v0.7
 
 ---
 
-# 📦 Versão Atual — v0.6.5
+# 📦 Versão Atual — v0.7
 
-Esta versão consolida a migração das movimentações para Excel e simplifica a estrutura da aplicação.
+Esta versão consolida a migração do projeto para Excel, eliminando a dependência do fluxo principal baseado em JSON e preparando o sistema para o gerenciamento completo de faturas.
 
 ## Implementado
 
 ### Excel
 
-* Movimentações em Excel
-* Receitas em Excel
-* Compromissos mensais em Excel
-* Configurações em Excel
+- Movimentações em Excel
+- Receitas em Excel
+- Compromissos mensais em Excel
+- Configurações em Excel
+- Ordenação automática das movimentações por data
 
-### Estrutura financeira
+### Movimentações
 
-* Separação entre receitas e despesas
-* Conceitos de Natureza e Meio
-* Receitas calculadas pelas movimentações
-* Compromissos integrados aos cálculos
-* Valor de reserva calculado automaticamente
-* Saldo disponível calculado automaticamente
+- Cadastro unificado de receitas e despesas
+- Registro de compras parceladas
+- Geração automática das parcelas
+- Exclusão de movimentações
+- Melhorias na validação das entradas
 
-### Refatoração
+### Estrutura
 
-* Simplificação do menu principal
-* Refatoração do excel_manager.py
-* Refatoração do calculos.py
-* Refatoração do dados.py
-* Refatoração do testes.py
-* Padronização dos nomes em minúsculas
-
----
+- Menu principal simplificado
+- Separação entre regras de negócio e acesso aos dados
+- Migração quase completa do JSON para Excel
 
 # 📈 Histórico de versões
 
@@ -250,49 +245,46 @@ Esta versão consolida a migração das movimentações para Excel e simplifica 
 * Refatoração dos módulos principais
 * Simplificação da estrutura do projeto
 
+## 🟢 v0.7 — Consolidação da migração para Excel
+
+- Cadastro unificado de movimentações
+- Parcelamentos registrados diretamente na planilha
+- Ordenação automática por data
+- Exclusão de movimentações
+- Melhorias na validação de entradas
+- Estrutura preparada para controle de faturas
+
 ---
 
 # 🔮 Próximas versões
 
-## 🔴 v0.7 — Migração completa para Excel
+## 🔵 v0.8
 
 Planejado:
 
-* Parcelamentos em Excel
-* Faturas em Excel
-* Eliminação do data.json
-* Remoção do dados.py
-* Centralização completa dos dados em uma única planilha
+- Controle completo do limite do cartão
+- Cálculo do limite disponível
+- Consulta de faturas
+- Integração da aba Faturas
 
 ---
 
-## 🚀 v0.8
+## 🟣 v0.9
 
 Planejado:
 
-* Dashboard funcional
-* Indicadores financeiros
-* Gráficos automáticos
-
----
-
-## 🚀 v0.9
-
-Planejado:
-
-* Interface para entrada de dados
-* Formulários para lançamentos
+- Dashboard financeiro
+- Indicadores
+- Gráficos automáticos
 
 ---
 
 ## 🏁 v1.0
 
-* Aplicação completa
-* Dashboard integrado
-* Executável (.exe)
-* Uso por terceiros
-
----
+- Sistema totalmente baseado em Excel
+- Dashboard integrado
+- Interface gráfica
+- Executável (.exe)
 
 # 🎯 Finalidade
 
