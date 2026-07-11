@@ -14,7 +14,8 @@ from excel_manager import (
     lerMovimentacoes,
     adicionarMovimentacao,
     lerCompromissosMensais,
-    adicionarCompromissoMensal
+    adicionarCompromissoMensal,
+    excluirMovimentacao
 )
 
 # ==========================
@@ -28,6 +29,7 @@ while True:
     print("2 - Ver movimentações")
     print("3 - Ver resumo financeiro")
     print("4 - Compromissos mensais")
+    print("5 - excluir movimentação")
     print("0 - Sair")
 
     opcao = input("Escolha uma opção: ")
@@ -336,8 +338,28 @@ while True:
                 )
             )
 
+
+    elif opcao == "5":
+
+        print("\n--- EXCLUIR MOVIMENTAÇÃO ---")
+
+        linha = lerInt(
+                "Digite o número da linha da movimentação a ser excluída: "
+            )
+        if linha<2:
+            print("Linha inválida. A linha deve ser maior ou igual a 2.")
+            continue
+        
+        confirmacao = input(f"Tem certeza que deseja excluir a movimentação na linha {linha}? (s/n): ")
+
+        if confirmacao == "s":
+
+            if excluirMovimentacao(linha):
+                print(f"Movimentação na linha {linha} excluída com sucesso.")
+            else:
+                print("Erro ao excluir movimentação.")
         else:
-            print("Opção inválida.")
+            print("Exclusão cancelada.")
 
     # ==========================
     # OPÇÃO INVÁLIDA

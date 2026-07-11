@@ -61,6 +61,42 @@ def somarDespesas():
 
 
 # ==========================
+# CARTÃO DE CRÉDITO
+# ==========================
+
+def somarDespesasCredito():
+
+    movimentacoes = lerMovimentacoes()
+
+    total = 0
+
+    for mov in movimentacoes:
+
+        if (
+            mov["natureza"] == "despesa"
+            and mov["meio"] == "credito"
+        ):
+
+            valor = mov["valor"]
+
+            if valor is not None:
+                total += valor
+
+    return total
+
+
+def calcularLimiteDisponivel():
+
+    configuracoes = lerConfiguracoes()
+
+    limiteCartao = configuracoes["limiteCartao"]
+
+    limiteComprometido = somarDespesasCredito()
+
+    return limiteCartao - limiteComprometido
+
+
+# ==========================
 # RESERVA
 # ==========================
 
@@ -118,5 +154,11 @@ def mostrarResumo():
             somarDespesas(),
 
         "saldoDisponivel":
-            calcularSaldoDisponivel()
+            calcularSaldoDisponivel(),
+
+        "limiteComprometido":
+            somarDespesasCredito(),
+
+        "limiteDisponivel":
+            calcularLimiteDisponivel()
     }

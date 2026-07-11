@@ -295,6 +295,21 @@ def adicionarCompromissoMensal(
 
     workbook.save(CAMINHO_PLANILHA)
 
+def excluirMovimentacao(linha):
+
+    workbook = abrirPlanilha()
+
+    aba_movimentacoes = workbook["Movimentacoes"]
+
+    if linha < 2 or linha > aba_movimentacoes.max_row:
+        return False
+    if aba_movimentacoes.cell(row=linha, column=1).value is None:
+        return False
+    aba_movimentacoes.delete_rows(linha)
+
+    workbook.save(CAMINHO_PLANILHA)
+
+    return True
 
 # ==========================
 # REGRAS DO CARTÃO
