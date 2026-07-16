@@ -15,3 +15,6 @@ Thumbs.db
 
 # dados locais do usuário
 data.json
+
+# arquivos de relatórios
+ASSISTENTE.md

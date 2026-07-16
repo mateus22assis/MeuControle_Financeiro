@@ -15,7 +15,8 @@ from excel_manager import (
     adicionarMovimentacao,
     lerCompromissosMensais,
     adicionarCompromissoMensal,
-    excluirMovimentacao
+    excluirMovimentacao,
+    lerConfiguracoes
 )
 
 # ==========================
@@ -244,43 +245,51 @@ while True:
 
         resumo = mostrarResumo()
 
-        print("\n--- RESUMO FINANCEIRO ---")
+        configuracoes = lerConfiguracoes()
+
+        print("\n========== RESUMO FINANCEIRO ==========\n")
 
         print(
-            "Receitas:",
-            formatarReal(
-                resumo["receitaTotal"]
-            )
+        "Receitas:              ",
+        formatarReal(resumo["receitaTotal"])
+    )
+
+        print(
+        "Compromissos:          ",
+        formatarReal(resumo["gastosFixos"])
+    )
+
+        print(
+            "Movimentações:         ",
+            formatarReal(resumo["gastosMovimentacoes"])
         )
 
         print(
-            "Compromissos:",
-            formatarReal(
-                resumo["gastosFixos"]
-            )
+            "Valor a guardar:       ",
+            formatarReal(resumo["valorGuardar"])
         )
 
         print(
-            "Movimentações:",
-            formatarReal(
-                resumo["gastosMovimentacoes"]
-            )
+            "Saldo disponível:      ",
+            formatarReal(resumo["saldoDisponivel"])
+        )
+
+        print("\n========== CARTÃO ==========\n")
+
+        print(
+            "Limite total:          ",
+            formatarReal(configuracoes["limiteCartao"])
         )
 
         print(
-            "Valor a guardar:",
-            formatarReal(
-                resumo["valorGuardar"]
-            )
+            "Limite comprometido:   ",
+            formatarReal(resumo["limiteComprometido"])
         )
 
         print(
-            "Saldo disponível:",
-            formatarReal(
-                resumo["saldoDisponivel"]
-            )
+            "Limite disponível:     ",
+            formatarReal(resumo["limiteDisponivel"])
         )
-
     # ==========================
     # COMPROMISSOS MENSAIS
     # ==========================

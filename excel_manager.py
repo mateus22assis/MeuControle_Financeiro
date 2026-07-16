@@ -243,6 +243,40 @@ def salvarPercentualReserva(valor):
     workbook.save(CAMINHO_PLANILHA)
 
 
+def limparFaturas():
+
+    workbook = abrirPlanilha()
+
+    aba_faturas = workbook["Faturas"]
+
+    if aba_faturas.max_row > 1:
+        aba_faturas.delete_rows(
+            2,
+            aba_faturas.max_row - 1
+        )
+
+    workbook.save(CAMINHO_PLANILHA)
+
+
+def gravarResumoFaturas(resumoFaturas):
+
+    limparFaturas()
+
+    workbook = abrirPlanilha()
+
+    aba_faturas = workbook["Faturas"]
+
+    for fatura in resumoFaturas:
+        aba_faturas.append([
+            fatura["fatura"],
+            fatura["vencimento"],
+            fatura["valor"],
+            fatura["status"]
+        ])
+
+    workbook.save(CAMINHO_PLANILHA)
+
+
 def adicionarMovimentacao(
     natureza,
     meio,
