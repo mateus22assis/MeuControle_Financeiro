@@ -12,6 +12,13 @@ from excel_manager import (
 # ==========================
 
 def somarCompromissosMensais():
+    """
+    Soma os valores dos compromissos mensais cadastrados.
+
+    Ignora compromissos sem valor informado.
+
+    Retorna o total dos gastos fixos mensais.
+    """
 
     compromissos = lerCompromissosMensais()
 
@@ -25,7 +32,16 @@ def somarCompromissosMensais():
             total += float(valor)
 
     return total
+
+
 def somarReceitas():
+    """
+    Soma todas as movimentações classificadas como receita.
+
+    Movimentações sem valor não entram no cálculo.
+
+    Retorna o total de receitas registradas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -44,6 +60,13 @@ def somarReceitas():
 
 
 def somarDespesas():
+    """
+    Soma todas as movimentações classificadas como despesa.
+
+    Movimentações sem valor não entram no cálculo.
+
+    Retorna o total de despesas registradas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -66,6 +89,14 @@ def somarDespesas():
 # ==========================
 
 def somarDespesasCredito():
+    """
+    Soma as despesas pagas com cartão de crédito.
+
+    Considera somente movimentações de natureza despesa
+    cujo meio de pagamento é crédito.
+
+    Retorna o valor comprometido no cartão.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -87,6 +118,14 @@ def somarDespesasCredito():
 
 
 def calcularProximaFatura():
+    """
+    Calcula o total da próxima fatura do cartão.
+
+    Compras após o dia de fechamento são atribuídas ao mês
+    seguinte, respeitando a virada de ano.
+
+    Retorna o valor total da próxima fatura.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -153,6 +192,14 @@ def calcularProximaFatura():
 
 
 def gerarResumoFaturas():
+    """
+    Gera o resumo das faturas de cartão por mês de referência.
+
+    A data da compra posterior ao fechamento compõe a fatura
+    seguinte; cada fatura é classificada como aberta, fechada ou prevista.
+
+    Retorna uma lista com valores, vencimentos e status das faturas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -238,6 +285,14 @@ def gerarResumoFaturas():
 
 
 def calcularLimiteDisponivel():
+    """
+    Calcula o limite disponível do cartão de crédito.
+
+    Utiliza o limite real cadastrado e desconta as despesas
+    registradas em crédito, sem considerar a renda.
+
+    Retorna o limite ainda disponível para uso.
+    """
 
     configuracoes = lerConfiguracoes()
 
@@ -253,6 +308,14 @@ def calcularLimiteDisponivel():
 # ==========================
 
 def calcularValorGuardar():
+    """
+    Calcula o valor mensal reservado para economia.
+
+    Aplica o percentual de reserva configurado sobre o total
+    de receitas registradas.
+
+    Retorna o valor que deve ser guardado.
+    """
 
     configuracoes = lerConfiguracoes()
 
@@ -268,6 +331,14 @@ def calcularValorGuardar():
 # ==========================
 
 def calcularSaldoDisponivel():
+    """
+    Calcula o saldo disponível no mês.
+
+    Subtrai das receitas a reserva financeira, os compromissos
+    mensais e as despesas registradas.
+
+    Retorna o saldo disponível após os descontos.
+    """
 
     receitaTotal = somarReceitas()
 
@@ -290,6 +361,14 @@ def calcularSaldoDisponivel():
 # ==========================
 
 def mostrarResumo():
+    """
+    Reúne os principais indicadores financeiros do usuário.
+
+    Inclui receitas, despesas, reserva, saldo e informações
+    do limite do cartão de crédito.
+
+    Retorna um dicionário com os valores do resumo.
+    """
 
     return {
 

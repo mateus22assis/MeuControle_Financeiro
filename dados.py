@@ -17,6 +17,13 @@ import json
 # ======================================
 
 def salvarDados(caminho, dados):
+    """
+    Salva os dados legados no arquivo JSON informado.
+
+    Mantém a estrutura recebida com indentação para facilitar a leitura.
+
+    Não retorna valor.
+    """
 
     with open(caminho, "w") as arquivo:
 
@@ -28,6 +35,14 @@ def salvarDados(caminho, dados):
 
 
 def carregarDados(caminho):
+    """
+    Carrega os dados legados armazenados em um arquivo JSON.
+
+    Quando o arquivo não existe ou está inválido, utiliza a estrutura
+    padrão de parcelamentos e gastos de cartão.
+
+    Retorna os dados carregados ou a estrutura padrão.
+    """
 
     try:
 
@@ -53,6 +68,13 @@ def adicionarParcelamento(
     valorParcela,
     quantidadeParcelas
 ):
+    """
+    Adiciona um parcelamento à estrutura legada de dados.
+
+    Registra o nome, o valor de cada parcela e sua quantidade.
+
+    Não retorna valor.
+    """
 
     dados["parcelamentos"].append(
         {
@@ -71,6 +93,13 @@ def adicionarGastoCartao(
     dados,
     valor
 ):
+    """
+    Adiciona um gasto à vista ao total legado do cartão.
+
+    Atualiza somente o valor acumulado da fatura atual.
+
+    Não retorna valor.
+    """
 
     dados["gastosCartao"] += valor
 
@@ -85,6 +114,14 @@ def adicionarGastoParcelado(
     valorTotal,
     quantidadeParcelas
 ):
+    """
+    Registra uma compra parcelada na estrutura legada.
+
+    Divide o valor total pela quantidade de parcelas e inclui a primeira
+    parcela no gasto atual do cartão.
+
+    Não retorna valor.
+    """
 
     valorParcela = (
         valorTotal / quantidadeParcelas
@@ -108,6 +145,14 @@ def adicionarGastoParcelado(
 # ======================================
 
 def fecharFatura(dados):
+    """
+    Fecha a fatura atual na estrutura legada de cartão.
+
+    Reduz as parcelas pendentes e compõe a próxima fatura somente
+    com os valores dos parcelamentos ainda ativos.
+
+    Não retorna valor.
+    """
 
     novosParcelamentos = []
 

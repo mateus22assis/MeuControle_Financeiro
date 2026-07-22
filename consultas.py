@@ -8,6 +8,13 @@ from excel_manager import lerMovimentacoes
 # ==========================
 
 def listarReceitas():
+    """
+    Lista as movimentações classificadas como receita.
+
+    Consulta os dados atuais registrados na planilha.
+
+    Retorna uma lista de receitas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -23,6 +30,13 @@ def listarReceitas():
 
 
 def listarDespesas():
+    """
+    Lista as movimentações classificadas como despesa.
+
+    Consulta os dados atuais registrados na planilha.
+
+    Retorna uma lista de despesas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -42,6 +56,13 @@ def listarDespesas():
 # ==========================
 
 def filtrarCategoria(categoria):
+    """
+    Filtra movimentações por uma categoria informada.
+
+    A comparação não diferencia letras maiúsculas de minúsculas.
+
+    Retorna a lista de movimentações encontradas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -62,6 +83,13 @@ def filtrarCategoria(categoria):
 
 
 def filtrarMeio(meio):
+    """
+    Filtra movimentações pelo meio de pagamento informado.
+
+    A comparação não diferencia letras maiúsculas de minúsculas.
+
+    Retorna a lista de movimentações encontradas.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -86,6 +114,13 @@ def filtrarMeio(meio):
 # ==========================
 
 def movimentacoesMes(mes, ano):
+    """
+    Filtra as movimentações de um mês e ano específicos.
+
+    Ignora registros que não possuem data informada.
+
+    Retorna a lista de movimentações do período.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -120,6 +155,13 @@ def movimentacoesMes(mes, ano):
 def ultimasMovimentacoes(
     quantidade=10
 ):
+    """
+    Seleciona as movimentações mais recentes registradas.
+
+    Inverte a seleção para apresentar o registro mais novo primeiro.
+
+    Retorna uma lista limitada à quantidade solicitada.
+    """
 
     movimentacoes = lerMovimentacoes()
 
@@ -131,6 +173,13 @@ def ultimasMovimentacoes(
 # ==========================
 
 def totalReceitas():
+    """
+    Calcula o total das receitas cadastradas.
+
+    Ignora movimentações de receita sem valor informado.
+
+    Retorna a soma das receitas.
+    """
 
     total = 0
 
@@ -148,6 +197,13 @@ def totalReceitas():
 
 
 def totalDespesas():
+    """
+    Calcula o total das despesas cadastradas.
+
+    Ignora movimentações de despesa sem valor informado.
+
+    Retorna a soma das despesas.
+    """
 
     total = 0
 

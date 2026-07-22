@@ -13,6 +13,13 @@ CAMINHO_PLANILHA = "ControleFinanceiro_2026_Prototipo_v3.xlsx"
 # ==========================
 
 def abrirPlanilha():
+    """
+    Abre a planilha principal do controle financeiro.
+
+    Utiliza o caminho configurado para o arquivo Excel do projeto.
+
+    Retorna o objeto de workbook carregado.
+    """
 
     return load_workbook(CAMINHO_PLANILHA)
 
@@ -22,6 +29,13 @@ def encontrarPrimeiraLinhaVazia(
     coluna="A",
     linhaInicial=2
 ):
+    """
+    Localiza a primeira linha sem valor em uma coluna da aba.
+
+    A busca começa na linha inicial informada para preservar cabeçalhos.
+
+    Retorna o número da primeira linha vazia encontrada.
+    """
 
     linha = linhaInicial
 
@@ -32,6 +46,11 @@ def encontrarPrimeiraLinhaVazia(
 
 def ordenarMovimentacoesPorData():
     """
+    Ordena os registros da aba Movimentacoes pela data.
+
+    Preserva o cabeçalho ao regravar as movimentações ordenadas.
+
+    Não retorna valor.
     Ordena a aba Movimentacoes pela coluna Data.
     """
 
@@ -63,6 +82,13 @@ def ordenarMovimentacoesPorData():
     workbook.save(CAMINHO_PLANILHA)
 
 def converterData(data):
+    """
+    Converte uma data para o formato datetime aceito pelo sistema.
+
+    Aceita datas já convertidas e os formatos de texto previstos.
+
+    Retorna a data convertida ou gera erro para formato inválido.
+    """
 
     if isinstance(data, datetime):
         return data
@@ -90,6 +116,13 @@ def converterData(data):
 # ==========================
 
 def lerConfiguracoes():
+    """
+    Lê as configurações financeiras armazenadas na planilha.
+
+    Mantém valores padrão quando algum campo não possui valor informado.
+
+    Retorna um dicionário com as configurações disponíveis.
+    """
 
     workbook = abrirPlanilha()
 
@@ -149,6 +182,13 @@ def lerConfiguracoes():
 
 
 def lerCompromissosMensais():
+    """
+    Lê os compromissos mensais cadastrados na planilha.
+
+    Considera apenas linhas que possuem uma descrição informada.
+
+    Retorna uma lista de compromissos com descrição e valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -177,6 +217,14 @@ def lerCompromissosMensais():
 
 
 def lerMovimentacoes():
+    """
+    Lê as movimentações financeiras cadastradas na planilha.
+
+    Considera apenas linhas com descrição e preserva o número original
+    da linha para permitir consultas e exclusões.
+
+    Retorna uma lista de movimentações registradas.
+    """
 
     workbook = abrirPlanilha()
 
@@ -222,6 +270,13 @@ def lerMovimentacoes():
 # ==========================
 
 def salvarReceitaMensal(valor):
+    """
+    Salva a receita mensal informada nas configurações.
+
+    Atualiza o campo correspondente na aba Configuracoes.
+
+    Não retorna valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -233,6 +288,13 @@ def salvarReceitaMensal(valor):
 
 
 def salvarPercentualReserva(valor):
+    """
+    Salva o percentual destinado à reserva financeira.
+
+    Atualiza o campo correspondente na aba Configuracoes.
+
+    Não retorna valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -244,6 +306,13 @@ def salvarPercentualReserva(valor):
 
 
 def limparFaturas():
+    """
+    Remove os registros de faturas já gravados na planilha.
+
+    Preserva a primeira linha da aba Faturas, destinada ao cabeçalho.
+
+    Não retorna valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -259,6 +328,13 @@ def limparFaturas():
 
 
 def gravarResumoFaturas(resumoFaturas):
+    """
+    Grava na planilha o resumo de faturas recebido.
+
+    Limpa os registros anteriores antes de inserir os novos dados.
+
+    Não retorna valor.
+    """
 
     limparFaturas()
 
@@ -286,6 +362,14 @@ def adicionarMovimentacao(
     parcelas="",
     dataMovimentacao=None
 ):
+    """
+    Adiciona uma movimentação financeira à planilha.
+
+    Quando a data não é informada, utiliza a data atual e ordena
+    as movimentações após salvar o novo registro.
+
+    Não retorna valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -315,6 +399,13 @@ def adicionarCompromissoMensal(
     descricao,
     valor
 ):
+    """
+    Adiciona um compromisso mensal à planilha.
+
+    Insere a descrição e o valor na próxima linha disponível da aba.
+
+    Não retorna valor.
+    """
 
     workbook = abrirPlanilha()
 
@@ -330,6 +421,13 @@ def adicionarCompromissoMensal(
     workbook.save(CAMINHO_PLANILHA)
 
 def excluirMovimentacao(linha):
+    """
+    Exclui uma movimentação pelo número de sua linha na planilha.
+
+    Não permite remover cabeçalhos, linhas inexistentes ou linhas vazias.
+
+    Retorna True quando a exclusão é realizada e False caso contrário.
+    """
 
     workbook = abrirPlanilha()
 
@@ -351,6 +449,10 @@ def excluirMovimentacao(linha):
 
 def calcularMesFatura(dataCompra):
     """
+    Determina a fatura correspondente a uma compra no cartão.
+
+    Compras após o fechamento são atribuídas ao mês seguinte.
+
     Recebe uma data (string no formato dd/mm/AAAA)
     e retorna o mês/ano da fatura correspondente.
     """
@@ -380,6 +482,10 @@ def calcularMesFatura(dataCompra):
 
 def adicionarMeses(data, quantidadeMeses):
     """
+    Adiciona meses a uma data utilizada pelo sistema.
+
+    Ajusta o dia para o último dia do mês de destino quando necessário.
+
     Recebe uma data (string dd/mm/AAAA)
     e retorna outra data adicionando meses.
     """
