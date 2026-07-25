@@ -353,6 +353,27 @@ def gravarResumoFaturas(resumoFaturas):
     workbook.save(CAMINHO_PLANILHA)
 
 
+# ==========================
+# ATUALIZAÇÃO DE ABAS
+# ==========================
+
+def atualizarPlanilha():
+    """
+    Atualiza as abas derivadas da planilha financeira.
+
+    Neste momento, gera e grava somente o resumo da aba Faturas.
+    Novas abas derivadas poderão ser incluídas neste ponto de atualização.
+
+    Não retorna valor.
+    """
+
+    from calculos import gerarResumoFaturas
+
+    resumoFaturas = gerarResumoFaturas()
+
+    gravarResumoFaturas(resumoFaturas)
+
+
 def adicionarMovimentacao(
     natureza,
     meio,

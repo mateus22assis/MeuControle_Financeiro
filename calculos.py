@@ -172,7 +172,7 @@ def calcularProximaFatura():
             mesMovimentacao = dataMovimentacao.month
             anoMovimentacao = dataMovimentacao.year
 
-            if dataMovimentacao.day > diaFechamento:
+            if dataMovimentacao.day >= diaFechamento:
                 mesMovimentacao += 1
 
                 if mesMovimentacao > 12:
@@ -243,7 +243,7 @@ def gerarResumoFaturas():
         mesFatura = dataMovimentacao.month
         anoFatura = dataMovimentacao.year
 
-        if dataMovimentacao.day > diaFechamento:
+        if dataMovimentacao.day >= diaFechamento:
 
             mesFatura += 1
 

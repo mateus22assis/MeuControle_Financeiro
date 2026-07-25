@@ -264,10 +264,11 @@ while True:
             formatarReal(resumo["gastosMovimentacoes"])
         )
 
-        print(
+        print(   
             "Valor a guardar:       ",
             formatarReal(resumo["valorGuardar"])
-        )
+        )  
+         
 
         print(
             "Saldo disponível:      ",

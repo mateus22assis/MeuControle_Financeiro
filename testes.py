@@ -38,12 +38,10 @@ for fatura in gerarResumoFaturas():
     print(fatura)
 
 
-from excel_manager import gravarResumoFaturas
+from excel_manager import atualizarPlanilha
 
-resumoFaturas = gerarResumoFaturas()
-
-gravarResumoFaturas(resumoFaturas)
+atualizarPlanilha()
 
 print(
-    f"{len(resumoFaturas)} faturas foram gravadas na planilha."
+    "Faturas foram atualizadas na planilha."
 )
