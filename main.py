@@ -16,7 +16,8 @@ from excel_manager import (
     lerCompromissosMensais,
     adicionarCompromissoMensal,
     excluirMovimentacao,
-    lerConfiguracoes
+    lerConfiguracoes,
+    atualizarPlanilha
 )
 
 # ==========================
@@ -81,6 +82,8 @@ while True:
                 "",
                 dataMovimentacao
             )
+
+            atualizarPlanilha()
 
             print("Receita registrada.")
 
@@ -194,6 +197,8 @@ while True:
             else:
                 print("Meio de pagamento inválido.")
                 continue
+
+            atualizarPlanilha()
 
             print("Movimentação registrada.")
 
