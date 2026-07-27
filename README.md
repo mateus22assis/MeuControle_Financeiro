@@ -1,48 +1,39 @@
 # 💰 Controle Financeiro Pessoal
 
-Sistema de controle financeiro desenvolvido em Python com foco em organização financeira, planejamento e integração com Excel.
+Sistema desenvolvido em Python para gerenciamento financeiro pessoal, utilizando Excel como banco de dados. O projeto permite controlar receitas, despesas, compras parceladas, faturas do cartão de crédito e planejamento financeiro, servindo também como estudo prático de arquitetura de software, organização de código e boas práticas de desenvolvimento.
 
 ## 📌 Objetivo
 
-O projeto nasceu para auxiliar no controle financeiro pessoal, permitindo registrar receitas, despesas, acompanhar parcelamentos, planejar reservas financeiras e visualizar informações consolidadas em uma planilha estruturada.
+O projeto auxilia no controle financeiro pessoal por meio do registro de movimentações, acompanhamento de compromissos mensais, planejamento de reserva financeira e consulta de informações consolidadas.
 
-Atualmente o sistema está passando por uma migração gradual do armazenamento em JSON para uma estrutura baseada em Excel, preparando o terreno para dashboards, relatórios e futuras interfaces gráficas.
+Todo o armazenamento é realizado diretamente na planilha Excel `ControleFinanceiro_2026_Prototipo_v3.xlsx`.
 
 ---
 
-# 🚀 Funcionalidades atuais
+# 🚀 Funcionalidades
 
 ### Movimentações
 
-* Registro de receitas
-* Registro de despesas
-* Separação entre receitas e despesas
-* Histórico de movimentações
-* Registro automático da data
-* Categorias personalizadas
-* Diferentes meios de pagamento
-
-### Cartão de crédito
-
-* Registro de gastos à vista
-* Registro de compras parceladas
-* Controle de parcelamentos existentes
-* Fechamento de fatura
+- Cadastro unificado de receitas e despesas
+- Histórico de movimentações com data, categoria, meio de pagamento, descrição e valor
+- Categorias informadas pelo usuário
+- Diferentes meios de pagamento: PIX, débito, dinheiro e cartão de crédito
+- Compras parceladas com geração automática das parcelas
+- Exclusão inteligente de compras parceladas, removendo as parcelas relacionadas
 
 ### Planejamento financeiro
 
-* Controle de compromissos mensais
-* Percentual de reserva financeira
-* Cálculo automático do valor a guardar
-* Cálculo automático do saldo disponível
-* Resumo financeiro consolidado
+- Controle de compromissos mensais
+- Resumo financeiro de receitas, despesas e compromissos
+- Cálculo automático do valor a guardar conforme o percentual de reserva configurado
+- Cálculo do saldo disponível
 
-### Integração com Excel
+### Cartão de crédito e Excel
 
-* Leitura e gravação em Excel utilizando OpenPyXL
-* Movimentações armazenadas em planilha
-* Compromissos mensais armazenados em planilha
-* Estrutura preparada para dashboards
+- Atualização automática da aba **Faturas** após inclusões e exclusões de movimentações
+- Controle do limite do cartão
+- Cálculo do limite comprometido e do limite disponível
+- Integração completa com Excel por meio do OpenPyXL
 
 ---
 
@@ -60,7 +51,7 @@ git clone https://github.com/mateus22assis/MeuControle_Financeiro.git
 cd MeuControle_Financeiro
 ```
 
-## 3. Instalar dependências
+## 3. Instalar a dependência
 
 ```bash
 pip install openpyxl
@@ -76,174 +67,148 @@ python main.py
 
 # 📂 Estrutura do projeto
 
-## main.py
+```text
+.
+├── main.py
+├── calculos.py
+├── excel_manager.py
+├── consultas.py
+├── utils.py
+├── testes.py
+├── ControleFinanceiro_2026_Prototipo_v3.xlsx
+├── README.md
+└── docs/
+    ├── ASSISTENTE.md
+    ├── BACKLOG_v0.8.5.md
+    ├── BACKLOG_v0.9.md
+    └── HOMOLOGACAO_v0.8.md
+```
 
-Menu principal da aplicação.
+- `main.py`: menu principal e interação com a pessoa usuária.
+- `calculos.py`: regras de negócio e cálculos financeiros.
+- `excel_manager.py`: leitura, gravação, ordenação e atualização da planilha Excel.
+- `consultas.py`: consultas e filtros sobre as movimentações.
+- `utils.py`: validação de entradas e formatação monetária.
+- `testes.py`: apoio a testes do projeto.
+- `ControleFinanceiro_2026_Prototipo_v3.xlsx`: base de dados principal.
+- `docs/`: documentos de contexto, backlog e homologação.
 
-## excel_manager.py
+---
 
-Responsável pela leitura e gravação da planilha.
+# Arquitetura
 
-## calculos.py
+```text
+main.py
+   ↓
+calculos.py
+   ↓
+excel_manager.py
+   ↓
+ControleFinanceiro_2026_Prototipo_v3.xlsx
+```
 
-Regras de negócio e cálculos financeiros.
-
-## consultas.py
-
-Funções auxiliares para consultas dos dados.
-
-## dados.py
-
-Parte legada responsável pelo cartão de crédito e parcelamentos.
-
-## testes.py
-
-Arquivo utilizado para testes.
-
-## data.json
-
-Estrutura temporária para cartão e parcelamentos.
-
-## ControleFinanceiro_2026_Prototipo_v3.xlsx
-
-Banco de dados principal do projeto.
+- `main.py` concentra os menus, a coleta de dados e a apresentação das informações.
+- `calculos.py` reúne os cálculos de resumo financeiro, reserva, saldo e limite do cartão.
+- `excel_manager.py` é a camada de acesso à planilha: lê, grava, ordena movimentações e atualiza as abas derivadas.
+- A planilha Excel persiste as configurações, movimentações, compromissos e faturas do sistema.
 
 ---
 
 # 📊 Estrutura da planilha
 
-Atualmente o sistema trabalha com as seguintes abas:
+O sistema utiliza as seguintes abas:
 
-* Configuracoes
-* Movimentacoes
-* CompromissosMensais
-* Dashboard
-* Faturas
+| Aba | Finalidade |
+| --- | --- |
+| `Configuracoes` | Armazena receita mensal, percentual de reserva, limite do cartão e datas de fechamento e vencimento. |
+| `Movimentacoes` | Registra receitas e despesas, incluindo categoria, meio de pagamento, valor e parcelas. |
+| `CompromissosMensais` | Mantém os compromissos financeiros recorrentes. |
+| `Dashboard` | Aba reservada para a visualização consolidada dos dados financeiros. |
+| `Faturas` | Exibe o resumo das faturas do cartão, com vencimento, valor e status. |
 
----
+## Estrutura da aba `Movimentacoes`
 
-## Estrutura da aba Movimentacoes
+Cada movimentação possui os campos:
 
-Cada movimentação possui:
-
-* Data
-* Natureza (receita ou despesa)
-* Meio
-* Categoria
-* Descrição
-* Valor
-* Parcelas
-* Valor da Parcela
-
-Exemplos de meios:
-
-* PIX
-* Débito
-* Dinheiro
-* Cartão de crédito
-* Salário
-* Investimento
+- Data
+- Natureza (receita ou despesa)
+- Meio
+- Categoria
+- Descrição
+- Valor
+- Parcelas
 
 ---
 
-# 🚧 Status do Projeto
+# 🚧 Status do projeto
 
-🚀 Em desenvolvimento
+**Versão atual:** v0.8.5
 
-Versão atual:
-
-## v0.7
+Projeto em desenvolvimento ativo.
 
 ---
 
-# 📦 Versão Atual — v0.7
+# 🗺️ Roadmap
 
-Esta versão consolida a migração do projeto para Excel, eliminando a dependência do fluxo principal baseado em JSON e preparando o sistema para o gerenciamento completo de faturas.
+| Versão | Status | Objetivo |
+| --- | --- | --- |
+| ✅ v0.8 | Concluída | Controle financeiro completo em Excel |
+| 🚧 v0.8.5 | Em desenvolvimento | Estabilização e homologação |
+| 📋 v0.9 | Planejada | Dashboard e preparação da interface |
+| 📋 v1.0 | Planejada | Primeira versão completa |
+| 📋 v1.5 | Planejada | Evolução da experiência do usuário |
+| 📋 v2.0 | Futuro | Evolução da arquitetura |
 
-## Implementado
-
-### Excel
-
-- Movimentações em Excel
-- Receitas em Excel
-- Compromissos mensais em Excel
-- Configurações em Excel
-- Ordenação automática das movimentações por data
-
-### Movimentações
-
-- Cadastro unificado de receitas e despesas
-- Registro de compras parceladas
-- Geração automática das parcelas
-- Exclusão de movimentações
-- Melhorias na validação das entradas
-
-### Estrutura
-
-- Menu principal simplificado
-- Separação entre regras de negócio e acesso aos dados
-- Migração quase completa do JSON para Excel
+---
 
 # 📈 Histórico de versões
 
 ## 🟢 v0.1 — Controle de cartão
 
-* Controle de gastos à vista
-* Controle de parcelamentos
-* Fechamento de fatura
-
----
+- Controle de gastos à vista
+- Controle de parcelamentos
+- Fechamento de fatura
 
 ## 🟡 v0.2 — Usabilidade
 
-* Validação de entradas
-* Formatação monetária
-* Organização em módulos
-
----
+- Validação de entradas
+- Formatação monetária
+- Organização em módulos
 
 ## 🔵 v0.3 — Planejamento financeiro
 
-* Receita mensal
-* Gastos fixos
-* Percentual de reserva
-* Saldo disponível
-
----
+- Receita mensal
+- Gastos fixos
+- Percentual de reserva
+- Saldo disponível
 
 ## 🟣 v0.4 — Novos meios de pagamento
 
-* PIX
-* Débito
-* Dinheiro
-
----
+- PIX
+- Débito
+- Dinheiro
 
 ## 🟣 v0.5 — Histórico de movimentações
 
-* Registro de movimentações
-* Registro automático das datas
-* Consulta de histórico
-
----
+- Registro de movimentações
+- Registro automático das datas
+- Consulta de histórico
 
 ## 🟠 v0.6 — Integração com Excel
 
-* Estrutura inicial da planilha
-* Leitura e gravação em Excel
-* Criação do excel_manager.py
-
----
+- Estrutura inicial da planilha
+- Leitura e gravação em Excel
+- Criação do `excel_manager.py`
 
 ## 🟠 v0.6.5 — Consolidação do Excel
 
-* Movimentações em Excel
-* Receitas em Excel
-* Compromissos mensais em Excel
-* Refatoração do menu principal
-* Padronização de Natureza e Meio
-* Refatoração dos módulos principais
-* Simplificação da estrutura do projeto
+- Movimentações em Excel
+- Receitas em Excel
+- Compromissos mensais em Excel
+- Refatoração do menu principal
+- Padronização de natureza e meio
+- Refatoração dos módulos principais
+- Simplificação da estrutura do projeto
 
 ## 🟢 v0.7 — Consolidação da migração para Excel
 
@@ -254,37 +219,66 @@ Esta versão consolida a migração do projeto para Excel, eliminando a dependê
 - Melhorias na validação de entradas
 - Estrutura preparada para controle de faturas
 
+## v0.8
+
+- Controle completo das Faturas
+- Controle do limite do cartão
+- Aba Faturas
+- Melhorias na integração com Excel
+
+## v0.8.5
+
+- Atualização automática da aba Faturas
+- Exclusão inteligente de compras parceladas
+- Correções encontradas durante a homologação
+- Remoção definitiva da estrutura legada baseada em JSON
+
 ---
 
 # 🔮 Próximas versões
 
-## 🔵 v0.8
-
-Planejado:
-
-- Controle completo do limite do cartão
-- Cálculo do limite disponível
-- Consulta de faturas
-- Integração da aba Faturas
-
----
-
-## 🟣 v0.9
-
-Planejado:
+## v0.9
 
 - Dashboard financeiro
-- Indicadores
-- Gráficos automáticos
+- Interface de lançamentos
+- Cadastro de categorias
+- Melhorias de usabilidade
 
----
+## v1.0
 
-## 🏁 v1.0
+Primeira versão considerada completa para uso diário.
 
-- Sistema totalmente baseado em Excel
 - Dashboard integrado
 - Interface gráfica
-- Executável (.exe)
+- Executável (`.exe`)
+- Documentação consolidada
+
+## v1.5
+
+Foco em experiência do usuário.
+
+- Pesquisa de movimentações
+- Filtros por período
+- Edição de movimentações
+- Relatórios mensais e anuais
+- Exportação para PDF
+- Melhorias no Dashboard
+- Configurações do sistema
+- Backup da planilha
+- Melhorias na interface
+
+## v2.0
+
+Foco em arquitetura.
+
+- Refatoração para Programação Orientada a Objetos (POO)
+- Otimizações de desempenho
+- Identificadores persistentes para movimentações
+- Suporte a múltiplos cartões
+- Evolução da arquitetura
+- Preparação para futuras formas de persistência de dados, caso necessário
+
+---
 
 # 🎯 Finalidade
 
@@ -294,12 +288,14 @@ Projeto criado para estudo prático de programação, organização financeira p
 
 # 🛠️ Tecnologias
 
-* Python
-* OpenPyXL
-* Excel
+- Python
+- OpenPyXL
+- Microsoft Excel
+- Git
+- GitHub
 
 ---
 
 # 🤖 Observação
 
-O desenvolvimento do projeto conta com apoio de Inteligência Artificial como ferramenta de aprendizado, revisão de código, discussão de arquitetura e boas práticas de desenvolvimento.
+O desenvolvimento do projeto conta com apoio de Inteligência Artificial como ferramenta de estudo, revisão de código, discussão de arquitetura, planejamento, testes, documentação e aprendizado.

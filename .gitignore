@@ -13,8 +13,6 @@ Thumbs.db
 # VS Code
 .vscode/
 
-# dados locais do usuário
-data.json
 
 # arquivos de relatórios
 ASSISTENTE.md

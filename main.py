@@ -369,8 +369,12 @@ while True:
 
         if confirmacao == "s":
 
-            if excluirMovimentacao(linha):
-                print(f"Movimentação na linha {linha} excluída com sucesso.")
+            quantidadeRemovida = excluirMovimentacao(linha)
+
+            if quantidadeRemovida:
+                print(
+                    f"{quantidadeRemovida} movimentação(ões) removida(s) com sucesso."
+                )
             else:
                 print("Erro ao excluir movimentação.")
         else:

@@ -1,6 +1,7 @@
 from openpyxl import load_workbook
 from datetime import datetime
 from calendar import monthrange
+import re
 
 # ==========================
 # CONFIGURAÇÕES
@@ -409,7 +410,7 @@ def adicionarMovimentacao(
     aba_movimentacoes[f"D{proximaLinha}"] = categoria
     aba_movimentacoes[f"E{proximaLinha}"] = descricao
     aba_movimentacoes[f"F{proximaLinha}"] = valor
-    aba_movimentacoes[f"G{proximaLinha}"] = ""
+    aba_movimentacoes[f"G{proximaLinha}"] = parcelas
 
     workbook.save(CAMINHO_PLANILHA)
 
@@ -441,6 +442,7 @@ def adicionarCompromissoMensal(
 
     workbook.save(CAMINHO_PLANILHA)
 
+
 def excluirMovimentacao(linha):
     """
     Exclui uma movimentação pelo número de sua linha na planilha.
@@ -455,14 +457,71 @@ def excluirMovimentacao(linha):
     aba_movimentacoes = workbook["Movimentacoes"]
 
     if linha < 2 or linha > aba_movimentacoes.max_row:
-        return False
+        return 0
     if aba_movimentacoes.cell(row=linha, column=1).value is None:
-        return False
-    aba_movimentacoes.delete_rows(linha)
+        return 0
+
+    movimentacaoSelecionada = list(
+        aba_movimentacoes.iter_rows(
+            min_row=linha,
+            max_row=linha,
+            values_only=True
+        )
+    )[0]
+
+    parcelasSelecionadas = re.fullmatch(
+        r"(.+) \(([1-9]\d*)/([1-9]\d*)\)",
+        str(movimentacaoSelecionada[4])
+    )
+
+    linhasParaExcluir = [linha]
+
+    if parcelasSelecionadas is not None:
+        descricaoBase = parcelasSelecionadas.group(1)
+        totalParcelas = int(parcelasSelecionadas.group(3))
+        natureza = movimentacaoSelecionada[1]
+        meio = movimentacaoSelecionada[2]
+        categoria = movimentacaoSelecionada[3]
+        valor = movimentacaoSelecionada[5]
+        linhasParaExcluir = []
+
+        for numeroLinha, movimentacao in enumerate(
+            aba_movimentacoes.iter_rows(
+                min_row=2,
+                values_only=True
+            ),
+            start=2
+        ):
+            parcelasMovimentacao = re.fullmatch(
+                r"(.+) \(([1-9]\d*)/([1-9]\d*)\)",
+                str(movimentacao[4])
+            )
+
+            if parcelasMovimentacao is None:
+                continue
+
+            numeroParcela = int(parcelasMovimentacao.group(2))
+            totalParcelasMovimentacao = int(parcelasMovimentacao.group(3))
+
+            if (
+                parcelasMovimentacao.group(1) == descricaoBase
+                and 1 <= numeroParcela <= totalParcelas
+                and totalParcelasMovimentacao == totalParcelas
+                and movimentacao[1] == natureza
+                and movimentacao[2] == meio
+                and movimentacao[3] == categoria
+                and movimentacao[5] == valor
+            ):
+                linhasParaExcluir.append(numeroLinha)
+
+    for numeroLinha in sorted(linhasParaExcluir, reverse=True):
+        aba_movimentacoes.delete_rows(numeroLinha)
 
     workbook.save(CAMINHO_PLANILHA)
 
-    return True
+    atualizarPlanilha()
+
+    return len(linhasParaExcluir)
 
 # ==========================
 # REGRAS DO CARTÃO

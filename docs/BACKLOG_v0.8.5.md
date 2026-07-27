@@ -23,11 +23,11 @@ Nesta etapa não serão implementadas mudanças que alterem o comportamento fina
 
 ### 🔴 Prioridade Alta
 
-- [ ] Integrar a atualização da aba **Faturas** ao fluxo principal do sistema (`main.py`), eliminando a necessidade de executar `testes.py`.
+- [x] Integrar a atualização da aba **Faturas** ao fluxo principal do sistema (`main.py`), eliminando a necessidade de executar `testes.py`.
 
-- [ ] Desenvolver o preenchimento automático da aba **Dashboard**, utilizando os dados já existentes na planilha.
 
-- [ ] Implementar exclusão inteligente de compras parceladas, permitindo excluir toda a compra quando desejado.
+
+- [x] Implementar exclusão inteligente de compras parceladas, permitindo excluir toda a compra quando desejado.
 
 - [ ] Melhorar a usabilidade da exclusão de movimentações na interface em modo texto (CLI).
 

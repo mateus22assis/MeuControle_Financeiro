@@ -1,0 +1,1 @@
+- [ ] Desenvolver o preenchimento automático da aba **Dashboard**, utilizando os dados já existentes na planilha.
