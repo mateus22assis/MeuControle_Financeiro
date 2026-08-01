@@ -51,10 +51,10 @@ git clone https://github.com/mateus22assis/MeuControle_Financeiro.git
 cd MeuControle_Financeiro
 ```
 
-## 3. Instalar a dependência
+## 3. Instalar as dependências
 
 ```bash
-pip install openpyxl
+pip install openpyxl customtkinter
 ```
 
 ## 4. Executar
@@ -77,37 +77,52 @@ python main.py
 ├── testes.py
 ├── ControleFinanceiro_2026_Prototipo_v3.xlsx
 ├── README.md
+├── gui/
+│   ├── app.py
+│   ├── dashboard.py
+│   ├── movimentacoes.py
+│   ├── compromissos.py
+│   ├── categorias.py
+│   ├── configuracoes.py
+│   └── componentes.py
 └── docs/
-    ├── ASSISTENTE.md
+    ├── ALERTAS.md
     ├── BACKLOG_v0.8.5.md
     ├── BACKLOG_v0.9.md
-    └── HOMOLOGACAO_v0.8.md
+    ├── CATEGORIAS.md
+    ├── DASHBOARD.md
+    ├── HOMOLOGACAO_v0.8.md
+    ├── UX.md
+    └── WIREFRAMES.md
 ```
 
-- `main.py`: menu principal e interação com a pessoa usuária.
+- `main.py`: ponto de entrada e inicialização da aplicação.
+- `gui/`: módulos da interface gráfica desenvolvidos em Programação Orientada a Objetos (POO).
 - `calculos.py`: regras de negócio e cálculos financeiros.
 - `excel_manager.py`: leitura, gravação, ordenação e atualização da planilha Excel.
 - `consultas.py`: consultas e filtros sobre as movimentações.
 - `utils.py`: validação de entradas e formatação monetária.
 - `testes.py`: apoio a testes do projeto.
-- `ControleFinanceiro_2026_Prototipo_v3.xlsx`: base de dados principal.
-- `docs/`: documentos de contexto, backlog e homologação.
+- `docs/`: documentos de UX, wireframes, backlog e homologação.
 
 ---
 
 # Arquitetura
 
 ```text
-main.py
-   ↓
-calculos.py
-   ↓
-excel_manager.py
-   ↓
+      Interface Gráfica (GUI)
+       (CustomTkinter - POO)
+                ↓
+    Backend Modular (Estudo)
+(calculos.py | consultas.py | etc.)
+                ↓
+         excel_manager.py
+                ↓
 ControleFinanceiro_2026_Prototipo_v3.xlsx
 ```
 
-- `main.py` concentra os menus, a coleta de dados e a apresentação das informações.
+- A **GUI** é desenvolvida utilizando **Programação Orientada a Objetos (POO)** para melhor organização de componentes e estados da interface.
+- O **Backend** permanece propositalmente **modular** (funções puras e módulos independentes) para fins de estudo e comparação de paradigmas.
 - `calculos.py` reúne os cálculos de resumo financeiro, reserva, saldo e limite do cartão.
 - `excel_manager.py` é a camada de acesso à planilha: lê, grava, ordena movimentações e atualiza as abas derivadas.
 - A planilha Excel persiste as configurações, movimentações, compromissos e faturas do sistema.
@@ -123,8 +138,9 @@ O sistema utiliza as seguintes abas:
 | `Configuracoes` | Armazena receita mensal, percentual de reserva, limite do cartão e datas de fechamento e vencimento. |
 | `Movimentacoes` | Registra receitas e despesas, incluindo categoria, meio de pagamento, valor e parcelas. |
 | `CompromissosMensais` | Mantém os compromissos financeiros recorrentes. |
-| `Dashboard` | Aba reservada para a visualização consolidada dos dados financeiros. |
 | `Faturas` | Exibe o resumo das faturas do cartão, com vencimento, valor e status. |
+
+> **Nota:** A antiga aba `Dashboard` foi removida da planilha, pois a visualização consolidada agora é processada dinamicamente e exibida em uma tela específica da interface gráfica.
 
 ## Estrutura da aba `Movimentacoes`
 
@@ -142,7 +158,9 @@ Cada movimentação possui os campos:
 
 # 🚧 Status do projeto
 
-**Versão atual:** v0.8.5
+**Versão atual:** v0.9
+
+O backend do sistema está funcional e consolidado, servindo como base sólida para a aplicação. Atualmente, o projeto entrou em uma nova fase com o início do desenvolvimento da interface gráfica (GUI).
 
 Projeto em desenvolvimento ativo.
 
@@ -153,9 +171,10 @@ Projeto em desenvolvimento ativo.
 | Versão | Status | Objetivo |
 | --- | --- | --- |
 | ✅ v0.8 | Concluída | Controle financeiro completo em Excel |
-| 🚧 v0.8.5 | Em desenvolvimento | Estabilização e homologação |
-| 📋 v0.9 | Planejada | Dashboard e preparação da interface |
-| 📋 v1.0 | Planejada | Primeira versão completa |
+| ✅ v0.8.5 | Concluída | Estabilização e homologação |
+| ✅ v0.9 | Concluída | Planejamento da GUI e Arquitetura |
+| 🚧 v0.9.5 | Em desenvolvimento | Primeira versão da GUI funcional |
+| 📋 v1.0 | Planejada | Primeira versão completa (GUI + Backend) |
 | 📋 v1.5 | Planejada | Evolução da experiência do usuário |
 | 📋 v2.0 | Futuro | Evolução da arquitetura |
 
@@ -233,25 +252,34 @@ Projeto em desenvolvimento ativo.
 - Correções encontradas durante a homologação
 - Remoção definitiva da estrutura legada baseada em JSON
 
+## 🎨 v0.9 — Início da Interface Gráfica (GUI)
+
+- Definição da stack tecnológica (CustomTkinter)
+- Criação de documentos de UX e Wireframes
+- Definição da arquitetura POO para a interface
+- Implementação da estrutura base da aplicação (App e frames)
+- Migração do Dashboard da planilha para visualização em tempo real na interface
+- Backend consolidado como suporte para a GUI
+
 ---
 
 # 🔮 Próximas versões
 
-## v0.9
+## v0.9.5
 
-- Dashboard financeiro
-- Interface de lançamentos
-- Cadastro de categorias
-- Melhorias de usabilidade
+- Interface de lançamentos (receitas/despesas) funcional
+- Cadastro de categorias via interface
+- Gerenciamento de compromissos via interface
+- Visualização de faturas na GUI
 
 ## v1.0
 
 Primeira versão considerada completa para uso diário.
 
-- Dashboard integrado
-- Interface gráfica
+- Dashboard interativo completo
+- Todos os módulos do backend acessíveis via GUI
 - Executável (`.exe`)
-- Documentação consolidada
+- Documentação de uso finalizada
 
 ## v1.5
 
@@ -289,10 +317,10 @@ Projeto criado para estudo prático de programação, organização financeira p
 # 🛠️ Tecnologias
 
 - Python
-- OpenPyXL
-- Microsoft Excel
-- Git
-- GitHub
+- CustomTkinter (Interface Gráfica)
+- OpenPyXL (Manipulação de Excel)
+- Microsoft Excel (Banco de Dados)
+- Git / GitHub
 
 ---
 
