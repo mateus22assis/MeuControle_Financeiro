@@ -295,16 +295,7 @@ Foco em experiência do usuário.
 - Backup da planilha
 - Melhorias na interface
 
-## v2.0
 
-Foco em arquitetura.
-
-- Refatoração para Programação Orientada a Objetos (POO)
-- Otimizações de desempenho
-- Identificadores persistentes para movimentações
-- Suporte a múltiplos cartões
-- Evolução da arquitetura
-- Preparação para futuras formas de persistência de dados, caso necessário
 
 ---
 
