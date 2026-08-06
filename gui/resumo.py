@@ -1,0 +1,50 @@
+import customtkinter as ctk
+
+
+class ResumoFinanceiro(ctk.CTkFrame):
+
+    def __init__(self, parent):
+        super().__init__(parent, )
+
+        self.titulo = ctk.CTkLabel(
+            self,
+            text="Resumo Financeiro",
+            font=("Arial", 18, "bold")
+        )
+
+        self.titulo.pack(pady=(15, 10))
+#cards
+    #card saldo disppnivel
+      
+        self.valor_saldo =self.criar_card("Saldo Disponível", "R$ 0,00")
+    #valor a guardar
+        self.valor_guardar = self.criar_card("Meta de guardar (mês)", "R$ 0,00")
+    #fatura do cartao de credito
+        self.valor_fatura = self.criar_card("Fatura do Cartão de Crédito", "R$ 0,00")
+   
+        
+    #criar card de resumo financeiro
+    def criar_card(self, titulo, valor):
+
+        card = ctk.CTkFrame(self, corner_radius=10)
+        card.pack(pady=10, padx=10, fill="x")
+
+        label_titulo = ctk.CTkLabel(
+            card,
+            text=titulo,
+            font=("Arial", 14)
+        )
+        label_titulo.pack(pady=(10, 5))
+
+        label_valor = ctk.CTkLabel(
+            card,
+            text=valor,
+            font=("Arial", 22, "bold")
+        )
+        label_valor.pack(pady=(0, 10))
+        return  label_valor
+#atualizaçao dos valores dos cards
+    def atualizar_valores(self, saldo, valor_guardar, fatura):
+        self.valor_saldo.configure(text=f"R$ {saldo:,.2f}")
+        self.valor_guardar.configure(text=f"R$ {valor_guardar:,.2f}")
+        self.valor_fatura.configure(text=f"R$ {fatura:,.2f}")

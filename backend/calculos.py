@@ -1,11 +1,12 @@
 from calendar import monthrange
 from datetime import datetime
 
-from excel_manager import (
+from backend.excel_manager import (
     lerConfiguracoes,
     lerCompromissosMensais,
     lerMovimentacoes
 )
+
 
 # ==========================
 # SOMATÓRIOS
@@ -183,6 +184,7 @@ def calcularProximaFatura():
                 mesMovimentacao == mesFatura
                 and anoMovimentacao == anoFatura
             ):
+
                 valor = mov["valor"]
 
                 if valor is not None:
@@ -190,6 +192,9 @@ def calcularProximaFatura():
 
     return float(total)
 
+# ==========================
+# RESUMO DE FATURAS
+# ==========================
 
 def gerarResumoFaturas():
     """
@@ -263,33 +268,60 @@ def gerarResumoFaturas():
     for (anoFatura, mesFatura), valor in sorted(faturas.items()):
 
         ultimoDiaMes = monthrange(anoFatura, mesFatura)[1]
-        diaVencimentoFatura = min(diaVencimento, ultimoDiaMes)
 
-        if (anoFatura, mesFatura) < (anoFaturaAtual, mesFaturaAtual):
+        diaVencimentoFatura = min(
+            diaVencimento,
+            ultimoDiaMes
+        )
+
+        if (anoFatura, mesFatura) < (
+            anoFaturaAtual,
+            mesFaturaAtual
+        ):
             status = "Fechada"
-        elif (anoFatura, mesFatura) == (anoFaturaAtual, mesFaturaAtual):
+
+        elif (anoFatura, mesFatura) == (
+            anoFaturaAtual,
+            mesFaturaAtual
+        ):
             status = "Aberta"
+
         else:
             status = "Prevista"
 
         resumoFaturas.append({
-            "fatura": f"{mesFatura:02d}/{anoFatura}",
-            "vencimento": (
-                f"{diaVencimentoFatura:02d}/{mesFatura:02d}/{anoFatura}"
-            ),
-            "valor": round(valor, 2),
-            "status": status
+
+            "fatura":
+                f"{mesFatura:02d}/{anoFatura}",
+
+            "vencimento":
+                (
+                    f"{diaVencimentoFatura:02d}/"
+                    f"{mesFatura:02d}/"
+                    f"{anoFatura}"
+                ),
+
+            "valor":
+                round(valor, 2),
+
+            "status":
+                status
         })
 
     return resumoFaturas
 
+
+
+# ==========================
+# LIMITE CARTÃO
+# ==========================
 
 def calcularLimiteDisponivel():
     """
     Calcula o limite disponível do cartão de crédito.
 
     Utiliza o limite real cadastrado e desconta as despesas
-    registradas em crédito, sem considerar a renda.
+    registradas em crédito.
 
     Retorna o limite ainda disponível para uso.
     """
@@ -301,6 +333,7 @@ def calcularLimiteDisponivel():
     limiteComprometido = somarDespesasCredito()
 
     return limiteCartao - limiteComprometido
+
 
 
 # ==========================
@@ -324,7 +357,6 @@ def calcularValorGuardar():
     percentualReserva = configuracoes["percentualReserva"]
 
     return receitaTotal * (percentualReserva / 100)
-
 
 # ==========================
 # SALDO
@@ -391,8 +423,8 @@ def mostrarResumo():
             somarDespesasCredito(),
 
         "limiteDisponivel":
-            calcularLimiteDisponivel()
+            calcularLimiteDisponivel(),
 
-        # "proximaFatura":
-        #     calcularProximaFatura()
+        "proximaFatura":
+            calcularProximaFatura()
     }

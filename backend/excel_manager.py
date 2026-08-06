@@ -368,7 +368,7 @@ def atualizarPlanilha():
     Não retorna valor.
     """
 
-    from calculos import gerarResumoFaturas
+    from backend.calculos import gerarResumoFaturas
 
     resumoFaturas = gerarResumoFaturas()
 

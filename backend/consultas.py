@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from excel_manager import lerMovimentacoes
+from backend.excel_manager import lerMovimentacoes
 
 
 # ==========================
