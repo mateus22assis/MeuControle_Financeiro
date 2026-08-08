@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from backend.excel_manager import lerMovimentacoes
+
 
 class Movimentacoes(ctk.CTkFrame):
 
@@ -35,8 +37,8 @@ class Movimentacoes(ctk.CTkFrame):
             side="left"
         )
 
-        # Área da futura listagem
-        self.frame_lista = ctk.CTkFrame(
+        # Área da listagem
+        self.frame_lista = ctk.CTkScrollableFrame(
             self
         )
 
@@ -46,3 +48,64 @@ class Movimentacoes(ctk.CTkFrame):
             padx=20,
             pady=10
         )
+
+        self.mostrar_movimentacoes()
+
+    def mostrar_movimentacoes(self):
+
+        movimentacoes = lerMovimentacoes()
+
+        # Cabeçalho
+        cabecalho = [
+            "Data",
+            "Natureza",
+            "Meio",
+            "Categoria",
+            "Descrição",
+            "Valor"
+        ]
+
+        for coluna, texto in enumerate(cabecalho):
+            label = ctk.CTkLabel(
+                self.frame_lista,
+                text=texto,
+                font=("Arial", 14, "bold")
+            )
+
+            label.grid(
+                row=0,
+                column=coluna,
+                padx=10,
+                pady=10,
+                sticky="w"
+            )
+
+        # Movimentações
+        for linha, movimentacao in enumerate(
+            movimentacoes,
+            start=1
+        ):
+
+            dados = [
+                movimentacao["data"],
+                movimentacao["natureza"],
+                movimentacao["meio"],
+                movimentacao["categoria"],
+                movimentacao["descricao"],
+                movimentacao["valor"]
+            ]
+
+            for coluna, valor in enumerate(dados):
+
+                label = ctk.CTkLabel(
+                    self.frame_lista,
+                    text=str(valor or "")
+                )
+
+                label.grid(
+                    row=linha,
+                    column=coluna,
+                    padx=10,
+                    pady=8,
+                    sticky="w"
+                )
