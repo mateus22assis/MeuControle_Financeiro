@@ -59,6 +59,38 @@ def somarReceitas():
 
     return total
 
+def somarReceitasParaReserva():
+    """
+    Soma somente as receitas consideradas renda nova
+    para o cálculo do valor a guardar.
+
+    Não considera devoluções de empréstimos ou resgates
+    de investimentos como base para a reserva.
+
+    Retorna o total de receitas que entram no cálculo da reserva.
+    """
+
+    movimentacoes = lerMovimentacoes()
+
+    total = 0
+
+    for mov in movimentacoes:
+
+        if (
+            mov["natureza"] == "receita"
+            and mov["categoria"] in [
+                "salario",
+                "renda extra"
+            ]
+        ):
+
+            valor = mov["valor"]
+
+            if valor is not None:
+                total += valor
+
+    return total
+
 
 def somarDespesas():
     """
@@ -352,7 +384,7 @@ def calcularValorGuardar():
 
     configuracoes = lerConfiguracoes()
 
-    receitaTotal = somarReceitas()
+    receitaTotal = somarReceitasParaReserva()
 
     percentualReserva = configuracoes["percentualReserva"]
 
