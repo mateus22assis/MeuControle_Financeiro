@@ -67,20 +67,9 @@ def ordenarMovimentacoesPorData():
     )
 
     movimentacoes.sort(
-        key=lambda linha: converterData(
-            linha[0]
-        )
+        key=lambda linha: converterData(linha[0])
     )
-
-    aba.delete_rows(
-        2,
-        aba.max_row
-    )
-
-    for movimentacao in movimentacoes:
-        aba.append(movimentacao)
-
-    workbook.save(CAMINHO_PLANILHA)
+    # ... (Refatoração para usar as novas funções centralizadas)
 
 def converterData(data):
     """
@@ -88,11 +77,15 @@ def converterData(data):
 
     Aceita datas já convertidas e os formatos de texto previstos.
 
-    Retorna a data convertida ou gera erro para formato inválido.
+    Retorna a data convertida ou None para dados vazios.
+    Gera erro para formato inválido de texto.
     """
 
     if isinstance(data, datetime):
         return data
+
+    if data is None or str(data).strip() == "":
+        return None
 
     formatos = [
         "%d/%m/%Y",
@@ -103,13 +96,14 @@ def converterData(data):
 
     for formato in formatos:
         try:
-            return datetime.strptime(data, formato)
-        except ValueError:
+            return datetime.strptime(str(data).strip(), formato)
+        except (ValueError, TypeError):
             pass
 
     raise ValueError(
         f"Formato de data inválido: {data}"
     )
+
 
 
 # ==========================
@@ -132,6 +126,7 @@ def lerConfiguracoes():
     configuracoes = {
         "receitaMensal": 0.0,
         "percentualReserva": 30.0,
+        "saldoInicial": 0.0,
         "limiteCartao": 0.0,
         "diaFechamento": 3,
         "diaVencimento": 10
@@ -155,7 +150,14 @@ def lerConfiguracoes():
                 valor if valor is not None else 0.0
             )
 
+        elif campo == "saldo inicial":
+
+            configuracoes["saldoInicial"] = (
+                valor if valor is not None else 0.0
+            )
+
         elif campo == "percentual reserva":
+
 
             configuracoes["percentualReserva"] = (
                 valor if valor is not None else 30.0
@@ -527,37 +529,46 @@ def excluirMovimentacao(linha):
 # REGRAS DO CARTÃO
 # ==========================
 
+def determinarMesFatura(dataCompra, diaFechamento):
+    """
+    Determina o mês e ano da fatura para uma compra.
+    Retorna uma tupla (mês, ano).
+    """
+    data = converterData(dataCompra)
+    if data is None:
+        return None, None
+
+    mes = data.month
+    ano = data.year
+
+    if data.day >= diaFechamento:
+        mes += 1
+        if mes > 12:
+            mes = 1
+            ano += 1
+    
+    return mes, ano
+
 def calcularMesFatura(dataCompra):
     """
     Determina a fatura correspondente a uma compra no cartão.
 
     Compras após o fechamento são atribuídas ao mês seguinte.
 
-    Recebe uma data (string no formato dd/mm/AAAA)
-    e retorna o mês/ano da fatura correspondente.
+    Recebe uma data (string ou datetime)
+    e retorna o mês/ano da fatura correspondente em texto MM/AAAA.
     """
 
     configuracoes = lerConfiguracoes()
-
     diaFechamento = configuracoes["diaFechamento"]
 
-    data = datetime.strptime(
-        dataCompra,
-        "%d/%m/%Y"
-    )
-
-    mes = data.month
-    ano = data.year
-
-    if data.day > diaFechamento:
-
-        mes += 1
-
-        if mes > 12:
-            mes = 1
-            ano += 1
+    mes, ano = determinarMesFatura(dataCompra, diaFechamento)
+    
+    if mes is None:
+        return None
 
     return f"{mes:02d}/{ano}"
+
 
 
 def adicionarMeses(data, quantidadeMeses):

@@ -4,7 +4,9 @@ from datetime import datetime
 from backend.excel_manager import (
     lerConfiguracoes,
     lerCompromissosMensais,
-    lerMovimentacoes
+    lerMovimentacoes,
+    converterData,
+    determinarMesFatura
 )
 
 
@@ -12,7 +14,86 @@ from backend.excel_manager import (
 # SOMATÓRIOS
 # ==========================
 
+def somarReceitasPorMes(mes, ano):
+    """
+    Soma todas as movimentações classificadas como receita
+    que pertencem ao mês e ano informados.
+    """
+    movimentacoes = lerMovimentacoes()
+    total = 0
+
+    for mov in movimentacoes:
+        natureza = str(mov["natureza"]).strip().lower()
+        if natureza == "receita" and mov["data"] is not None:
+            data_mov = converterData(mov["data"])
+            if data_mov.month == mes and data_mov.year == ano:
+                valor = mov["valor"]
+                if valor is not None:
+                    total += valor
+    return total
+
+def somarReceitasParaReservaNoMes(mes, ano):
+    """
+    Soma somente as receitas consideradas renda nova
+    no mês informado para o cálculo do valor a guardar.
+    """
+    movimentacoes = lerMovimentacoes()
+    total = 0
+
+    for mov in movimentacoes:
+        natureza = str(mov["natureza"]).strip().lower()
+        categoria = str(mov["categoria"]).strip().lower()
+        
+        if natureza == "receita" and categoria in ["salario", "renda extra"] and mov["data"] is not None:
+            data_mov = converterData(mov["data"])
+            if data_mov.month == mes and data_mov.year == ano:
+                valor = mov["valor"]
+                if valor is not None:
+                    total += valor
+    return total
+
+def somarDespesasAVista(mes, ano):
+    """
+    Soma despesas (meio != credito) de um mês específico.
+    """
+    movimentacoes = lerMovimentacoes()
+    total = 0
+
+    for mov in movimentacoes:
+        natureza = str(mov["natureza"]).strip().lower()
+        meio = str(mov["meio"]).strip().lower()
+        
+        if natureza == "despesa" and meio != "credito" and mov["data"] is not None:
+            data_mov = converterData(mov["data"])
+            if data_mov.month == mes and data_mov.year == ano:
+                valor = mov["valor"]
+                if valor is not None:
+                    total += float(valor)
+    return total
+
+def somarFaturaPorMes(mes, ano):
+    """
+    Soma as despesas de cartão cuja fatura de destino é o mês/ano informado.
+    """
+    movimentacoes = lerMovimentacoes()
+    configuracoes = lerConfiguracoes()
+    diaFechamento = configuracoes["diaFechamento"]
+    total = 0
+
+    for mov in movimentacoes:
+        natureza = str(mov["natureza"]).strip().lower()
+        meio = str(mov["meio"]).strip().lower()
+
+        if natureza == "despesa" and meio == "credito" and mov["data"] is not None:
+            m_fat, a_fat = determinarMesFatura(mov["data"], diaFechamento)
+            if m_fat == mes and a_fat == ano:
+                valor = mov["valor"]
+                if valor is not None:
+                    total += float(valor)
+    return total
+
 def somarCompromissosMensais():
+
     """
     Soma os valores dos compromissos mensais cadastrados.
 
@@ -122,13 +203,7 @@ def somarDespesas():
             and mov["data"] is not None
         ):
 
-            dataMovimentacao = mov["data"]
-
-            if not isinstance(dataMovimentacao, datetime):
-                dataMovimentacao = datetime.strptime(
-                    str(dataMovimentacao),
-                    "%d/%m/%Y"
-                )
+            dataMovimentacao = converterData(mov["data"])
 
             if (
                 dataMovimentacao.month == hoje.month
@@ -142,117 +217,75 @@ def somarDespesas():
 
     return total
 
+
 # ==========================
 # CARTÃO DE CRÉDITO
 # ==========================
 
-def somarDespesasCredito():
-    """
-    Soma as despesas pagas com cartão de crédito.
-
-    Considera somente movimentações de natureza despesa
-    cujo meio de pagamento é crédito.
-
-    Retorna o valor comprometido no cartão.
-    """
-
-    movimentacoes = lerMovimentacoes()
-
-    total = 0
-
-    for mov in movimentacoes:
-
-        natureza = str(mov["natureza"]).strip().lower()
-        meio = str(mov["meio"]).strip().lower()
-
-        if (
-            natureza == "despesa"
-            and meio == "credito"
-        ):
-
-            valor = mov["valor"]
-
-            if valor is not None:
-                total += valor
-
-    return total
-
-
 def calcularProximaFatura():
     """
     Calcula o total da próxima fatura do cartão.
-
-    Compras após o dia de fechamento são atribuídas ao mês
-    seguinte, respeitando a virada de ano.
-
-    Retorna o valor total da próxima fatura.
     """
-
-    movimentacoes = lerMovimentacoes()
-
-    configuracoes = lerConfiguracoes()
-
     hoje = datetime.today()
-
+    configuracoes = lerConfiguracoes()
     diaFechamento = configuracoes["diaFechamento"]
 
-    if hoje.day > diaFechamento:
+    # Se hoje é 15/03 e fechamento é 03, a próxima fatura é Abril.
+    # Se hoje é 01/03 e fechamento é 03, a próxima fatura é Março.
+    mes_fat, ano_fat = determinarMesFatura(hoje, diaFechamento)
+    
+    return somarFaturaPorMes(mes_fat, ano_fat)
 
-        mesFatura = hoje.month + 1
-        anoFatura = hoje.year
+def calcularCapacidadeComprometimento():
+    """
+    Calcula quanto ainda se pode gastar no cartão para a próxima fatura.
+    Fórmula: Renda Prevista - Reserva - Compromissos - Fatura já comprometida.
+    """
+    configuracoes = lerConfiguracoes()
+    renda = configuracoes["receitaMensal"]
+    perc_reserva = configuracoes["percentualReserva"]
+    
+    reserva = renda * (perc_reserva / 100)
+    gastos_fixos = somarCompromissosMensais()
+    
+    # Próxima fatura
+    hoje = datetime.today()
+    mes_prox, ano_prox = determinarMesFatura(hoje, configuracoes["diaFechamento"])
+    fatura_prox = somarFaturaPorMes(mes_prox, ano_prox)
+    
+    capacidade = renda - reserva - gastos_fixos - fatura_prox
+    return max(0, capacidade)
 
-        if mesFatura > 12:
-            mesFatura = 1
-            anoFatura += 1
-
-    else:
-
-        mesFatura = hoje.month
-        anoFatura = hoje.year
-
-    total = 0
-
+def calcularLimiteDisponivel():
+    """
+    Calcula o limite disponível do cartão de crédito.
+    Desconta apenas faturas aberta e futuras.
+    """
+    configuracoes = lerConfiguracoes()
+    limite_total = configuracoes["limiteCartao"]
+    diaFechamento = configuracoes["diaFechamento"]
+    
+    hoje = datetime.today()
+    # Fatura aberta (a que ainda recebe compras)
+    m_aberta, a_aberta = determinarMesFatura(hoje, diaFechamento)
+    
+    movimentacoes = lerMovimentacoes()
+    comprometido = 0
+    
     for mov in movimentacoes:
         natureza = str(mov["natureza"]).strip().lower()
         meio = str(mov["meio"]).strip().lower()
-
-        if (
-            natureza == "despesa"
-            and meio == "credito"
-            and mov["data"] is not None
-        ):
-
-            dataMovimentacao = mov["data"]
-
-            if isinstance(dataMovimentacao, datetime):
-                dataMovimentacao = dataMovimentacao
-            else:
-                dataMovimentacao = datetime.strptime(
-                    str(dataMovimentacao),
-                    "%d/%m/%Y"
-                )
-
-            mesMovimentacao = dataMovimentacao.month
-            anoMovimentacao = dataMovimentacao.year
-
-            if dataMovimentacao.day >= diaFechamento:
-                mesMovimentacao += 1
-
-                if mesMovimentacao > 12:
-                    mesMovimentacao = 1
-                    anoMovimentacao += 1
-
-            if (
-                mesMovimentacao == mesFatura
-                and anoMovimentacao == anoFatura
-            ):
-
+        
+        if natureza == "despesa" and meio == "credito" and mov["data"] is not None:
+            m_fat, a_fat = determinarMesFatura(mov["data"], diaFechamento)
+            # Se a fatura de destino é a aberta ou qualquer futura
+            if (a_fat > a_aberta) or (a_fat == a_aberta and m_fat >= m_aberta):
                 valor = mov["valor"]
-
                 if valor is not None:
-                    total += float(valor)
+                    comprometido += float(valor)
+                    
+    return limite_total - comprometido
 
-    return float(total)
 
 # ==========================
 # RESUMO DE FATURAS
@@ -262,8 +295,8 @@ def gerarResumoFaturas():
     """
     Gera o resumo das faturas de cartão por mês de referência.
 
-    A data da compra posterior ao fechamento compõe a fatura
-    seguinte; cada fatura é classificada como aberta, fechada ou prevista.
+    Compras realizadas no dia do fechamento ou depois
+    pertencem à fatura do mês seguinte.
 
     Retorna uma lista com valores, vencimentos e status das faturas.
     """
@@ -277,62 +310,59 @@ def gerarResumoFaturas():
 
     hoje = datetime.today()
 
-    mesFaturaAtual = hoje.month
-    anoFaturaAtual = hoje.year
-
-    if hoje.day > diaFechamento:
-
-        mesFaturaAtual += 1
-
-        if mesFaturaAtual > 12:
-            mesFaturaAtual = 1
-            anoFaturaAtual += 1
+    # Determina qual é a fatura atualmente aberta.
+    mesFaturaAtual, anoFaturaAtual = determinarMesFatura(
+        hoje,
+        diaFechamento
+    )
 
     faturas = {}
 
     for movimentacao in movimentacoes:
 
-        natureza = str(movimentacao["natureza"]).strip().lower()
-        meio = str(movimentacao["meio"]).strip().lower()
+        natureza = str(
+            movimentacao["natureza"]
+        ).strip().lower()
+
+        meio = str(
+            movimentacao["meio"]
+        ).strip().lower()
 
         if (
             natureza != "despesa"
+            or meio != "credito"
             or movimentacao["data"] is None
             or movimentacao["valor"] is None
         ):
             continue
 
-        dataMovimentacao = movimentacao["data"]
+        mesFatura, anoFatura = determinarMesFatura(
+            movimentacao["data"],
+            diaFechamento
+        )
 
-        if not isinstance(dataMovimentacao, datetime):
-            dataMovimentacao = datetime.strptime(
-                str(dataMovimentacao),
-                "%d/%m/%Y"
-            )
-
-        mesFatura = dataMovimentacao.month
-        anoFatura = dataMovimentacao.year
-
-        if dataMovimentacao.day >= diaFechamento:
-
-            mesFatura += 1
-
-            if mesFatura > 12:
-                mesFatura = 1
-                anoFatura += 1
+        if mesFatura is None:
+            continue
 
         chaveFatura = (anoFatura, mesFatura)
 
         if chaveFatura not in faturas:
             faturas[chaveFatura] = 0.0
 
-        faturas[chaveFatura] += float(movimentacao["valor"])
+        faturas[chaveFatura] += float(
+            movimentacao["valor"]
+        )
 
     resumoFaturas = []
 
-    for (anoFatura, mesFatura), valor in sorted(faturas.items()):
+    for (anoFatura, mesFatura), valor in sorted(
+        faturas.items()
+    ):
 
-        ultimoDiaMes = monthrange(anoFatura, mesFatura)[1]
+        ultimoDiaMes = monthrange(
+            anoFatura,
+            mesFatura
+        )[1]
 
         diaVencimentoFatura = min(
             diaVencimento,
@@ -378,50 +408,19 @@ def gerarResumoFaturas():
 
 
 # ==========================
-# LIMITE CARTÃO
-# ==========================
-
-def calcularLimiteDisponivel():
-    """
-    Calcula o limite disponível do cartão de crédito.
-
-    Utiliza o limite real cadastrado e desconta as despesas
-    registradas em crédito.
-
-    Retorna o limite ainda disponível para uso.
-    """
-
-    configuracoes = lerConfiguracoes()
-
-    limiteCartao = configuracoes["limiteCartao"]
-
-    limiteComprometido = somarDespesasCredito()
-
-    return limiteCartao - limiteComprometido
-
-
-
-# ==========================
 # RESERVA
 # ==========================
 
 def calcularValorGuardar():
     """
-    Calcula o valor mensal reservado para economia.
-
-    Aplica o percentual de reserva configurado sobre o total
-    de receitas registradas.
-
-    Retorna o valor que deve ser guardado.
+    Calcula o valor mensal reservado para economia baseado nas receitas do mês atual.
     """
-
+    hoje = datetime.today()
     configuracoes = lerConfiguracoes()
-
-    receitaTotal = somarReceitasParaReserva()
-
+    receitaParaReserva = somarReceitasParaReservaNoMes(hoje.month, hoje.year)
     percentualReserva = configuracoes["percentualReserva"]
 
-    return receitaTotal * (percentualReserva / 100)
+    return receitaParaReserva * (percentualReserva / 100)
 
 # ==========================
 # SALDO
@@ -429,28 +428,32 @@ def calcularValorGuardar():
 
 def calcularSaldoDisponivel():
     """
-    Calcula o saldo disponível no mês.
-
-    Subtrai das receitas a reserva financeira, os compromissos
-    mensais e as despesas registradas.
-
-    Retorna o saldo disponível após os descontos.
+    Calcula o saldo disponível no mês atual.
+    Fórmula: Saldo Inicial + Receitas Mês - Reserva Mês - Fixos - Fatura Mês - Despesas à Vista Mês.
     """
-
-    receitaTotal = somarReceitas()
-
-    valorGuardar = calcularValorGuardar()
-
-    gastosFixos = somarCompromissosMensais()
-
-    despesas = somarDespesas()
+    hoje = datetime.today()
+    configuracoes = lerConfiguracoes()
+    
+    saldo_inicial = configuracoes["saldoInicial"]
+    receitas_mes = somarReceitasPorMes(hoje.month, hoje.year)
+    reserva_mes = calcularValorGuardar()
+    gastos_fixos = somarCompromissosMensais()
+    
+    # Fatura que vence no mês atual
+    fatura_mes = somarFaturaPorMes(hoje.month, hoje.year)
+    
+    # Despesas à vista do mês atual (PIX, Débito, etc)
+    despesas_vista = somarDespesasAVista(hoje.month, hoje.year)
 
     return (
-        receitaTotal
-        - valorGuardar
-        - gastosFixos
-        - despesas
+        saldo_inicial
+        + receitas_mes
+        - reserva_mes
+        - gastos_fixos
+        - fatura_mes
+        - despesas_vista
     )
+
 
 
 # ==========================
@@ -459,37 +462,18 @@ def calcularSaldoDisponivel():
 
 def mostrarResumo():
     """
-    Reúne os principais indicadores financeiros do usuário.
-
-    Inclui receitas, despesas, reserva, saldo e informações
-    do limite do cartão de crédito.
-
-    Retorna um dicionário com os valores do resumo.
+    Reúne os principais indicadores financeiros.
     """
-
+    hoje = datetime.today()
+    configuracoes = lerConfiguracoes()
+    
     return {
-
-        "receitaTotal":
-            somarReceitas(),
-
-        "gastosFixos":
-            somarCompromissosMensais(),
-
-        "valorGuardar":
-            calcularValorGuardar(),
-
-        "gastosMovimentacoes":
-            somarDespesas(),
-
-        "saldoDisponivel":
-            calcularSaldoDisponivel(),
-
-        "limiteComprometido":
-            somarDespesasCredito(),
-
-        "limiteDisponivel":
-            calcularLimiteDisponivel(),
-
-        "proximaFatura":
-            calcularProximaFatura()
+        "receitaTotal": somarReceitasPorMes(hoje.month, hoje.year),
+        "gastosFixos": somarCompromissosMensais(),
+        "valorGuardar": calcularValorGuardar(),
+        "saldoDisponivel": calcularSaldoDisponivel(),
+        "faturaProximoMes": calcularProximaFatura(),
+        "capacidadeComprometimento": calcularCapacidadeComprometimento(),
+        "limiteTotal": configuracoes["limiteCartao"],
+        "limiteDisponivel": calcularLimiteDisponivel()
     }
