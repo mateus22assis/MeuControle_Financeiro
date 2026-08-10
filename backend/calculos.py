@@ -50,7 +50,9 @@ def somarReceitas():
 
     for mov in movimentacoes:
 
-        if mov["natureza"] == "receita":
+        natureza = str(mov["natureza"]).strip().lower()
+
+        if natureza == "receita":
 
             valor = mov["valor"]
 
@@ -76,13 +78,14 @@ def somarReceitasParaReserva():
 
     for mov in movimentacoes:
 
-        if (
-            mov["natureza"] == "receita"
-            and mov["categoria"] in [
-                "salario",
-                "renda extra"
-            ]
-        ):
+      natureza = str(mov["natureza"]).strip().lower()
+      categoria = str(mov["categoria"]).strip().lower()
+
+      if(
+          natureza == "receita" and categoria in[
+              "salario", "renda extra"
+          ]
+      ):
 
             valor = mov["valor"]
 
@@ -94,28 +97,50 @@ def somarReceitasParaReserva():
 
 def somarDespesas():
     """
-    Soma todas as movimentações classificadas como despesa.
+    Soma as despesas que pertencem ao mês atual.
 
-    Movimentações sem valor não entram no cálculo.
+    Considera somente movimentações classificadas como despesa
+    cuja data pertence ao mês e ano atuais.
 
-    Retorna o total de despesas registradas.
+    Movimentações sem valor ou sem data não entram no cálculo.
+
+    Retorna o total das despesas do mês atual.
     """
 
     movimentacoes = lerMovimentacoes()
+
+    hoje = datetime.today()
 
     total = 0
 
     for mov in movimentacoes:
 
-        if mov["natureza"] == "despesa":
+        natureza = str(mov["natureza"]).strip().lower()
 
-            valor = mov["valor"]
+        if (
+            natureza == "despesa"
+            and mov["data"] is not None
+        ):
 
-            if valor is not None:
-                total += valor
+            dataMovimentacao = mov["data"]
+
+            if not isinstance(dataMovimentacao, datetime):
+                dataMovimentacao = datetime.strptime(
+                    str(dataMovimentacao),
+                    "%d/%m/%Y"
+                )
+
+            if (
+                dataMovimentacao.month == hoje.month
+                and dataMovimentacao.year == hoje.year
+            ):
+
+                valor = mov["valor"]
+
+                if valor is not None:
+                    total += float(valor)
 
     return total
-
 
 # ==========================
 # CARTÃO DE CRÉDITO
@@ -137,9 +162,12 @@ def somarDespesasCredito():
 
     for mov in movimentacoes:
 
+        natureza = str(mov["natureza"]).strip().lower()
+        meio = str(mov["meio"]).strip().lower()
+
         if (
-            mov["natureza"] == "despesa"
-            and mov["meio"] == "credito"
+            natureza == "despesa"
+            and meio == "credito"
         ):
 
             valor = mov["valor"]
@@ -185,10 +213,12 @@ def calcularProximaFatura():
     total = 0
 
     for mov in movimentacoes:
+        natureza = str(mov["natureza"]).strip().lower()
+        meio = str(mov["meio"]).strip().lower()
 
         if (
-            mov["natureza"] == "despesa"
-            and mov["meio"] == "credito"
+            natureza == "despesa"
+            and meio == "credito"
             and mov["data"] is not None
         ):
 
@@ -262,8 +292,11 @@ def gerarResumoFaturas():
 
     for movimentacao in movimentacoes:
 
+        natureza = str(movimentacao["natureza"]).strip().lower()
+        meio = str(movimentacao["meio"]).strip().lower()
+
         if (
-            movimentacao["meio"] != "credito"
+            natureza != "despesa"
             or movimentacao["data"] is None
             or movimentacao["valor"] is None
         ):
