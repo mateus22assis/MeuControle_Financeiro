@@ -525,6 +525,55 @@ def excluirMovimentacao(linha):
 
     return len(linhasParaExcluir)
 
+
+
+def anteciparParcelas(linhas, dataAntecipacao=None):
+   """ Altera a data das parcelas selecionadas para a data da antecipação. Recebe uma lista com os números das linhas das parcelas que serão antecipadas. Quando a data não é informada, utiliza a data atual. Retorna a quantidade de parcelas alteradas.
+   """
+
+   workbook = abrirPlanilha()
+
+   aba_movimentacoes = workbook["Movimentacoes"]
+
+   if dataAntecipacao is None:
+       dataAntecipacao = datetime.now().strftime("%d/%m/%Y")
+
+   dataAntecipacao = converterData(dataAntecipacao)
+
+   if dataAntecipacao is None:
+       return 0
+
+   parcelasAlteradas = 0
+
+   for linha in linhas:
+
+       if linha < 2 or linha > aba_movimentacoes.max_row:
+           continue
+
+       movimentacao = aba_movimentacoes.cell(row=linha, column=1).value
+
+       if movimentacao is None:
+           continue
+
+       descricao = aba_movimentacoes.cell(row=linha, column=5).value
+
+       parcelas = re.fullmatch(
+           r"(.+) \(([1-9]\d*)/([1-9]\d*)\)", str(descricao) )
+
+       if parcelas is None:
+           continue
+
+       aba_movimentacoes.cell(row=linha, column=1).value = dataAntecipacao
+
+       parcelasAlteradas += 1
+
+   workbook.save(CAMINHO_PLANILHA)
+
+   atualizarPlanilha()
+
+   return parcelasAlteradas
+   
+          
 # ==========================
 # REGRAS DO CARTÃO
 # ==========================

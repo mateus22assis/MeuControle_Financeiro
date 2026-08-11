@@ -70,7 +70,7 @@ class App(ctk.CTk):
 
 
         resumo = mostrarResumo()
-        self.frame_resumo.atualizar_valores(resumo['saldoDisponivel'], resumo['valorGuardar'], resumo['proximaFatura'])
+        self.frame_resumo.atualizar_valores(resumo['saldoDisponivel'], resumo['valorGuardar'], resumo['faturaProximoMes'])
 
 #frame conteudo
         self.frame_conteudo = ctk.CTkFrame(self.frame_principal, fg_color="gray75")

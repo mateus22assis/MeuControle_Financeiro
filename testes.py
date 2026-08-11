@@ -2,7 +2,7 @@
 # TESTES
 # ==========================
 
-from excel_manager import abrirPlanilha
+from backend.excel_manager import abrirPlanilha
 
 workbook = abrirPlanilha()
 
