@@ -67,8 +67,19 @@ def ordenarMovimentacoesPorData():
     )
 
     movimentacoes.sort(
-        key=lambda linha: converterData(linha[0])
+        key=lambda linha: (
+            linha[0] is None or str(linha[0]).strip() == "",
+            converterData(linha[0]) if linha[0] is not None else datetime.max
+        )
     )
+
+    if aba.max_row > 1:
+        aba.delete_rows(2, aba.max_row - 1)
+
+    for movimentacao in movimentacoes:
+        aba.append(movimentacao)
+
+    workbook.save(CAMINHO_PLANILHA)
     # ... (Refatoração para usar as novas funções centralizadas)
 
 def converterData(data):
@@ -568,6 +579,8 @@ def anteciparParcelas(linhas, dataAntecipacao=None):
        parcelasAlteradas += 1
 
    workbook.save(CAMINHO_PLANILHA)
+
+   ordenarMovimentacoesPorData()
 
    atualizarPlanilha()
 
