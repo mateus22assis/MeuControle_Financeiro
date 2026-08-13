@@ -486,7 +486,66 @@ def adicionarCompromissoMensal(
     aba_compromissos[f"B{proximaLinha}"] = valor
 
     workbook.save(CAMINHO_PLANILHA)
+def alterarCompromissoMensal(linha, descricao, valor):
+    """
+    Altera um compromisso mensal existente.
 
+    Recebe o número da linha na planilha, a nova descrição
+    e o novo valor.
+
+    Retorna True quando a alteração é realizada e False
+    quando a linha é inválida ou está vazia.
+    """
+
+    workbook = abrirPlanilha()
+
+    aba_compromissos = workbook["CompromissosMensais"]
+
+    if linha < 2 or linha > aba_compromissos.max_row:
+        return False
+
+    if aba_compromissos.cell(row=linha, column=1).value is None:
+        return False
+
+    aba_compromissos.cell(
+        row=linha,
+        column=1
+    ).value = descricao
+
+    aba_compromissos.cell(
+        row=linha,
+        column=2
+    ).value = valor
+
+    workbook.save(CAMINHO_PLANILHA)
+
+    return True
+
+
+def excluirCompromissoMensal(linha):
+    """
+    Exclui um compromisso mensal pelo número de sua linha
+    na planilha.
+
+    Retorna True quando a exclusão é realizada e False
+    quando a linha é inválida ou está vazia.
+    """
+
+    workbook = abrirPlanilha()
+
+    aba_compromissos = workbook["CompromissosMensais"]
+
+    if linha < 2 or linha > aba_compromissos.max_row:
+        return False
+
+    if aba_compromissos.cell(row=linha, column=1).value is None:
+        return False
+
+    aba_compromissos.delete_rows(linha)
+
+    workbook.save(CAMINHO_PLANILHA)
+
+    return True
 
 def excluirMovimentacao(linha):
     """
