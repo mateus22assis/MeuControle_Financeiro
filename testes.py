@@ -1,7 +1,7 @@
 # ==========================
 # TESTES
 # ==========================
-
+'''
 from backend.excel_manager import abrirPlanilha
 
 workbook = abrirPlanilha()
@@ -12,7 +12,7 @@ for aba in workbook.sheetnames:
     print("-", aba)
 
 
-from excel_manager import lerConfiguracoes
+from backend.excel_manager import lerConfiguracoes
 
 config = lerConfiguracoes()
 
@@ -44,4 +44,21 @@ atualizarPlanilha()
 
 print(
     "Faturas foram atualizadas na planilha."
+)
+'''
+
+from backend.excel_manager import alterarStatusCategoria, lerCategorias
+from backend.excel_manager import adicionarCategoria
+
+adicionarCategoria(
+    "Teste",
+    "Despesa"
+)
+
+print(lerCategorias())
+
+alterarStatusCategoria(
+    "Investimentos",
+    "Despesa",
+    True
 )

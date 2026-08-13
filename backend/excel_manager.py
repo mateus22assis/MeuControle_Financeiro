@@ -278,6 +278,38 @@ def lerMovimentacoes():
 
     return movimentacoes
 
+def lerCategorias():
+  '''
+   Lê as categorias cadastradas na planilha.
+
+    Considera o nome, a natureza e o status de cada categoria.
+
+    Retorna uma lista de categorias.
+    '''  
+  workbook = abrirPlanilha()
+
+  aba_categorias = workbook["Categorias"]
+
+  categorias = []
+
+  for linha in aba_categorias.iter_rows(
+          min_row=2,    
+        values_only=True
+    ):
+
+      nome = linha[0]
+      natureza = linha[1]
+      ativa = linha[2]
+
+      if nome is not None:
+            categorias.append({
+                "nome": nome,
+                "natureza": natureza,
+                "ativa": str(ativa).lower() == "sim"
+            })
+
+  return categorias
+
 
 # ==========================
 # ESCRITA DA PLANILHA
@@ -585,8 +617,44 @@ def anteciparParcelas(linhas, dataAntecipacao=None):
    atualizarPlanilha()
 
    return parcelasAlteradas
-   
-          
+def adicionarCategoria(nome, natureza):
+
+    workbook = abrirPlanilha()
+
+    aba_categorias = workbook["Categorias"]
+
+    proximaLinha = encontrarPrimeiraLinhaVazia(
+        aba_categorias
+    )
+
+    aba_categorias[f"A{proximaLinha}"] = nome
+    aba_categorias[f"B{proximaLinha}"] = natureza
+    aba_categorias[f"C{proximaLinha}"] = "Sim"
+
+
+    workbook.save(CAMINHO_PLANILHA)
+def alterarStatusCategoria(nome, natureza, ativa):
+
+    workbook = abrirPlanilha()
+
+    aba_categorias = workbook["Categorias"]
+
+    for linha in range(2, aba_categorias.max_row + 1):
+
+        nomeCategoria = aba_categorias[f"A{linha}"].value
+        naturezaCategoria = aba_categorias[f"B{linha}"].value
+
+        if (
+            nomeCategoria == nome
+            and naturezaCategoria == natureza
+        ):
+            aba_categorias[f"C{linha}"] = (
+                "Sim" if ativa else "Não"
+            )
+
+            break
+
+    workbook.save(CAMINHO_PLANILHA)  
 # ==========================
 # REGRAS DO CARTÃO
 # ==========================

@@ -69,8 +69,7 @@ class App(ctk.CTk):
         self.frame_resumo.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
 
-        resumo = mostrarResumo()
-        self.frame_resumo.atualizar_valores(resumo['saldoDisponivel'], resumo['valorGuardar'], resumo['faturaProximoMes'])
+        self.atualizar_resumo()
 
 #frame conteudo
         self.frame_conteudo = ctk.CTkFrame(self.frame_principal, fg_color="gray75")
@@ -87,7 +86,10 @@ class App(ctk.CTk):
     def mostrar_movimentacoes(self):
         self.limpar_frame_conteudo()
 
-        movimentacoes = Movimentacoes(self.frame_conteudo)
+        movimentacoes = Movimentacoes(
+            self.frame_conteudo,
+            ao_atualizar=self.atualizar_resumo
+        )
         movimentacoes.pack(expand=True, fill="both")
 
     def mostrar_compromissos(self):
@@ -111,6 +113,14 @@ class App(ctk.CTk):
     def limpar_frame_conteudo(self):
         for widget in self.frame_conteudo.winfo_children():
             widget.destroy()
+
+    def atualizar_resumo(self):
+        resumo = mostrarResumo()
+        self.frame_resumo.atualizar_valores(
+            resumo['saldoDisponivel'],
+            resumo['valorGuardar'],
+            resumo['faturaProximoMes']
+        )
 
   
 
