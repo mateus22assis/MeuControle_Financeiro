@@ -350,6 +350,37 @@ def salvarPercentualReserva(valor):
 
     workbook.save(CAMINHO_PLANILHA)
 
+def salvarLimiteCartao(valor):
+
+    workbook = abrirPlanilha()
+
+    aba_configuracoes = workbook["Configuracoes"]
+
+    aba_configuracoes["B4"] = valor
+
+    workbook.save(CAMINHO_PLANILHA)
+
+
+def salvarDiaFechamento(valor):
+
+    workbook = abrirPlanilha()
+
+    aba_configuracoes = workbook["Configuracoes"]
+
+    aba_configuracoes["B5"] = valor
+
+    workbook.save(CAMINHO_PLANILHA)
+
+
+def salvarDiaVencimento(valor):
+
+    workbook = abrirPlanilha()
+
+    aba_configuracoes = workbook["Configuracoes"]
+
+    aba_configuracoes["B6"] = valor
+
+    workbook.save(CAMINHO_PLANILHA)
 
 def limparFaturas():
     """
