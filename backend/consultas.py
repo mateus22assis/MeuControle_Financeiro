@@ -128,6 +128,23 @@ def filtrarMeio(meio):
 # CONSULTAS POR DATA
 # ==========================
 
+def _filtrarMovimentacoesPorMeses(meses):
+    """Filtra movimentações pelos pares (mês, ano) informados."""
+    resultado = []
+
+    for movimentacao in lerMovimentacoes():
+        data = movimentacao["data"]
+
+        if data is None:
+            continue
+
+        data = converterData(data)
+
+        if (data.month, data.year) in meses:
+            resultado.append(movimentacao)
+
+    return resultado
+
 def movimentacoesMes(mes, ano):
     """
     Filtra as movimentações de um mês e ano específicos.
@@ -137,27 +154,45 @@ def movimentacoesMes(mes, ano):
     Retorna a lista de movimentações do período.
     """
 
-    movimentacoes = lerMovimentacoes()
+    return _filtrarMovimentacoesPorMeses({(mes, ano)})
 
-    resultado = []
 
-    for mov in movimentacoes:
+def movimentacoesPeriodoPrincipal(mes, ano):
+    """
+    Lista movimentações do mês anterior, atual e seguinte.
 
-        data = mov["data"]
+    Trata a virada de ano sem alterar os registros futuros da planilha.
+    """
+    meses = set()
 
-        if data is None:
-            continue
+    for deslocamento in (-1, 0, 1):
+        mes_periodo = mes + deslocamento
+        ano_periodo = ano
 
-        data = converterData(data)
+        if mes_periodo == 0:
+            mes_periodo = 12
+            ano_periodo -= 1
+        elif mes_periodo == 13:
+            mes_periodo = 1
+            ano_periodo += 1
 
-        if (
-            data.month == mes
-            and data.year == ano
-        ):
+        meses.add((mes_periodo, ano_periodo))
 
-            resultado.append(mov)
+    return _filtrarMovimentacoesPorMeses(meses)
 
-    return resultado
+
+def mesesComMovimentacoes():
+    """Retorna os meses com registros, do mais recente para o mais antigo."""
+    meses = set()
+
+    for movimentacao in lerMovimentacoes():
+        data = movimentacao["data"]
+
+        if data is not None:
+            data = converterData(data)
+            meses.add((data.month, data.year))
+
+    return sorted(meses, key=lambda periodo: (periodo[1], periodo[0]), reverse=True)
 
 
 # ==========================

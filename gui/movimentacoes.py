@@ -13,13 +13,16 @@ from backend.excel_manager import (
 )
 from backend.consultas import (
     listarCategoriasAtivasPorNatureza,
+    mesesComMovimentacoes,
     movimentacoesMes,
-    ultimasMovimentacoes,
+    movimentacoesPeriodoPrincipal,
 )
 from backend.utils import formatarReal
 
 
 class Movimentacoes(ctk.CTkFrame):
+
+    PERIODO_PRINCIPAL = "Período principal"
 
     def __init__(self, parent, ao_atualizar=None):
         super().__init__(parent)
@@ -55,6 +58,21 @@ class Movimentacoes(ctk.CTkFrame):
             command=self.antecipar_selecionadas,
         ).pack(side="left", padx=8)
 
+        ctk.CTkLabel(
+            self.frame_controles,
+            text="Visualização:",
+        ).pack(side="left", padx=(20, 8))
+
+        self.visualizacao = ctk.StringVar(value=self.PERIODO_PRINCIPAL)
+        self.periodos_disponiveis = {self.PERIODO_PRINCIPAL: None}
+        self.menu_visualizacao = ctk.CTkOptionMenu(
+            self.frame_controles,
+            variable=self.visualizacao,
+            values=[self.PERIODO_PRINCIPAL],
+            command=self.atualizar_listagem,
+        )
+        self.menu_visualizacao.pack(side="left")
+
         self.frame_lista = ctk.CTkScrollableFrame(self)
         self.frame_lista.pack(fill="both", expand=True, padx=20, pady=10)
         self.frame_lista.grid_columnconfigure(5, weight=1)
@@ -62,37 +80,78 @@ class Movimentacoes(ctk.CTkFrame):
         self.mostrar_movimentacoes()
 
     def mostrar_movimentacoes(self):
-        for widget in self.frame_lista.winfo_children():
+        self.atualizar_periodos_disponiveis()
+        self.atualizar_listagem()
+
+    def atualizar_periodos_disponiveis(self):
+        nomes_meses = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+        ]
+        periodo_atual = self.visualizacao.get()
+        self.periodos_disponiveis = {self.PERIODO_PRINCIPAL: None}
+
+        for mes, ano in mesesComMovimentacoes():
+            nome = f"{nomes_meses[mes - 1]}/{ano}"
+            self.periodos_disponiveis[nome] = (mes, ano)
+
+        self.menu_visualizacao.configure(values=list(self.periodos_disponiveis))
+
+        if periodo_atual not in self.periodos_disponiveis:
+            self.visualizacao.set(self.PERIODO_PRINCIPAL)
+
+    def atualizar_listagem(self, escolha=None):
+        self.selecoes = {}
+        escolha = escolha or self.visualizacao.get()
+
+        if escolha == self.PERIODO_PRINCIPAL:
+            hoje = datetime.now()
+            movimentacoes = movimentacoesPeriodoPrincipal(hoje.month, hoje.year)
+        else:
+            mes, ano = self.periodos_disponiveis[escolha]
+            movimentacoes = movimentacoesMes(mes, ano)
+
+        self.preencher_lista(
+            self.frame_lista,
+            movimentacoes,
+            permitir_selecao=True,
+        )
+
+    def preencher_lista(self, frame, movimentacoes, permitir_selecao=False):
+        for widget in frame.winfo_children():
             widget.destroy()
 
-        self.selecoes = {}
-        cabecalho = ["", "Data", "Natureza", "Meio", "Categoria", "Descricao", "Valor"]
+        cabecalho = ["Data", "Natureza", "Meio", "Categoria", "Descricao", "Valor"]
+        coluna_inicial = 0
+
+        if permitir_selecao:
+            cabecalho.insert(0, "")
+            coluna_inicial = 1
 
         for coluna, texto in enumerate(cabecalho):
             ctk.CTkLabel(
-                self.frame_lista,
+                frame,
                 text=texto,
                 font=("Arial", 14, "bold"),
             ).grid(row=0, column=coluna, padx=10, pady=10, sticky="w")
 
-        hoje = datetime.now()
-        movimentacoes = movimentacoesMes(hoje.month, hoje.year)
-        if not movimentacoes:
-            movimentacoes = ultimasMovimentacoes()
-        else:
-            movimentacoes = reversed(movimentacoes)
+        movimentacoes_ordenadas = sorted(
+            movimentacoes,
+            key=lambda movimentacao: converterData(movimentacao["data"]),
+        )
 
-        for indice, movimentacao in enumerate(movimentacoes, start=1):
-            linha_planilha = movimentacao["linha"]
-            selecionada = ctk.BooleanVar(value=False)
-            self.selecoes[linha_planilha] = selecionada
+        for indice, movimentacao in enumerate(movimentacoes_ordenadas, start=1):
+            if permitir_selecao:
+                linha_planilha = movimentacao["linha"]
+                selecionada = ctk.BooleanVar(value=False)
+                self.selecoes[linha_planilha] = selecionada
 
-            ctk.CTkCheckBox(
-                self.frame_lista,
-                text="",
-                variable=selecionada,
-                width=24,
-            ).grid(row=indice, column=0, padx=10, pady=8)
+                ctk.CTkCheckBox(
+                    frame,
+                    text="",
+                    variable=selecionada,
+                    width=24,
+                ).grid(row=indice, column=0, padx=10, pady=8)
 
             dados = [
                 self.formatar_data(movimentacao["data"]),
@@ -103,9 +162,9 @@ class Movimentacoes(ctk.CTkFrame):
                 formatarReal(movimentacao["valor"] or 0),
             ]
 
-            for coluna, valor in enumerate(dados, start=1):
+            for coluna, valor in enumerate(dados, start=coluna_inicial):
                 ctk.CTkLabel(
-                    self.frame_lista,
+                    frame,
                     text=str(valor or ""),
                     anchor="w",
                 ).grid(row=indice, column=coluna, padx=10, pady=8, sticky="w")
