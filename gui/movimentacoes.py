@@ -29,6 +29,7 @@ class Movimentacoes(ctk.CTkFrame):
 
         self.ao_atualizar = ao_atualizar
         self.selecoes = {}
+        self.frame_adicionar = None
 
         self.titulo = ctk.CTkLabel(
             self,
@@ -179,14 +180,28 @@ class Movimentacoes(ctk.CTkFrame):
         return [linha for linha, selecionada in self.selecoes.items() if selecionada.get()]
 
     def abrir_formulario_adicao(self):
-        janela = ctk.CTkToplevel(self)
-        janela.title("Adicionar movimentacao")
-        janela.geometry("450x550")
-        janela.transient(self.winfo_toplevel())
-        janela.grab_set()
+        if self.frame_adicionar is not None:
+            self.frame_adicionar.lift()
+            return
 
-        campos = ctk.CTkFrame(janela, fg_color="transparent")
-        campos.pack(fill="both", expand=True, padx=24, pady=20)
+        self.frame_adicionar = ctk.CTkFrame(
+            self,
+            width=450,
+            height=550,
+            corner_radius=10,
+        )
+        self.frame_adicionar.place(relx=0.5, rely=0.55, anchor="center")
+        self.frame_adicionar.pack_propagate(False)
+        self.frame_adicionar.lift()
+
+        ctk.CTkLabel(
+            self.frame_adicionar,
+            text="Adicionar movimentacao",
+            font=("Arial", 18, "bold"),
+        ).pack(pady=(20, 4))
+
+        campos = ctk.CTkFrame(self.frame_adicionar, fg_color="transparent")
+        campos.pack(fill="both", expand=True, padx=24, pady=(8, 10))
 
         natureza = ctk.StringVar(value="despesa")
         meio = ctk.StringVar(value="pix")
@@ -253,19 +268,19 @@ class Movimentacoes(ctk.CTkFrame):
                     raise ValueError
                 converterData(data.get().strip())
             except ValueError:
-                messagebox.showerror("Dados invalidos", "Informe valor positivo e data no formato dd/mm/aaaa.", parent=janela)
+                messagebox.showerror("Dados invalidos", "Informe valor positivo e data no formato dd/mm/aaaa.", parent=self.frame_adicionar)
                 return
 
             if categoria.get() == "Nenhuma categoria ativa":
                 messagebox.showerror(
                     "Dados invalidos",
                     "Cadastre uma categoria ativa para a natureza selecionada.",
-                    parent=janela,
+                    parent=self.frame_adicionar,
                 )
                 return
 
             if not descricao.get().strip():
-                messagebox.showerror("Dados invalidos", "Descricao e obrigatoria.", parent=janela)
+                messagebox.showerror("Dados invalidos", "Descricao e obrigatoria.", parent=self.frame_adicionar)
                 return
 
             if meio.get() == "credito":
@@ -277,7 +292,7 @@ class Movimentacoes(ctk.CTkFrame):
                     messagebox.showerror(
                         "Dados invalidos",
                         "Informe uma quantidade de parcelas maior que zero.",
-                        parent=janela,
+                        parent=self.frame_adicionar,
                     )
                     return
 
@@ -305,10 +320,28 @@ class Movimentacoes(ctk.CTkFrame):
                     data.get().strip(),
                 )
             atualizarPlanilha()
-            janela.destroy()
+            self.fechar_formulario_adicao()
             self.atualizar_tela()
 
-        ctk.CTkButton(campos, text="Salvar", command=salvar).pack(pady=14)
+        botoes = ctk.CTkFrame(self.frame_adicionar, fg_color="transparent")
+        botoes.pack(fill="x", padx=24, pady=(0, 20))
+
+        ctk.CTkButton(
+            botoes,
+            text="Cancelar",
+            command=self.fechar_formulario_adicao,
+        ).pack(side="left", expand=True, padx=(0, 6))
+
+        ctk.CTkButton(
+            botoes,
+            text="Adicionar",
+            command=salvar,
+        ).pack(side="right", expand=True, padx=(6, 0))
+
+    def fechar_formulario_adicao(self):
+        if self.frame_adicionar is not None:
+            self.frame_adicionar.destroy()
+            self.frame_adicionar = None
 
     def excluir_selecionada(self):
         linhas = self.linhas_selecionadas()
