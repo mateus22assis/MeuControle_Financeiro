@@ -24,11 +24,11 @@ class Dashboard(ctk.CTkFrame):
             pady=(20, 10)
         )
 
-        self.frame_comprometimento = ctk.CTkFrame(
+        self.frame_fluxo_mensal = ctk.CTkFrame(
             self,
             fg_color="transparent"
         )
-        self.frame_comprometimento.grid(
+        self.frame_fluxo_mensal.grid(
             row=1,
             column=0,
             columnspan=2,
@@ -37,16 +37,26 @@ class Dashboard(ctk.CTkFrame):
             sticky="ew"
         )
 
-        self.frame_comprometimento.grid_columnconfigure(
-            0,
-            weight=1
-        )
+        for coluna in range(3):
+            self.frame_fluxo_mensal.grid_columnconfigure(coluna, weight=1)
 
-        self.card_comprometimento = self.criar_card(
-            self.frame_comprometimento,
-            "Pode comprometer na próxima fatura",
+        self.card_receita = self.criar_card(
+            self.frame_fluxo_mensal,
+            "Receita do mês",
             0,
             0
+        )
+        self.card_entradas = self.criar_card(
+            self.frame_fluxo_mensal,
+            "Entradas do mês",
+            0,
+            1
+        )
+        self.card_saidas = self.criar_card(
+            self.frame_fluxo_mensal,
+            "Saídas reais do mês",
+            0,
+            2
         )
 
         self.titulo_cartao = ctk.CTkLabel(
@@ -104,16 +114,6 @@ class Dashboard(ctk.CTkFrame):
             sticky="ew"
         )
 
-        self.receita = ctk.CTkLabel(
-            self.frame_informacoes,
-            text="Receita do mês: R$ 0,00",
-            font=("Arial", 14)
-        )
-        self.receita.pack(
-            side="left",
-            padx=10
-        )
-
         self.compromissos = ctk.CTkLabel(
             self.frame_informacoes,
             text="Compromissos: R$ 0,00",
@@ -164,11 +164,14 @@ class Dashboard(ctk.CTkFrame):
 
         resumo = mostrarResumo()
 
-        self.card_comprometimento.configure(
+        self.card_receita.configure(
             text=formatarReal(
-                resumo["capacidadeComprometimento"]
+                resumo["receitaParaReserva"]
             )
         )
+
+        self.card_entradas.configure(text=formatarReal(resumo["entradasMes"]))
+        self.card_saidas.configure(text=formatarReal(resumo["saidasReaisMes"]))
 
         self.card_limite_total.configure(
             text=formatarReal(
@@ -179,13 +182,6 @@ class Dashboard(ctk.CTkFrame):
         self.card_limite_disponivel.configure(
             text=formatarReal(
                 resumo["limiteDisponivel"]
-            )
-        )
-
-        self.receita.configure(
-            text=(
-                f"Receita do mês: "
-                f"{formatarReal(resumo['receitaTotal'])}"
             )
         )
 

@@ -10,7 +10,11 @@ from backend.excel_manager import (
     atualizarPlanilha,
     converterData,
     excluirMovimentacao,
-    lerMovimentacoes,
+)
+from backend.consultas import (
+    listarCategoriasAtivasPorNatureza,
+    movimentacoesMes,
+    ultimasMovimentacoes,
 )
 from backend.utils import formatarReal
 
@@ -71,7 +75,14 @@ class Movimentacoes(ctk.CTkFrame):
                 font=("Arial", 14, "bold"),
             ).grid(row=0, column=coluna, padx=10, pady=10, sticky="w")
 
-        for indice, movimentacao in enumerate(lerMovimentacoes(), start=1):
+        hoje = datetime.now()
+        movimentacoes = movimentacoesMes(hoje.month, hoje.year)
+        if not movimentacoes:
+            movimentacoes = ultimasMovimentacoes()
+        else:
+            movimentacoes = reversed(movimentacoes)
+
+        for indice, movimentacao in enumerate(movimentacoes, start=1):
             linha_planilha = movimentacao["linha"]
             selecionada = ctk.BooleanVar(value=False)
             self.selecoes[linha_planilha] = selecionada
@@ -120,7 +131,7 @@ class Movimentacoes(ctk.CTkFrame):
 
         natureza = ctk.StringVar(value="despesa")
         meio = ctk.StringVar(value="pix")
-        categoria = ctk.CTkEntry(campos, placeholder_text="Categoria")
+        categoria = ctk.StringVar()
         descricao = ctk.CTkEntry(campos, placeholder_text="Descricao")
         valor = ctk.CTkEntry(campos, placeholder_text="Valor")
         data = ctk.CTkEntry(campos)
@@ -128,6 +139,19 @@ class Movimentacoes(ctk.CTkFrame):
         campo_parcelas = ctk.CTkFrame(campos, fg_color="transparent")
         quantidade_parcelas = ctk.CTkEntry(campo_parcelas, placeholder_text="Quantidade de parcelas")
         quantidade_parcelas.pack(fill="x", pady=(0, 6))
+
+        menu_categoria = ctk.CTkOptionMenu(campos, variable=categoria)
+
+        def atualizar_categorias(natureza_escolhida=None):
+            categorias = listarCategoriasAtivasPorNatureza(natureza.get())
+            nomes = [item["nome"] for item in categorias]
+
+            if nomes:
+                menu_categoria.configure(values=nomes)
+                categoria.set(nomes[0])
+            else:
+                menu_categoria.configure(values=["Nenhuma categoria ativa"])
+                categoria.set("Nenhuma categoria ativa")
 
         def atualizar_campo_parcelas(escolha=None):
             if meio.get() == "credito":
@@ -137,14 +161,19 @@ class Movimentacoes(ctk.CTkFrame):
 
         label_categoria = None
         for texto, widget in [
-            ("Natureza", ctk.CTkOptionMenu(campos, variable=natureza, values=["receita", "despesa"])),
+            ("Natureza", ctk.CTkOptionMenu(
+                campos,
+                variable=natureza,
+                values=["receita", "despesa"],
+                command=atualizar_categorias,
+            )),
             ("Meio/origem", ctk.CTkOptionMenu(
                 campos,
                 variable=meio,
                 values=["pix", "debito", "dinheiro", "credito"],
                 command=atualizar_campo_parcelas,
             )),
-            ("Categoria", categoria),
+            ("Categoria", menu_categoria),
             ("Descricao", descricao),
             ("Valor", valor),
             ("Data", data),
@@ -156,6 +185,7 @@ class Movimentacoes(ctk.CTkFrame):
             widget.pack(fill="x", pady=(0, 6))
 
         atualizar_campo_parcelas()
+        atualizar_categorias()
 
         def salvar():
             try:
@@ -167,8 +197,16 @@ class Movimentacoes(ctk.CTkFrame):
                 messagebox.showerror("Dados invalidos", "Informe valor positivo e data no formato dd/mm/aaaa.", parent=janela)
                 return
 
-            if not categoria.get().strip() or not descricao.get().strip():
-                messagebox.showerror("Dados invalidos", "Categoria e descricao sao obrigatorias.", parent=janela)
+            if categoria.get() == "Nenhuma categoria ativa":
+                messagebox.showerror(
+                    "Dados invalidos",
+                    "Cadastre uma categoria ativa para a natureza selecionada.",
+                    parent=janela,
+                )
+                return
+
+            if not descricao.get().strip():
+                messagebox.showerror("Dados invalidos", "Descricao e obrigatoria.", parent=janela)
                 return
 
             if meio.get() == "credito":
@@ -191,7 +229,7 @@ class Movimentacoes(ctk.CTkFrame):
                     adicionarMovimentacao(
                         natureza.get(),
                         meio.get(),
-                        categoria.get().strip(),
+                        categoria.get(),
                         f"{descricao.get().strip()} ({numero_parcela}/{total_parcelas})",
                         valor_parcela,
                         f"{numero_parcela}/{total_parcelas}",
@@ -201,7 +239,7 @@ class Movimentacoes(ctk.CTkFrame):
                 adicionarMovimentacao(
                     natureza.get(),
                     meio.get(),
-                    categoria.get().strip(),
+                    categoria.get(),
                     descricao.get().strip(),
                     valor_informado,
                     "",

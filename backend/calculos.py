@@ -466,9 +466,18 @@ def mostrarResumo():
     """
     hoje = datetime.today()
     configuracoes = lerConfiguracoes()
+    receitas_mes = somarReceitasPorMes(hoje.month, hoje.year)
+    receita_para_reserva = somarReceitasParaReservaNoMes(
+        hoje.month,
+        hoje.year
+    )
+    saidas_reais = somarDespesasAVista(hoje.month, hoje.year)
     
     return {
-        "receitaTotal": somarReceitasPorMes(hoje.month, hoje.year),
+        "receitaTotal": receitas_mes,
+        "receitaParaReserva": receita_para_reserva,
+        "entradasMes": receitas_mes,
+        "saidasReaisMes": saidas_reais,
         "gastosFixos": somarCompromissosMensais(),
         "valorGuardar": calcularValorGuardar(),
         "saldoDisponivel": calcularSaldoDisponivel(),

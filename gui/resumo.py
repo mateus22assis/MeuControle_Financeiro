@@ -20,7 +20,11 @@ class ResumoFinanceiro(ctk.CTkFrame):
     #valor a guardar
         self.valor_guardar = self.criar_card("Meta de guardar (mês)", "R$ 0,00")
     #fatura do cartao de credito
-        self.valor_fatura = self.criar_card("Fatura do Cartão de Crédito", "R$ 0,00")
+        self.valor_fatura = self.criar_card("Fatura do próximo mês", "R$ 0,00")
+        self.valor_comprometimento = self.criar_card(
+            "Pode comprometer na próxima fatura",
+            "R$ 0,00"
+        )
    
         
     #criar card de resumo financeiro
@@ -44,7 +48,8 @@ class ResumoFinanceiro(ctk.CTkFrame):
         label_valor.pack(pady=(0, 10))
         return  label_valor
 #atualizaçao dos valores dos cards
-    def atualizar_valores(self, saldo, valor_guardar, fatura):
+    def atualizar_valores(self, saldo, valor_guardar, fatura, comprometimento):
         self.valor_saldo.configure(text=f"R$ {saldo:,.2f}")
         self.valor_guardar.configure(text=f"R$ {valor_guardar:,.2f}")
         self.valor_fatura.configure(text=f"R$ {fatura:,.2f}")
+        self.valor_comprometimento.configure(text=f"R$ {comprometimento:,.2f}")

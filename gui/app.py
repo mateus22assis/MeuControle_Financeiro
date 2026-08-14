@@ -119,7 +119,8 @@ class App(ctk.CTk):
         self.frame_resumo.atualizar_valores(
             resumo['saldoDisponivel'],
             resumo['valorGuardar'],
-            resumo['faturaProximoMes']
+            resumo['faturaProximoMes'],
+            resumo['capacidadeComprometimento']
         )
 
   

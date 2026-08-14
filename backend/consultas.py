@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from backend.excel_manager import lerMovimentacoes
+from backend.excel_manager import converterData, lerCategorias, lerMovimentacoes
 
 
 # ==========================
@@ -54,6 +52,23 @@ def listarDespesas():
 # ==========================
 # FILTROS
 # ==========================
+
+def listarCategoriasAtivasPorNatureza(natureza):
+    """
+    Lista as categorias ativas da natureza informada.
+
+    A comparação ignora maiúsculas e minúsculas para manter
+    compatibilidade com os valores já gravados na planilha.
+    """
+    natureza_normalizada = str(natureza).strip().lower()
+
+    return [
+        categoria
+        for categoria in lerCategorias()
+        if categoria["ativa"]
+        and str(categoria["natureza"]).strip().lower()
+        == natureza_normalizada
+    ]
 
 def filtrarCategoria(categoria):
     """
@@ -133,10 +148,7 @@ def movimentacoesMes(mes, ano):
         if data is None:
             continue
 
-        data = datetime.strptime(
-            str(data),
-            "%d/%m/%Y"
-        )
+        data = converterData(data)
 
         if (
             data.month == mes
