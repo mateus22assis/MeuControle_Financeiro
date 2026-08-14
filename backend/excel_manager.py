@@ -7,7 +7,7 @@ import re
 # CONFIGURAÇÕES
 # ==========================
 
-CAMINHO_PLANILHA = "ControleFinanceiro_2026_Prototipo_v3.xlsx"
+CAMINHO_PLANILHA = "ControleFinanceiro_2026.xlsx"
 
 # ==========================
 # UTILITÁRIOS
