@@ -45,7 +45,7 @@ atualizarPlanilha()
 print(
     "Faturas foram atualizadas na planilha."
 )
-'''
+
 
 from backend.excel_manager import alterarStatusCategoria, lerCategorias
 from backend.excel_manager import adicionarCategoria
@@ -62,3 +62,23 @@ alterarStatusCategoria(
     "Despesa",
     True
 )
+
+
+from backend.excel_manager import (
+    alterarCompromissoMensal,
+    excluirCompromissoMensal,
+)
+
+alterarCompromissoMensal(
+    2,
+    "Teste alterado",
+    150.00
+)
+'
+from backend.excel_manager import excluirCompromissoMensal
+
+
+excluirCompromissoMensal(2)
+
+
+'''
