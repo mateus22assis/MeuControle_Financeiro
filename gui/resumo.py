@@ -1,15 +1,18 @@
 import customtkinter as ctk
 
+from gui.tema import (CARD, BORDA, TEXTO_PRINCIPAL, TEXTO_SECUNDARIO, CARD_INTERNO)
+
 
 class ResumoFinanceiro(ctk.CTkFrame):
 
     def __init__(self, parent):
-        super().__init__(parent, )
+        super().__init__(parent, fg_color=CARD)
 
         self.titulo = ctk.CTkLabel(
             self,
             text="Resumo Financeiro",
-            font=("Arial", 18, "bold")
+            font=("Arial", 18, "bold"),
+            text_color=TEXTO_PRINCIPAL
         )
 
         self.titulo.pack(pady=(15, 10))
@@ -22,7 +25,7 @@ class ResumoFinanceiro(ctk.CTkFrame):
     #fatura do cartao de credito
         self.valor_fatura = self.criar_card("Fatura do próximo mês", "R$ 0,00")
         self.valor_comprometimento = self.criar_card(
-            "Pode comprometer na próxima fatura",
+            "Margem disponível \n próxima fatura",
             "R$ 0,00"
         )
    
@@ -30,20 +33,22 @@ class ResumoFinanceiro(ctk.CTkFrame):
     #criar card de resumo financeiro
     def criar_card(self, titulo, valor):
 
-        card = ctk.CTkFrame(self, corner_radius=10)
+        card = ctk.CTkFrame(self,fg_color=CARD_INTERNO,border_color=BORDA, border_width=1, corner_radius=10)
         card.pack(pady=10, padx=10, fill="x")
 
         label_titulo = ctk.CTkLabel(
             card,
             text=titulo,
-            font=("Arial", 14)
+            font=("Arial", 14),
+            text_color=TEXTO_SECUNDARIO
         )
         label_titulo.pack(pady=(10, 5))
 
         label_valor = ctk.CTkLabel(
             card,
             text=valor,
-            font=("Arial", 22, "bold")
+            font=("Arial", 22, "bold"),
+            text_color=TEXTO_PRINCIPAL
         )
         label_valor.pack(pady=(0, 10))
         return  label_valor

@@ -6,23 +6,30 @@ from gui.compromissos import Compromissos
 from gui.categorias import Categorias
 from gui.configuracoes import Configuracoes
 from gui.resumo import ResumoFinanceiro
+from gui.tema import (FUNDO_PRINCIPAL, MENU_LATERAL, TEXTO_PRINCIPAL)
 
 #backend imports
 from backend.calculos import mostrarResumo
 
 
-ctk.set_appearance_mode("System")  # Modes: "System" (default), "Dark", "Light"
+
+
+ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
 
 class App(ctk.CTk):
     
     def __init__(self):
         super().__init__()
 
+        self.configure(fg_color=FUNDO_PRINCIPAL)
+
         self.title("meu controle financeiro")
-        self.geometry("1200x700")
+        self.geometry("1200x750")
         
         self.minsize(1000, 600)
         self.resizable(True, True)
+
+        self.overlay_configuracoes = None  # Variável para armazenar a referência da janela de configurações
 
 
 #configura o grid da janela
@@ -30,19 +37,21 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
 
 #frame principal
-        self.frame_principal = ctk.CTkFrame(self)
+        self.frame_principal = ctk.CTkFrame(self, fg_color=FUNDO_PRINCIPAL)
         self.frame_principal.grid(row=0, column=0, sticky="nsew")
 
 #configura o grid do frame principal
         self.frame_principal.grid_rowconfigure(0, weight=1)
 
-        self.frame_principal.grid_columnconfigure(0, weight=1)
-        self.frame_principal.grid_columnconfigure(1, weight=3)
+        self.frame_principal.grid_columnconfigure(0, weight=0,  minsize=260)
+        self.frame_principal.grid_columnconfigure(1, weight=1)
 
 
         # Barra lateral
-        self.barra_lateral = ctk.CTkFrame(self.frame_principal)
+        self.barra_lateral = ctk.CTkFrame(self.frame_principal, fg_color=MENU_LATERAL)
         self.barra_lateral.grid(row=0, column=0, sticky="nsew")
+
+        self.barra_lateral.grid_propagate(False)  # Impede que a barra lateral se expanda automaticamente
 
         # Configura o grid da barra lateral
         self.barra_lateral.grid_rowconfigure(0, weight=1)
@@ -59,7 +68,7 @@ class App(ctk.CTk):
             "Movimentações": self.mostrar_movimentacoes,
             "Compromissos": self.mostrar_compromissos,
             "Categorias": self.mostrar_categorias,
-            "Configurações": self.mostrar_configuracoes
+            "Configurações": self.abrir_configuracoes
         })
 
         self.menu.pack(fill="both", expand=True)
@@ -86,12 +95,14 @@ class App(ctk.CTk):
     def mostrar_movimentacoes(self):
         self.limpar_frame_conteudo()
 
+        
         movimentacoes = Movimentacoes(
             self.frame_conteudo,
-            ao_atualizar=self.atualizar_resumo
+            ao_atualizar=self.atualizar_resumo,
+            
         )
         movimentacoes.pack(expand=True, fill="both")
-
+    
     def mostrar_compromissos(self):
         self.limpar_frame_conteudo()
 
@@ -104,15 +115,52 @@ class App(ctk.CTk):
         categorias = Categorias(self.frame_conteudo)
         categorias.pack(expand=True, fill="both")
 
-    def mostrar_configuracoes(self):
-        self.limpar_frame_conteudo()
+    def abrir_configuracoes(self):
 
-        configuracoes = Configuracoes(self.frame_conteudo)
+        if self.overlay_configuracoes is not None:
+            return
+
+        self.overlay_configuracoes = ctk.CTkFrame(self.frame_conteudo, fg_color="gray85")
+
+        self.overlay_configuracoes.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        frame_configuracoes = ctk.CTkFrame(
+            self.overlay_configuracoes,
+            width=500,
+            height=600
+        )
+
+        frame_configuracoes.place(relx=0.5, rely=0.5, anchor="center")  
+
+        frame_configuracoes.pack_propagate(False)  # Impede que o frame se ajuste automaticamente ao conteúdo
+
+        configuracoes = Configuracoes(frame_configuracoes)
         configuracoes.pack(expand=True, fill="both")
 
+        botao_fechar = ctk.CTkButton(
+            self.overlay_configuracoes,
+            text="X",
+            width = 35,
+            command=self.fechar_configuracoes
+        )
+
+        botao_fechar.place(relx=1, x=-15, y=15, anchor="ne")
+
+        
+
+    def fechar_configuracoes(self):
+        if self.overlay_configuracoes is not None:
+            self.overlay_configuracoes.destroy()
+            self.overlay_configuracoes = None
+
+
     def limpar_frame_conteudo(self):
+        if self.overlay_configuracoes is not None:
+            self.fechar_configuracoes()
+
         for widget in self.frame_conteudo.winfo_children():
-            widget.destroy()
+            if widget is not self.overlay_configuracoes:
+                widget.destroy()
 
     def atualizar_resumo(self):
         resumo = mostrarResumo()

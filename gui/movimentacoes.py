@@ -1,6 +1,8 @@
 from datetime import datetime
 from tkinter import messagebox
 
+from gui.tema import (FUNDO_PRINCIPAL, CARD, CARD_INTERNO, BORDA, AZUL_PRINCIPAL, AZUL_HOVER, TEXTO_PRINCIPAL, TEXTO_SECUNDARIO, CAMPO_SELECAO)
+
 import customtkinter as ctk
 
 from backend.excel_manager import (
@@ -25,7 +27,7 @@ class Movimentacoes(ctk.CTkFrame):
     PERIODO_PRINCIPAL = "Período principal"
 
     def __init__(self, parent, ao_atualizar=None):
-        super().__init__(parent)
+        super().__init__(parent, fg_color=FUNDO_PRINCIPAL)
 
         self.ao_atualizar = ao_atualizar
         self.selecoes = {}
@@ -34,7 +36,10 @@ class Movimentacoes(ctk.CTkFrame):
         self.titulo = ctk.CTkLabel(
             self,
             text="Movimentacoes",
-            font=("Arial", 24, "bold")
+            font=("Arial", 24, "bold"),
+            fg_color="transparent",
+            text_color=TEXTO_PRINCIPAL
+            
         )
         self.titulo.pack(pady=20)
 
@@ -45,23 +50,34 @@ class Movimentacoes(ctk.CTkFrame):
             self.frame_controles,
             text="+ Adicionar movimentacao",
             command=self.abrir_formulario_adicao,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER
+          
         ).pack(side="left", padx=(0, 8))
 
         ctk.CTkButton(
             self.frame_controles,
             text="Excluir selecionada",
             command=self.excluir_selecionada,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER
+          
         ).pack(side="left", padx=8)
 
         ctk.CTkButton(
             self.frame_controles,
             text="Antecipar parcelas selecionadas",
             command=self.antecipar_selecionadas,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER
+            
         ).pack(side="left", padx=8)
 
         ctk.CTkLabel(
             self.frame_controles,
             text="Visualização:",
+            text_color=TEXTO_SECUNDARIO
+            
         ).pack(side="left", padx=(20, 8))
 
         self.visualizacao = ctk.StringVar(value=self.PERIODO_PRINCIPAL)
@@ -71,10 +87,15 @@ class Movimentacoes(ctk.CTkFrame):
             variable=self.visualizacao,
             values=[self.PERIODO_PRINCIPAL],
             command=self.atualizar_listagem,
+            fg_color=CARD,
+            button_color=AZUL_PRINCIPAL,
+            button_hover_color=AZUL_HOVER,
+            text_color=TEXTO_PRINCIPAL
+          
         )
         self.menu_visualizacao.pack(side="left")
 
-        self.frame_lista = ctk.CTkScrollableFrame(self)
+        self.frame_lista = ctk.CTkScrollableFrame(self, fg_color=CARD)
         self.frame_lista.pack(fill="both", expand=True, padx=20, pady=10)
         self.frame_lista.grid_columnconfigure(5, weight=1)
 
@@ -134,6 +155,7 @@ class Movimentacoes(ctk.CTkFrame):
                 frame,
                 text=texto,
                 font=("Arial", 14, "bold"),
+                text_color=TEXTO_SECUNDARIO
             ).grid(row=0, column=coluna, padx=10, pady=10, sticky="w")
 
         movimentacoes_ordenadas = sorted(
@@ -152,6 +174,8 @@ class Movimentacoes(ctk.CTkFrame):
                     text="",
                     variable=selecionada,
                     width=24,
+                    fg_color=AZUL_PRINCIPAL,
+                    hover_color=AZUL_HOVER
                 ).grid(row=indice, column=0, padx=10, pady=8)
 
             dados = [
@@ -168,6 +192,7 @@ class Movimentacoes(ctk.CTkFrame):
                     frame,
                     text=str(valor or ""),
                     anchor="w",
+                    text_color=TEXTO_PRINCIPAL
                 ).grid(row=indice, column=coluna, padx=10, pady=8, sticky="w")
 
     @staticmethod
@@ -189,6 +214,7 @@ class Movimentacoes(ctk.CTkFrame):
             width=450,
             height=550,
             corner_radius=10,
+            fg_color=CARD_INTERNO
         )
         self.frame_adicionar.place(relx=0.5, rely=0.55, anchor="center")
         self.frame_adicionar.pack_propagate(False)
@@ -198,6 +224,8 @@ class Movimentacoes(ctk.CTkFrame):
             self.frame_adicionar,
             text="Adicionar movimentacao",
             font=("Arial", 18, "bold"),
+            text_color=TEXTO_PRINCIPAL,
+            fg_color="transparent",
         ).pack(pady=(20, 4))
 
         campos = ctk.CTkFrame(self.frame_adicionar, fg_color="transparent")
@@ -206,15 +234,15 @@ class Movimentacoes(ctk.CTkFrame):
         natureza = ctk.StringVar(value="despesa")
         meio = ctk.StringVar(value="pix")
         categoria = ctk.StringVar()
-        descricao = ctk.CTkEntry(campos, placeholder_text="Descricao")
-        valor = ctk.CTkEntry(campos, placeholder_text="Valor")
-        data = ctk.CTkEntry(campos)
+        descricao = ctk.CTkEntry(campos, placeholder_text="Descricao", fg_color=CARD)
+        valor = ctk.CTkEntry(campos, placeholder_text="Valor", fg_color=CARD)
+        data = ctk.CTkEntry(campos, fg_color=CARD)
         data.insert(0, datetime.now().strftime("%d/%m/%Y"))
         campo_parcelas = ctk.CTkFrame(campos, fg_color="transparent")
-        quantidade_parcelas = ctk.CTkEntry(campo_parcelas, placeholder_text="Quantidade de parcelas")
+        quantidade_parcelas = ctk.CTkEntry(campo_parcelas, placeholder_text="Quantidade de parcelas", fg_color=CARD)
         quantidade_parcelas.pack(fill="x", pady=(0, 6))
 
-        menu_categoria = ctk.CTkOptionMenu(campos, variable=categoria)
+        menu_categoria = ctk.CTkOptionMenu(campos, variable=categoria, fg_color=CAMPO_SELECAO, button_color=AZUL_PRINCIPAL, button_hover_color=AZUL_HOVER, text_color=TEXTO_PRINCIPAL )
 
         def atualizar_categorias(natureza_escolhida=None):
             categorias = listarCategoriasAtivasPorNatureza(natureza.get())
@@ -240,19 +268,28 @@ class Movimentacoes(ctk.CTkFrame):
                 variable=natureza,
                 values=["receita", "despesa"],
                 command=atualizar_categorias,
+                fg_color=CAMPO_SELECAO,
+                button_color=AZUL_PRINCIPAL,
+                button_hover_color=AZUL_HOVER,
+                text_color=TEXTO_PRINCIPAL,
             )),
             ("Meio/origem", ctk.CTkOptionMenu(
                 campos,
                 variable=meio,
                 values=["pix", "debito", "dinheiro", "credito"],
                 command=atualizar_campo_parcelas,
+                fg_color=CAMPO_SELECAO,
+                button_color=AZUL_PRINCIPAL,
+                button_hover_color=AZUL_HOVER,
+                text_color=TEXTO_PRINCIPAL,
             )),
             ("Categoria", menu_categoria),
             ("Descricao", descricao),
             ("Valor", valor),
             ("Data", data),
+
         ]:
-            label = ctk.CTkLabel(campos, text=texto)
+            label = ctk.CTkLabel(campos, text=texto, text_color=TEXTO_SECUNDARIO)
             label.pack(anchor="w", pady=(6, 0))
             if texto == "Categoria":
                 label_categoria = label
@@ -330,12 +367,18 @@ class Movimentacoes(ctk.CTkFrame):
             botoes,
             text="Cancelar",
             command=self.fechar_formulario_adicao,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER,
+            text_color=TEXTO_PRINCIPAL,
         ).pack(side="left", expand=True, padx=(0, 6))
 
         ctk.CTkButton(
             botoes,
             text="Adicionar",
             command=salvar,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER,
+            text_color=TEXTO_PRINCIPAL,
         ).pack(side="right", expand=True, padx=(6, 0))
 
     def fechar_formulario_adicao(self):
