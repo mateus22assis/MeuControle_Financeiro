@@ -404,14 +404,52 @@ def limparFaturas():
     workbook.save(CAMINHO_PLANILHA)
 
 
+# ==========================
+# RESUMO DE FATURAS
+# ==========================
+def lerAbatimentosFaturas():
+    """
+    Lê os valores abatidos previamente de cada fatura.
+
+    Retorna um dicionário no formato:
+    {
+        "09/2026": 100.0
+    }
+    """
+
+    workbook = abrirPlanilha()
+
+    aba_faturas = workbook["Faturas"]
+
+    abatimentos = {}
+
+    for linha in aba_faturas.iter_rows(
+        min_row=2,
+        values_only=True
+    ):
+        fatura = linha[0]
+
+        if fatura is None:
+            continue
+
+        valorAbatido = (
+            linha[3]
+            if len(linha) > 3 and linha[3] is not None
+            else 0.0
+        )
+
+        abatimentos[str(fatura)] = float(valorAbatido)
+
+    return abatimentos
+
+
 def gravarResumoFaturas(resumoFaturas):
     """
-    Grava na planilha o resumo de faturas recebido.
-
-    Limpa os registros anteriores antes de inserir os novos dados.
-
-    Não retorna valor.
+    Grava o resumo das faturas preservando
+    os valores abatidos previamente.
     """
+
+    abatimentos = lerAbatimentosFaturas()
 
     limparFaturas()
 
@@ -420,15 +458,71 @@ def gravarResumoFaturas(resumoFaturas):
     aba_faturas = workbook["Faturas"]
 
     for fatura in resumoFaturas:
+
+        valorAbatidoPreviamente = abatimentos.get(
+            fatura["fatura"],
+            0.0
+        )
+
         aba_faturas.append([
             fatura["fatura"],
             fatura["vencimento"],
             fatura["valor"],
+            valorAbatidoPreviamente,
             fatura["status"]
         ])
 
     workbook.save(CAMINHO_PLANILHA)
 
+def registrarAbatimentoFatura(valor):
+    """
+    Registra um valor abatido previamente
+    na fatura atualmente aberta.
+
+    Retorna True quando o abatimento é registrado
+    e False quando o valor é inválido.
+    """
+
+    if valor is None or float(valor) <= 0:
+        return False
+
+    workbook = abrirPlanilha()
+
+    aba_faturas = workbook["Faturas"]
+
+    valor = float(valor)
+
+    for linha in range(2, aba_faturas.max_row + 1):
+
+        status = aba_faturas[f"E{linha}"].value
+
+        if status != "Aberta":
+            continue
+
+        valorPrevisto = float(
+            aba_faturas[f"C{linha}"].value or 0
+        )
+
+        valorAbatido = float(
+            aba_faturas[f"D{linha}"].value or 0
+        )
+
+        valorEmAberto = (
+            valorPrevisto - valorAbatido
+        )
+
+        if valor > valorEmAberto:
+            return False
+
+        aba_faturas[f"D{linha}"] = (
+            valorAbatido + valor
+        )
+
+        workbook.save(CAMINHO_PLANILHA)
+
+        return True
+
+    return False   
 
 # ==========================
 # ATUALIZAÇÃO DE ABAS
@@ -443,13 +537,10 @@ def atualizarPlanilha():
 
     Não retorna valor.
     """
-
     from backend.calculos import gerarResumoFaturas
-
     resumoFaturas = gerarResumoFaturas()
 
     gravarResumoFaturas(resumoFaturas)
-
 
 def adicionarMovimentacao(
     natureza,

@@ -6,7 +6,8 @@ from backend.excel_manager import (
     lerCompromissosMensais,
     lerMovimentacoes,
     converterData,
-    determinarMesFatura
+    determinarMesFatura,
+    lerAbatimentosFaturas
 )
 
 
@@ -233,8 +234,17 @@ def calcularProximaFatura():
     # Se hoje é 15/03 e fechamento é 03, a próxima fatura é Abril.
     # Se hoje é 01/03 e fechamento é 03, a próxima fatura é Março.
     mes_fat, ano_fat = determinarMesFatura(hoje, diaFechamento)
-    
-    return somarFaturaPorMes(mes_fat, ano_fat)
+
+    valor_fatura = somarFaturaPorMes(mes_fat, ano_fat)
+
+    abatimentos = lerAbatimentosFaturas()
+
+    chave_fatura = f"{mes_fat:02d}/{ano_fat}"
+
+    valor_abatido = abatimentos.get(chave_fatura, 0.0)
+
+    return max(0, valor_fatura - valor_abatido)
+ 
 
 def calcularCapacidadeComprometimento():
     """
@@ -253,8 +263,8 @@ def calcularCapacidadeComprometimento():
     mes_prox, ano_prox = determinarMesFatura(hoje, configuracoes["diaFechamento"])
     fatura_prox = somarFaturaPorMes(mes_prox, ano_prox)
     
-    capacidade = renda - reserva - gastos_fixos - fatura_prox
-    return max(0, capacidade)
+    capacidade = (renda - reserva - gastos_fixos - fatura_prox)
+    return capacidade
 
 def calcularLimiteDisponivel():
     """
@@ -304,6 +314,8 @@ def gerarResumoFaturas():
     movimentacoes = lerMovimentacoes()
 
     configuracoes = lerConfiguracoes()
+
+    abatimentos = lerAbatimentosFaturas()
 
     diaFechamento = configuracoes["diaFechamento"]
     diaVencimento = configuracoes["diaVencimento"]
@@ -397,7 +409,7 @@ def gerarResumoFaturas():
                 ),
 
             "valor":
-                round(valor, 2),
+                round(max(0, valor - abatimentos.get(f"{mesFatura:02d}/{anoFatura}",0.0)), 2),
 
             "status":
                 status
@@ -422,14 +434,23 @@ def calcularValorGuardar():
 
     return receitaParaReserva * (percentualReserva / 100)
 
+
 # ==========================
 # SALDO
 # ==========================
 
 def calcularSaldoDisponivel():
     """
-    Calcula o saldo disponível no mês atual.
-    Fórmula: Saldo Inicial + Receitas Mês - Reserva Mês - Fixos - Fatura Mês - Despesas à Vista Mês.
+        Calcula o saldo disponível no mês atual.
+
+    Considera:
+    - saldo inicial;
+    - receitas do mês;
+    - valor a guardar;
+    - compromissos mensais;
+    - fatura que vence no mês;
+    - despesas à vista;
+    - abatimentos realizados na próxima fatura.
     """
     hoje = datetime.today()
     configuracoes = lerConfiguracoes()
@@ -441,9 +462,29 @@ def calcularSaldoDisponivel():
     
     # Fatura que vence no mês atual
     fatura_mes = somarFaturaPorMes(hoje.month, hoje.year)
+
+    
     
     # Despesas à vista do mês atual (PIX, Débito, etc)
     despesas_vista = somarDespesasAVista(hoje.month, hoje.year)
+
+    #abatimento realizado na proxima fatura
+    mes_proxima_fatura, ano_proxima_fatura = determinarMesFatura(
+        hoje,
+        configuracoes["diaFechamento"]
+    )
+    abatimentos = lerAbatimentosFaturas()
+
+    chave_fatura = (
+        f"{mes_proxima_fatura:02d}/{ano_proxima_fatura}"
+
+    )
+
+    valor_abatido = abatimentos.get(
+        chave_fatura,
+        0.0
+    )
+
 
     return (
         saldo_inicial
@@ -452,6 +493,7 @@ def calcularSaldoDisponivel():
         - gastos_fixos
         - fatura_mes
         - despesas_vista
+        -valor_abatido
     )
 
 
