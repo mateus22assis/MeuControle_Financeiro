@@ -262,8 +262,16 @@ def calcularCapacidadeComprometimento():
     hoje = datetime.today()
     mes_prox, ano_prox = determinarMesFatura(hoje, configuracoes["diaFechamento"])
     fatura_prox = somarFaturaPorMes(mes_prox, ano_prox)
+
+    abatimentos = lerAbatimentosFaturas()
+
+    nome_fatura = f"{mes_prox:02d}/{ano_prox}"
+
+    valora_abatido = abatimentos.get(nome_fatura, 0.0)
+
+    fatura_em_aberto = (fatura_prox- float(valora_abatido))
     
-    capacidade = (renda - reserva - gastos_fixos - fatura_prox)
+    capacidade = (renda - reserva - gastos_fixos - fatura_em_aberto)
     return capacidade
 
 def calcularLimiteDisponivel():

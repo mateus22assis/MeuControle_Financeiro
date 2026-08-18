@@ -377,35 +377,24 @@ class Movimentacoes(ctk.CTkFrame):
         """
 
         resumo_faturas = gerarResumoFaturas()
-        abatimentos = lerAbatimentosFaturas()
+       
 
         for fatura in resumo_faturas:
 
             if fatura["status"] != "Aberta":
                 continue
 
-            nome_fatura = fatura["fatura"]
+           
 
-            valor_previsto = float(
+            valor_em_aberto = float(
                 fatura["valor"] or 0
-            )
-
-            valor_abatido = float(
-                abatimentos.get(
-                    nome_fatura,
-                    0
-                )
-            )
-
-            valor_em_aberto = (
-                valor_previsto - valor_abatido
+                
             )
 
             return {
-                "fatura": nome_fatura,
+                "fatura": fatura["fatura"],
                 "vencimento": fatura["vencimento"],
-                "valor": valor_previsto,
-                "abatido": valor_abatido,
+                "valor": valor_em_aberto,
                 "emAberto": max(
                     0,
                     valor_em_aberto
