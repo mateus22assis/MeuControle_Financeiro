@@ -81,7 +81,7 @@ class App(ctk.CTk):
         self.atualizar_resumo()
 
 #frame conteudo
-        self.frame_conteudo = ctk.CTkFrame(self.frame_principal, fg_color="gray75")
+        self.frame_conteudo = ctk.CTkFrame(self.frame_principal, fg_color=FUNDO_PRINCIPAL)
         self.frame_conteudo.grid(row=0, column=1, sticky="nsew")
 
         self.mostrar_dashboard()  # Exibe o dashboard por padrão
@@ -120,7 +120,7 @@ class App(ctk.CTk):
         if self.overlay_configuracoes is not None:
             return
 
-        self.overlay_configuracoes = ctk.CTkFrame(self.frame_conteudo, fg_color="gray85")
+        self.overlay_configuracoes = ctk.CTkFrame(self.frame_conteudo, fg_color= FUNDO_PRINCIPAL)
 
         self.overlay_configuracoes.place(relx=0, rely=0, relwidth=1, relheight=1)
 

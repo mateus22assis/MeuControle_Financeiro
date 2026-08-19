@@ -10,99 +10,233 @@ from backend.excel_manager import (
     salvarDiaVencimento,
 )
 
+from gui.tema import (
+    FUNDO_PRINCIPAL,
+    CARD,
+    CARD_INTERNO,
+    BORDA,
+    AZUL_PRINCIPAL,
+    AZUL_HOVER,
+    TEXTO_PRINCIPAL,
+    TEXTO_SECUNDARIO,
+)
+
 
 class Configuracoes(ctk.CTkFrame):
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(
+            parent,
+            fg_color=FUNDO_PRINCIPAL
+        )
 
         self.grid_columnconfigure(0, weight=1)
+
+        # ======================================================
+        # TÍTULO
+        # ======================================================
 
         self.titulo = ctk.CTkLabel(
             self,
             text="Configurações",
-            font=("Arial", 24, "bold")
+            font=("Arial", 24, "bold"),
+            text_color=TEXTO_PRINCIPAL,
         )
         self.titulo.grid(
             row=0,
             column=0,
-            pady=20
+            padx=20,
+            pady=(24, 4),
         )
 
-        self.frame_formulario = ctk.CTkFrame(self)
-        self.frame_formulario.grid(
+        self.subtitulo = ctk.CTkLabel(
+            self,
+            text="Configure os valores utilizados nos cálculos financeiros.",
+            font=("Arial", 13),
+            text_color=TEXTO_SECUNDARIO,
+        )
+        self.subtitulo.grid(
             row=1,
             column=0,
-            padx=40,
+            padx=20,
+            pady=(0, 20),
+        )
+
+        # ======================================================
+        # CARD PRINCIPAL
+        # ======================================================
+
+        self.frame_formulario = ctk.CTkFrame(
+            self,
+            fg_color=CARD,
+            corner_radius=12,
+            border_width=1,
+            border_color=BORDA,
+        )
+
+        self.frame_formulario.grid(
+            row=2,
+            column=0,
+            padx=30,
             pady=10,
-            sticky="n"
+            sticky="ew",
         )
 
         self.frame_formulario.grid_columnconfigure(0, weight=1)
+        self.frame_formulario.grid_columnconfigure(1, weight=1)
+        self.frame_formulario.grid_columnconfigure(2, weight=1)
+
+        # ======================================================
+        # SEÇÃO FINANCEIRA
+        # ======================================================
+
+        ctk.CTkLabel(
+            self.frame_formulario,
+            text="Financeiro",
+            font=("Arial", 17, "bold"),
+            text_color=TEXTO_PRINCIPAL,
+        ).grid(
+            row=0,
+            column=0,
+            columnspan=3,
+            padx=24,
+            pady=(22, 2),
+            sticky="w",
+        )
+
+        ctk.CTkLabel(
+            self.frame_formulario,
+            text="Valores utilizados para calcular seu saldo disponível.",
+            font=("Arial", 12),
+            text_color=TEXTO_SECUNDARIO,
+        ).grid(
+            row=1,
+            column=0,
+            columnspan=3,
+            padx=24,
+            pady=(0, 14),
+            sticky="w",
+        )
 
         self.campo_receita = self.criar_campo(
             "Receita mensal",
+            2,
             0
         )
 
         self.campo_reserva = self.criar_campo(
             "Percentual de reserva",
+            2,
             1
+        )
+
+        # ======================================================
+        # SEÇÃO CARTÃO
+        # ======================================================
+
+        ctk.CTkLabel(
+            self.frame_formulario,
+            text="Cartão de crédito",
+            font=("Arial", 17, "bold"),
+            text_color=TEXTO_PRINCIPAL,
+        ).grid(
+            row=5,
+            column=0,
+            columnspan=3,
+            padx=24,
+            pady=(22, 2),
+            sticky="w",
+        )
+
+        ctk.CTkLabel(
+            self.frame_formulario,
+            text="Configure os dados utilizados no controle das faturas.",
+            font=("Arial", 12),
+            text_color=TEXTO_SECUNDARIO,
+        ).grid(
+            row=6,
+            column=0,
+            columnspan=3,
+            padx=24,
+            pady=(0, 14),
+            sticky="w",
         )
 
         self.campo_limite = self.criar_campo(
             "Limite do cartão",
-            2
+            7,
+            0
         )
 
         self.campo_fechamento = self.criar_campo(
             "Dia de fechamento",
-            3
+            7,
+            1
         )
 
         self.campo_vencimento = self.criar_campo(
             "Dia de vencimento",
-            4
+            7,
+            2
         )
+
+        # ======================================================
+        # BOTÃO
+        # ======================================================
 
         self.botao_salvar = ctk.CTkButton(
             self.frame_formulario,
             text="Salvar configurações",
-            command=self.salvar_configuracoes
+            command=self.salvar_configuracoes,
+            height=42,
+            fg_color=AZUL_PRINCIPAL,
+            hover_color=AZUL_HOVER,
+            text_color=TEXTO_PRINCIPAL,
+            font=("Arial", 13, "bold"),
         )
+
         self.botao_salvar.grid(
-            row=10,
+            row=9,
             column=0,
-            padx=20,
-            pady=20,
-            sticky="ew"
+            columnspan=3,
+            padx=24,
+            pady=(22, 24),
+            sticky="ew",
         )
 
         self.carregar_configuracoes()
 
-    def criar_campo(self, texto, linha):
+    def criar_campo(self, texto, linha, coluna):
 
         ctk.CTkLabel(
             self.frame_formulario,
             text=texto,
-            anchor="w"
+            font=("Arial", 13),
+            text_color=TEXTO_SECUNDARIO,
+            anchor="center",
         ).grid(
-            row=linha * 2,
-            column=0,
-            padx=20,
-            pady=(12, 4),
-            sticky="w"
+            row=linha,
+            column=coluna,
+            padx=10,
+            pady=(4, 5),
+            sticky="ew",
         )
 
         campo = ctk.CTkEntry(
-            self.frame_formulario
+            self.frame_formulario,
+            height=38,
+            fg_color=CARD_INTERNO,
+            border_color=BORDA,
+            text_color=TEXTO_PRINCIPAL,
+            font=("Arial", 13),
         )
+
         campo.grid(
-            row=linha * 2 + 1,
-            column=0,
-            padx=20,
-            pady=(0, 6),
-            sticky="ew"
+            row=linha + 1,
+            column=coluna,
+            padx=10,
+            pady=(0, 4),
+            sticky="ew",
         )
 
         return campo

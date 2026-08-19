@@ -210,9 +210,10 @@ def lerCompromissosMensais():
 
     compromissos = []
 
-    for linha in aba_compromissos.iter_rows(
+    for numeroLinha, linha in enumerate (aba_compromissos.iter_rows(
             min_row=2,
-            values_only=True
+            values_only=True),
+            start=2
     ):
 
         descricao = linha[0]
@@ -221,9 +222,10 @@ def lerCompromissosMensais():
         if descricao is not None:
 
             compromissos.append({
-
+                "linha": numeroLinha,
                 "descricao": descricao,
                 "valor": valor
+                
 
             })
 

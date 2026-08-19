@@ -288,19 +288,41 @@ def calcularLimiteDisponivel():
     m_aberta, a_aberta = determinarMesFatura(hoje, diaFechamento)
     
     movimentacoes = lerMovimentacoes()
-    comprometido = 0
+    abatimentos = lerAbatimentosFaturas()
+
+    comprometido =0
     
     for mov in movimentacoes:
         natureza = str(mov["natureza"]).strip().lower()
         meio = str(mov["meio"]).strip().lower()
         
-        if natureza == "despesa" and meio == "credito" and mov["data"] is not None:
+        if (natureza == "despesa" and meio == "credito" and mov["data"] is not None):
             m_fat, a_fat = determinarMesFatura(mov["data"], diaFechamento)
             # Se a fatura de destino é a aberta ou qualquer futura
             if (a_fat > a_aberta) or (a_fat == a_aberta and m_fat >= m_aberta):
                 valor = mov["valor"]
                 if valor is not None:
                     comprometido += float(valor)
+
+    abatimento_total = 0
+
+    for fatura, valor_abatido in abatimentos.items():
+
+        mes, ano = map(
+            int,
+            fatura.split("/")
+        )
+
+        if(
+            (ano > a_aberta)
+            or
+            (ano == a_aberta and mes >= m_aberta)
+        ):
+
+            abatimento_total += float(valor_abatido)
+
+    comprometido -= abatimento_total
+
                     
     return limite_total - comprometido
 
