@@ -1,21 +1,26 @@
-# arquivos compilados
+# Python
 __pycache__/
 *.pyc
 
-# ambiente virtual
+# Ambiente virtual
 venv/
 .env/
 
-# arquivos do sistema
+# Arquivos do sistema
 .DS_Store
 Thumbs.db
 
 # VS Code
 .vscode/
 
+# PyInstaller
+build/
+dist/
+*.spec
 
-# arquivos de relatórios
-ASSISTENTE.md
-
+# Arquivos pessoais
 ControleFinanceiro_2026.xlsx
 ~$*.xlsx
+
+# Documentação local
+ASSISTENTE.md

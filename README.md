@@ -1,326 +1,686 @@
-# 💰 Controle Financeiro Pessoal
+# 💰 Meu Controle Financeiro
 
-Sistema desenvolvido em Python para gerenciamento financeiro pessoal, utilizando Excel como base de dados. O projeto permite registrar receitas, despesas, compras parceladas, faturas do cartão de crédito, compromissos mensais e planejamento financeiro, além de servir como estudo prático de arquitetura de software, organização de código e boas práticas de desenvolvimento.
+Sistema desenvolvido em Python para gerenciamento financeiro pessoal, utilizando Excel como base de dados.
 
-Todo o armazenamento é realizado diretamente na planilha Excel `ControleFinanceiro_2026_Exemplo.xlsx`.
+O projeto permite registrar receitas, despesas, compras parceladas, faturas do cartão de crédito, compromissos mensais, categorias e configurações financeiras, além de apresentar um resumo do planejamento financeiro por meio de uma interface gráfica.
 
-## Objetivo
+O projeto também foi desenvolvido como estudo prático de programação, organização de código, arquitetura, Programação Orientada a Objetos, boas práticas e evolução incremental de software.
 
-Auxiliar no controle financeiro pessoal por meio do registro de movimentações, acompanhamento de compromissos mensais, planejamento de reserva financeira e consulta de informações consolidadas em uma interface gráfica.
+---
 
-## Status do projeto
+## 🎯 Objetivo
 
-**Versão atual: v0.9.5 — concluída.**
+Auxiliar no controle financeiro pessoal por meio do registro de movimentações, acompanhamento de compromissos, controle de compras no cartão de crédito e planejamento financeiro.
 
-A v0.9.5 encerra a primeira base funcional da GUI. O projeto agora entra em uma etapa de consolidação, revisão e preparação para a v1.0, que será a primeira versão considerada completa para uso diário.
+O sistema busca mostrar não apenas o quanto ainda existe de limite no cartão, mas também quanto pode ser comprometido considerando a capacidade financeira prevista para o próximo ciclo.
 
-## Funcionalidades atuais
+---
 
-### GUI
+## 🚀 Status do projeto
 
-- Dashboard
-- Resumo Financeiro
-- Movimentações
-- Categorias
-- Compromissos
-- Configurações
+**Versão atual: v1.0 — concluída.**
 
-### Movimentações
+A v1.0 representa a primeira versão completa do sistema para uso diário.
 
-- Cadastro de receitas e despesas
-- Meios de pagamento: PIX, débito, dinheiro e cartão de crédito
-- Compras parceladas com geração automática das parcelas
-- Exclusão de movimentações
-- Exclusão inteligente de compras parceladas, removendo as parcelas relacionadas
-- Antecipação de parcelas selecionadas
+Nesta versão foram consolidados:
 
-### Categorias
+* Backend financeiro;
+* Persistência dos dados em Excel;
+* Interface gráfica com CustomTkinter;
+* Cadastro e gerenciamento de movimentações;
+* Controle de compras parceladas;
+* Controle de faturas;
+* Controle de categorias;
+* Controle de compromissos mensais;
+* Configurações financeiras;
+* Resumo financeiro;
+* Planejamento financeiro;
+* Geração do executável Windows.
 
-- Cadastro pela GUI
-- Categorias de receita e despesa
-- Controle de categoria ativa/inativa
-- Dados armazenados na aba `Categorias` do Excel
+---
 
-### Compromissos
+# ✨ Funcionalidades
 
-- Cadastro pela GUI
-- Alteração de valores
-- Exclusão
-- Integração com os cálculos financeiros
+## 🖥️ Interface gráfica
 
-### Configurações
+A aplicação possui uma interface desenvolvida com CustomTkinter e organizada em módulos:
 
-- Receita mensal
-- Percentual de reserva
-- Limite do cartão
-- Dia de fechamento
-- Dia de vencimento
+* Dashboard;
+* Resumo Financeiro;
+* Movimentações;
+* Categorias;
+* Compromissos;
+* Configurações.
 
-### Planejamento financeiro
+A interface utiliza Programação Orientada a Objetos para organizar os componentes e o estado das diferentes telas.
 
-- Valor a guardar
-- Saldo disponível
-- Fatura do próximo mês
-- Capacidade de comprometimento da próxima fatura
+---
 
-## Conceitos financeiros
+## 💸 Movimentações
 
-O sistema diferencia a capacidade financeira pessoal do limite de crédito concedido pelo banco:
+Permite registrar e gerenciar movimentações financeiras.
 
-| Conceito | Significado |
-| --- | --- |
-| **Saldo disponível** | Dinheiro disponível para o ciclo atual. |
-| **Fatura do próximo mês** | Compras de cartão já comprometidas para a próxima fatura. |
-| **Pode comprometer na próxima fatura** | Valor que ainda pode ser acrescentado à próxima fatura sem comprometer excessivamente a capacidade financeira prevista do próximo ciclo. |
-| **Limite total** | Limite de crédito fornecido pelo banco. |
-| **Limite disponível** | Crédito que ainda está disponível no cartão. |
+Funcionalidades:
 
-A capacidade de comprometimento da próxima fatura é calculada a partir de:
+* Cadastro de receitas;
+* Cadastro de despesas;
+* PIX;
+* Débito;
+* Dinheiro;
+* Cartão de crédito;
+* Categorias;
+* Registro de datas;
+* Compras parceladas;
+* Geração automática das parcelas;
+* Exclusão de movimentações;
+* Exclusão inteligente de compras parceladas;
+* Antecipação de parcelas.
+
+As movimentações são armazenadas na aba `Movimentacoes` da planilha.
+
+---
+
+## 🏷️ Categorias
+
+Permite organizar as movimentações por categorias.
+
+Funcionalidades:
+
+* Cadastro de categorias;
+* Categorias de receita;
+* Categorias de despesa;
+* Ativação e desativação de categorias;
+* Integração com o cadastro de movimentações.
+
+As categorias são armazenadas na aba `Categorias` do Excel.
+
+---
+
+## 📅 Compromissos mensais
+
+Permite cadastrar despesas recorrentes que fazem parte do planejamento financeiro.
+
+Funcionalidades:
+
+* Cadastro;
+* Alteração;
+* Exclusão;
+* Integração com os cálculos financeiros.
+
+Os compromissos são armazenados na aba `CompromissosMensais`.
+
+---
+
+## ⚙️ Configurações
+
+Permite configurar os principais parâmetros financeiros do sistema:
+
+* Receita mensal;
+* Percentual de reserva;
+* Limite do cartão;
+* Dia de fechamento da fatura;
+* Dia de vencimento da fatura.
+
+Essas informações são armazenadas na aba `Configuracoes`.
+
+---
+
+## 💳 Controle de cartão
+
+O sistema possui regras próprias para o controle do cartão de crédito.
+
+Funcionalidades:
+
+* Determinação automática da fatura de cada compra;
+* Controle de compras parceladas;
+* Cálculo das próximas faturas;
+* Controle do limite total;
+* Cálculo do limite disponível;
+* Registro de abatimentos de fatura;
+* Antecipação de parcelas;
+* Integração das compras com o planejamento financeiro.
+
+O dia de fechamento e o dia de vencimento podem ser configurados pelo usuário.
+
+---
+
+# 📊 Planejamento financeiro
+
+O sistema apresenta informações consolidadas para auxiliar na tomada de decisão financeira.
+
+Entre elas:
+
+* Receita mensal;
+* Valor a guardar;
+* Saldo disponível;
+* Gastos fixos;
+* Fatura do próximo mês;
+* Capacidade de comprometimento da próxima fatura;
+* Limite total do cartão;
+* Limite disponível do cartão.
+
+---
+
+## 🧮 Conceitos financeiros
+
+O sistema diferencia a capacidade financeira pessoal do limite de crédito disponibilizado pelo banco.
+
+| Conceito                               | Significado                                                                                           |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Saldo disponível**                   | Valor disponível considerando o planejamento financeiro do ciclo atual.                               |
+| **Fatura do próximo mês**              | Valor já comprometido em compras que serão cobradas na próxima fatura.                                |
+| **Pode comprometer na próxima fatura** | Valor que ainda pode ser acrescentado à próxima fatura considerando a capacidade financeira prevista. |
+| **Limite total**                       | Limite de crédito disponibilizado pelo banco.                                                         |
+| **Limite disponível**                  | Crédito que ainda está disponível para utilização no cartão.                                          |
+
+A capacidade de comprometimento considera a relação entre renda, reserva, compromissos e valores já comprometidos.
+
+De forma simplificada:
 
 ```text
-Renda prevista - reserva - compromissos - fatura já comprometida
-= capacidade de comprometimento restante
+Renda prevista
+- Reserva
+- Compromissos
+- Fatura já comprometida
+= Capacidade de comprometimento restante
 ```
 
-Compras novas no cartão de crédito não são descontadas imediatamente do saldo disponível: elas serão pagas por meio da fatura correspondente.
+Compras realizadas no cartão não são descontadas imediatamente do saldo financeiro. Elas são consideradas como compromissos futuros por meio da fatura correspondente.
 
-## Como executar
+---
 
-### 1. Clonar o repositório
+# 📁 Estrutura do projeto
+
+```text
+MeuControle_Financeiro/
+│
+├── main.py
+├── main_cli.py
+├── testes.py
+├── README.md
+├── .gitignore
+├── MeuControleFinanceiro.ico
+├── MeuControleFinanceiro.spec
+│
+├── ControleFinanceiro_2026_Exemplo.xlsx
+│
+├── backend/
+│   ├── __init__.py
+│   ├── calculos.py
+│   ├── consultas.py
+│   ├── excel_manager.py
+│   └── utils.py
+│
+├── gui/
+│   ├── app.py
+│   ├── categorias.py
+│   ├── compromissos.py
+│   ├── configuracoes.py
+│   ├── dashboard.py
+│   ├── menu.py
+│   ├── movimentacoes.py
+│   ├── resumo.py
+│   └── tema.py
+│
+└── docs/
+    ├── ALERTAS.md
+    ├── BACKLOG_v0.8.5.md
+    ├── BACKLOG_v0.9.md
+    ├── CATEGORIAS.md
+    ├── DASHBOARD.md
+    ├── HOMOLOGACAO_v0.8.md
+    ├── UX.md
+    └── WIREFRAMES.md
+```
+
+---
+
+# 🧩 Organização do código
+
+### `main.py`
+
+Ponto de entrada principal da aplicação gráfica.
+
+### `main_cli.py`
+
+Ponto de entrada da versão de linha de comando utilizada durante etapas anteriores do desenvolvimento.
+
+### `gui/`
+
+Contém a interface gráfica desenvolvida com CustomTkinter.
+
+Cada tela principal da aplicação possui seu próprio módulo.
+
+### `backend/calculos.py`
+
+Concentra as principais regras de negócio e cálculos financeiros.
+
+### `backend/consultas.py`
+
+Responsável por consultas e filtros relacionados aos dados financeiros.
+
+### `backend/excel_manager.py`
+
+Responsável pela comunicação com a planilha Excel, incluindo:
+
+* Leitura;
+* Gravação;
+* Atualização;
+* Ordenação;
+* Cadastro;
+* Alteração;
+* Exclusão;
+* Controle das faturas.
+
+### `backend/utils.py`
+
+Contém funções auxiliares, principalmente relacionadas à validação e formatação de dados.
+
+### `gui/tema.py`
+
+Centraliza configurações relacionadas ao tema e aparência da interface.
+
+---
+
+# 📊 Estrutura da planilha
+
+A aplicação utiliza um arquivo Excel como camada de persistência.
+
+| Aba                   | Finalidade                                        |
+| --------------------- | ------------------------------------------------- |
+| `Configuracoes`       | Armazena os parâmetros financeiros do sistema.    |
+| `Movimentacoes`       | Registra receitas, despesas e compras parceladas. |
+| `CompromissosMensais` | Armazena compromissos financeiros recorrentes.    |
+| `Categorias`          | Armazena categorias e seu status.                 |
+| `Faturas`             | Exibe o resumo das faturas do cartão.             |
+
+A antiga aba `Dashboard` da planilha não é utilizada para a visualização principal.
+
+O Dashboard atual é calculado dinamicamente pelo backend e apresentado pela interface gráfica.
+
+---
+
+## 📋 Aba `Movimentacoes`
+
+Cada movimentação possui informações como:
+
+* Data;
+* Natureza;
+* Meio de pagamento;
+* Categoria;
+* Descrição;
+* Valor;
+* Parcelas.
+
+---
+
+# 🗂️ Dados pessoais
+
+O arquivo:
+
+```text
+ControleFinanceiro_2026.xlsx
+```
+
+contém os dados financeiros pessoais do usuário e **não é enviado ao GitHub**.
+
+O repositório disponibiliza apenas:
+
+```text
+ControleFinanceiro_2026_Exemplo.xlsx
+```
+
+como modelo inicial.
+
+Para utilizar o sistema:
+
+1. Faça uma cópia de `ControleFinanceiro_2026_Exemplo.xlsx`;
+2. Renomeie a cópia para `ControleFinanceiro_2026.xlsx`;
+3. Mantenha o arquivo na raiz do projeto;
+4. Cadastre seus próprios dados;
+5. Execute a aplicação.
+
+O arquivo pessoal é ignorado pelo Git por meio do `.gitignore`.
+
+---
+
+# ▶️ Como executar
+
+## 1. Clonar o repositório
 
 ```bash
 git clone https://github.com/mateus22assis/MeuControle_Financeiro.git
 ```
 
-### 2. Entrar na pasta
+## 2. Entrar na pasta
 
 ```bash
 cd MeuControle_Financeiro
 ```
 
-### 3. Instalar as dependências
+## 3. Instalar as dependências
 
 ```bash
 pip install openpyxl customtkinter
 ```
 
-### 4. Configurar a planilha
+## 4. Preparar a planilha
 
-O repositório contém uma planilha de exemplo:
+Copie:
 
-`ControleFinanceiro_2026_Exemplo.xlsx`
+```text
+ControleFinanceiro_2026_Exemplo.xlsx
+```
 
-Para utilizar o sistema:
+para:
 
-1. Faça uma cópia da planilha de exemplo.
-2. Renomeie a cópia para `ControleFinanceiro_2026.xlsx`.
-3. Mantenha esse arquivo na raiz do projeto.
-4. Cadastre seus próprios dados nessa planilha.
+```text
+ControleFinanceiro_2026.xlsx
+```
 
-A planilha `ControleFinanceiro_2026.xlsx` é ignorada pelo Git para evitar que dados financeiros pessoais sejam enviados ao repositório.
-
-### 5. Executar
+## 5. Executar
 
 ```bash
 python main.py
 ```
 
-## Estrutura do projeto
+---
+
+# 🪟 Executável Windows
+
+A versão v1.0 também possui uma versão compilada para Windows utilizando PyInstaller.
+
+O projeto utiliza:
 
 ```text
-.
-├── main.py
-├── testes.py
-├── ControleFinanceiro_2026_Prototipo_v3.xlsx
-├── README.md
-├── backend/
-│   ├── calculos.py
-│   ├── consultas.py
-│   ├── excel_manager.py
-│   └── utils.py
-├── gui/
-│   ├── app.py
-│   ├── dashboard.py
-│   ├── resumo.py
-│   ├── movimentacoes.py
-│   ├── compromissos.py
-│   ├── categorias.py
-│   ├── configuracoes.py
-│   └── componentes.py
-└── docs/
+MeuControleFinanceiro.spec
 ```
 
-- `main.py`: ponto de entrada e inicialização da aplicação.
-- `gui/`: interface gráfica em CustomTkinter, organizada com Programação Orientada a Objetos (POO).
-- `backend/calculos.py`: regras de negócio e cálculos financeiros.
-- `backend/consultas.py`: consultas e filtros sobre movimentações.
-- `backend/excel_manager.py`: leitura, gravação, ordenação e atualização da planilha Excel.
-- `backend/utils.py`: validação de entradas e formatação monetária.
-- `testes.py`: apoio a testes do projeto.
-- `docs/`: documentos de UX, wireframes, backlog e homologação.
+para configurar a geração do executável.
 
-## Arquitetura
+O executável possui ícone próprio:
 
 ```text
-Interface Gráfica (CustomTkinter / POO)
-                ↓
-       Backend modular
- (cálculos | consultas | utilitários)
-                ↓
-         excel_manager.py
-                ↓
-ControleFinanceiro_2026_Prototipo_v3.xlsx
+MeuControleFinanceiro.ico
 ```
 
-A GUI utiliza POO para organizar componentes e estados da interface. O backend permanece modular, com funções e módulos independentes para as regras de negócio, consultas e manipulação dos dados. A planilha Excel persiste as configurações, movimentações, compromissos, categorias e faturas do sistema.
+A distribuição compilada é gerada na pasta:
 
-## Estrutura da planilha
+```text
+dist/MeuControleFinanceiro/
+```
 
-| Aba | Finalidade |
-| --- | --- |
-| `Configuracoes` | Armazena receita mensal, percentual de reserva, limite do cartão e dias de fechamento e vencimento. |
-| `Movimentacoes` | Registra receitas e despesas, incluindo categoria, meio de pagamento, valor e parcelas. |
-| `CompromissosMensais` | Mantém os compromissos financeiros recorrentes. |
-| `Categorias` | Armazena as categorias de receita e despesa e seu status de atividade. |
-| `Faturas` | Exibe o resumo das faturas do cartão, com vencimento, valor e status. |
+A planilha utilizada pela aplicação deve acompanhar o executável quando a versão compilada for utilizada.
 
-> A antiga aba `Dashboard` da planilha não é mais utilizada para visualização. O Dashboard é processado dinamicamente e exibido pela GUI.
+---
 
-### Estrutura da aba `Movimentacoes`
+# 🏗️ Arquitetura
 
-Cada movimentação possui os campos:
+```text
+┌─────────────────────────────────┐
+│        Interface Gráfica        │
+│         CustomTkinter           │
+│              POO                │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│             Backend             │
+│                                 │
+│  cálculos | consultas | utils   │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│        excel_manager.py         │
+│                                 │
+│   Leitura / gravação / Excel    │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│       ControleFinanceiro        │
+│             .xlsx               │
+└─────────────────────────────────┘
+```
 
-- Data
-- Natureza (receita ou despesa)
-- Meio
-- Categoria
-- Descrição
-- Valor
-- Parcelas
+A separação entre GUI, regras de negócio e persistência permite que cada parte do sistema tenha uma responsabilidade mais definida.
 
-## Roadmap
+A interface é responsável pela interação com o usuário, o backend concentra as regras financeiras e o `excel_manager.py` realiza a comunicação com o Excel.
 
-| Versão | Status | Objetivo |
-| --- | --- | --- |
-| v0.8 | Concluída | Controle financeiro completo em Excel. |
-| v0.8.5 | Concluída | Estabilização e homologação. |
-| v0.9 | Concluída | Planejamento e arquitetura da GUI. |
-| v0.9.5 | **CONCLUÍDA** | Primeira base funcional da GUI. |
-| v1.0 | Próxima etapa | Primeira versão considerada completa para uso diário. |
-| v1.5 | Planejada | Melhorias de experiência do usuário, filtros, pesquisa, edição, relatórios, gráficos, exportação e outras melhorias. |
-| v2.0 | Futuro | Possíveis mudanças arquiteturais e evolução do armazenamento. |
+---
 
-### Possíveis objetivos da v1.0
+# 🧪 Testes
 
-- Revisão e organização final do código
-- Melhorias visuais da GUI
-- Melhorias de layout e responsividade
-- Testes finais
-- Documentação final
-- Geração do executável `.exe`
+O projeto possui o arquivo:
 
-## Histórico de versões
+```text
+testes.py
+```
 
-### v0.1 — Controle de cartão
+utilizado durante o desenvolvimento para apoiar a validação das regras e comportamentos do sistema.
 
-- Controle de gastos à vista
-- Controle de parcelamentos
-- Fechamento de fatura
+Além dos testes, a aplicação passou por etapas de homologação e validação durante a evolução das versões.
 
-### v0.2 — Usabilidade
+---
 
-- Validação de entradas
-- Formatação monetária
-- Organização em módulos
+# 🛣️ Roadmap
 
-### v0.3 — Planejamento financeiro
+| Versão   | Status          | Objetivo                                                     |
+| -------- | --------------- | ------------------------------------------------------------ |
+| v0.1     | ✅ Concluída     | Controle inicial do cartão                                   |
+| v0.2     | ✅ Concluída     | Melhorias de usabilidade                                     |
+| v0.3     | ✅ Concluída     | Planejamento financeiro                                      |
+| v0.4     | ✅ Concluída     | Novos meios de pagamento                                     |
+| v0.5     | ✅ Concluída     | Histórico de movimentações                                   |
+| v0.6     | ✅ Concluída     | Integração com Excel                                         |
+| v0.6.5   | ✅ Concluída     | Consolidação do Excel                                        |
+| v0.7     | ✅ Concluída     | Consolidação da migração para Excel                          |
+| v0.8     | ✅ Concluída     | Controle completo das faturas                                |
+| v0.8.5   | ✅ Concluída     | Estabilização e homologação                                  |
+| v0.9     | ✅ Concluída     | Planejamento e arquitetura da GUI                            |
+| v0.9.5   | ✅ Concluída     | Primeira base funcional da GUI                               |
+| **v1.0** | **✅ Concluída** | **Primeira versão completa para uso diário**                 |
+| v1.5     | 🔮 Planejada    | Melhorias de experiência e novas funcionalidades             |
+| v2.0     | 🔮 Futuro       | Possíveis mudanças arquiteturais e evolução do armazenamento |
 
-- Receita mensal
-- Gastos fixos
-- Percentual de reserva
-- Saldo disponível
+---
 
-### v0.4 — Novos meios de pagamento
+# 📜 Histórico de versões
 
-- PIX
-- Débito
-- Dinheiro
+## v0.1 — Controle de cartão
 
-### v0.5 — Histórico de movimentações
+* Controle de gastos à vista;
+* Controle de parcelamentos;
+* Fechamento de fatura.
 
-- Registro de movimentações
-- Registro automático das datas
-- Consulta de histórico
+## v0.2 — Usabilidade
 
-### v0.6 — Integração com Excel
+* Validação de entradas;
+* Formatação monetária;
+* Organização em módulos.
 
-- Estrutura inicial da planilha
-- Leitura e gravação em Excel
-- Criação do `excel_manager.py`
+## v0.3 — Planejamento financeiro
 
-### v0.6.5 — Consolidação do Excel
+* Receita mensal;
+* Gastos fixos;
+* Percentual de reserva;
+* Saldo disponível.
 
-- Movimentações em Excel
-- Receitas em Excel
-- Compromissos mensais em Excel
-- Refatoração do menu principal
-- Padronização de natureza e meio
-- Refatoração dos módulos principais
-- Simplificação da estrutura do projeto
+## v0.4 — Novos meios de pagamento
 
-### v0.7 — Consolidação da migração para Excel
+* PIX;
+* Débito;
+* Dinheiro.
 
-- Cadastro unificado de movimentações
-- Parcelamentos registrados diretamente na planilha
-- Ordenação automática por data
-- Exclusão de movimentações
-- Melhorias na validação de entradas
-- Estrutura preparada para controle de faturas
+## v0.5 — Histórico de movimentações
 
-### v0.8 — Controle completo das faturas
+* Registro de movimentações;
+* Registro automático das datas;
+* Consulta de histórico.
 
-- Controle completo das faturas
-- Controle do limite do cartão
-- Aba `Faturas`
-- Melhorias na integração com Excel
+## v0.6 — Integração com Excel
 
-### v0.8.5 — Estabilização e homologação
+* Estrutura inicial da planilha;
+* Leitura e gravação em Excel;
+* Criação do `excel_manager.py`.
 
-- Atualização automática da aba `Faturas`
-- Exclusão inteligente de compras parceladas
-- Correções encontradas durante a homologação
-- Remoção definitiva da estrutura legada baseada em JSON
+## v0.6.5 — Consolidação do Excel
 
-### v0.9 — Planejamento e arquitetura da GUI
+* Movimentações em Excel;
+* Receitas em Excel;
+* Compromissos mensais em Excel;
+* Refatoração do menu principal;
+* Padronização de natureza e meio;
+* Refatoração dos módulos principais;
+* Simplificação da estrutura do projeto.
 
-- Definição da stack tecnológica com CustomTkinter
-- Criação de documentos de UX e wireframes
-- Definição da arquitetura POO para a interface
-- Implementação da estrutura base da aplicação
-- Migração do Dashboard da planilha para visualização em tempo real na interface
-- Backend consolidado como suporte para a GUI
+## v0.7 — Consolidação da migração para Excel
 
-### v0.9.5 — Primeira base funcional da GUI
+* Cadastro unificado de movimentações;
+* Parcelamentos registrados diretamente na planilha;
+* Ordenação automática por data;
+* Exclusão de movimentações;
+* Melhorias na validação de entradas;
+* Estrutura preparada para controle de faturas.
 
-- Dashboard, resumo financeiro, movimentações, categorias, compromissos e configurações disponíveis na GUI
-- Cadastro e gestão de movimentações, incluindo parcelamentos, exclusão inteligente e antecipação de parcelas
-- Cadastro e controle de status de categorias pela GUI
-- Cadastro, alteração e exclusão de compromissos pela GUI
-- Configurações financeiras acessíveis pela GUI
-- Planejamento financeiro integrado ao Dashboard e ao resumo
+## v0.8 — Controle completo das faturas
 
-## Tecnologias
+* Controle completo das faturas;
+* Controle do limite do cartão;
+* Criação da aba `Faturas`;
+* Melhorias na integração com Excel.
 
-- Python
-- CustomTkinter (interface gráfica)
-- OpenPyXL (manipulação de Excel)
-- Microsoft Excel (base de dados)
-- Git / GitHub
+## v0.8.5 — Estabilização e homologação
 
-## Finalidade
+* Atualização automática da aba `Faturas`;
+* Exclusão inteligente de compras parceladas;
+* Correções encontradas durante a homologação;
+* Remoção definitiva da estrutura legada baseada em JSON.
 
-Projeto criado para estudo prático de programação, organização financeira pessoal e desenvolvimento de software.
+## v0.9 — Planejamento e arquitetura da GUI
 
-## Observação sobre IA
+* Definição da stack tecnológica com CustomTkinter;
+* Criação dos documentos de UX e wireframes;
+* Definição da arquitetura POO para a interface;
+* Implementação da estrutura base da aplicação;
+* Migração do Dashboard da planilha para visualização em tempo real na interface;
+* Consolidação do backend como suporte para a GUI.
 
-O desenvolvimento do projeto conta com apoio de Inteligência Artificial como ferramenta de estudo, revisão de código, discussão de arquitetura, planejamento, testes, documentação e aprendizado.
+## v0.9.5 — Primeira base funcional da GUI
+
+* Dashboard;
+* Resumo financeiro;
+* Movimentações;
+* Categorias;
+* Compromissos;
+* Configurações;
+* Cadastro e gestão de movimentações;
+* Parcelamentos;
+* Exclusão inteligente;
+* Antecipação de parcelas;
+* Cadastro e controle de categorias;
+* Cadastro, alteração e exclusão de compromissos;
+* Configurações financeiras acessíveis pela GUI;
+* Planejamento financeiro integrado ao Dashboard e ao resumo.
+
+## v1.0 — Primeira versão completa
+
+* Consolidação da interface gráfica;
+* Organização final dos módulos principais;
+* Integração entre GUI e backend;
+* Controle de movimentações;
+* Controle de categorias;
+* Controle de compromissos;
+* Controle de faturas;
+* Planejamento financeiro;
+* Configurações financeiras;
+* Controle de compras parceladas;
+* Antecipação de parcelas;
+* Abatimentos de fatura;
+* Geração do executável Windows;
+* Ícone próprio da aplicação;
+* Documentação final da versão.
+
+---
+
+# 🔮 Próximos passos
+
+A v1.0 encerra o primeiro ciclo de desenvolvimento do projeto.
+
+As próximas versões poderão explorar melhorias como:
+
+* Pesquisa e filtros;
+* Edição mais completa de movimentações;
+* Melhorias na experiência de uso;
+* Relatórios;
+* Gráficos;
+* Exportação de dados;
+* Melhorias de organização interna;
+* Evolução da persistência dos dados;
+* Outras melhorias identificadas durante o uso diário.
+
+Essas funcionalidades fazem parte de uma evolução futura e não são necessárias para considerar a v1.0 completa.
+
+---
+
+# 🛠️ Tecnologias
+
+* Python;
+* CustomTkinter;
+* OpenPyXL;
+* Microsoft Excel;
+* Git;
+* GitHub;
+* PyInstaller.
+
+---
+
+# 📚 Finalidade do projeto
+
+O **Meu Controle Financeiro** foi criado como um projeto pessoal de estudo e desenvolvimento.
+
+Além de seu objetivo financeiro, o projeto serviu como laboratório prático para aprender e aplicar:
+
+* Python;
+* Programação Orientada a Objetos;
+* Separação de responsabilidades;
+* Organização de projetos;
+* Arquitetura de software;
+* Git e GitHub;
+* Desenvolvimento de interfaces gráficas;
+* Manipulação de arquivos Excel;
+* Testes e homologação;
+* Refatoração;
+* Boas práticas de programação;
+* Desenvolvimento incremental.
+
+A evolução do projeto ocorreu de forma progressiva, começando como uma aplicação simples de controle de cartão e chegando a uma aplicação gráfica integrada na versão 1.0.
+
+---
+
+# 🤖 Uso de Inteligência Artificial
+
+O desenvolvimento do projeto contou com apoio de Inteligência Artificial como ferramenta de estudo e desenvolvimento.
+
+A IA foi utilizada para auxiliar em atividades como:
+
+* Revisão de código;
+* Discussão de arquitetura;
+* Explicação de conceitos;
+* Planejamento;
+* Identificação de problemas;
+* Sugestões de melhoria;
+* Testes;
+* Documentação;
+* Aprendizado.
+
+A implementação, decisões de projeto, testes e validação foram realizados ao longo do processo de desenvolvimento.
+
+---
+
+## 📌 Versão
+
+**Meu Controle Financeiro — v1.0**
+
+Primeira versão completa do sistema para uso diário.

@@ -2,13 +2,26 @@ from openpyxl import load_workbook
 from datetime import datetime
 from calendar import monthrange
 import re
+import os
+import sys
 
-# ==========================
-# CONFIGURAÇÕES
-# ==========================
 
-CAMINHO_PLANILHA = "ControleFinanceiro_2026.xlsx"
+if getattr(sys, "frozen", False):
+    PASTA_PROGRAMA = os.path.dirname(sys.executable)
+else:
+    PASTA_PROGRAMA = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
 
+
+CAMINHO_PLANILHA = os.path.join(
+    PASTA_PROGRAMA,
+    "ControleFinanceiro_2026.xlsx"
+)
+
+
+print("CAMINHO DA PLANILHA:", CAMINHO_PLANILHA)
+print("PLANILHA EXISTE:", os.path.exists(CAMINHO_PLANILHA))
 # ==========================
 # UTILITÁRIOS
 # ==========================
