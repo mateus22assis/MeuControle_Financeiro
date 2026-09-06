@@ -129,6 +129,20 @@ def converterData(data):
     )
 
 
+def normalizarMesAno(valor):
+    if valor is None:
+        return None
+
+    if isinstance(valor, datetime):
+        return valor.strftime("%m/%Y")
+
+    texto = str(valor).strip()
+
+    if re.fullmatch(r"\d{2}/\d{4}", texto):
+        return texto
+
+    return None
+
 
 # ==========================
 # LEITURA DA PLANILHA
@@ -231,14 +245,17 @@ def lerCompromissosMensais():
 
         descricao = linha[0]
         valor = linha[1]
+        ultimaAlteracao = linha[2] if len(linha) > 2 else None
+        valorAnterior = linha[3] if len(linha) > 3 else None
 
         if descricao is not None:
 
             compromissos.append({
                 "linha": numeroLinha,
                 "descricao": descricao,
-                "valor": valor
-                
+                "valor": valor,
+                "ultimaAlteracao": ultimaAlteracao,
+                "valorAnterior": valorAnterior
 
             })
 
@@ -621,21 +638,13 @@ def adicionarCompromissoMensal(
 
     aba_compromissos[f"A{proximaLinha}"] = descricao
     aba_compromissos[f"B{proximaLinha}"] = valor
+    aba_compromissos[f"C{proximaLinha}"] = None
+    aba_compromissos[f"D{proximaLinha}"] = None
 
     workbook.save(CAMINHO_PLANILHA)
+
 def alterarCompromissoMensal(linha, descricao, valor):
-    """
-    Altera um compromisso mensal existente.
-
-    Recebe o número da linha na planilha, a nova descrição
-    e o novo valor.
-
-    Retorna True quando a alteração é realizada e False
-    quando a linha é inválida ou está vazia.
-    """
-
     workbook = abrirPlanilha()
-
     aba_compromissos = workbook["CompromissosMensais"]
 
     if linha < 2 or linha > aba_compromissos.max_row:
@@ -644,15 +653,26 @@ def alterarCompromissoMensal(linha, descricao, valor):
     if aba_compromissos.cell(row=linha, column=1).value is None:
         return False
 
-    aba_compromissos.cell(
-        row=linha,
-        column=1
-    ).value = descricao
+    valorAtual = aba_compromissos.cell(row=linha, column=2).value
+    ultimaAlteracao = aba_compromissos.cell(row=linha, column=3).value
 
-    aba_compromissos.cell(
-        row=linha,
-        column=2
-    ).value = valor
+    try:
+        valoresIguais = float(valorAtual or 0) == float(valor or 0)
+    except (TypeError, ValueError):
+        valoresIguais = valorAtual == valor
+
+    if not valoresIguais:
+        mesAtual = datetime.today().strftime("%m/%Y")
+        mesUltimaAlteracao = normalizarMesAno(ultimaAlteracao)
+
+        # Só cria um novo histórico se ainda não houve
+        # alteração deste compromisso neste mês.
+        if mesUltimaAlteracao != mesAtual:
+            aba_compromissos.cell(row=linha, column=4).value = valorAtual
+            aba_compromissos.cell(row=linha, column=3).value = mesAtual
+
+    aba_compromissos.cell(row=linha, column=1).value = descricao
+    aba_compromissos.cell(row=linha, column=2).value = valor
 
     workbook.save(CAMINHO_PLANILHA)
 

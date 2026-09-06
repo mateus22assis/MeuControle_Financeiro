@@ -1,4 +1,16 @@
-#funçoes de validação de entrada
+import unicodedata
+# ==========================
+# NORMALIZAÇÃO DE TEXTO
+# ==========================
+def normalizarTexto(texto):
+
+    tesxto = str(texto).strip().lower()
+
+    return "".join(
+        caractere
+        for caractere in unicodedata.normalize("NFD", texto)
+        if unicodedata.category(caractere) != "Mn"
+    )
 # ==========================
 # VALIDAÇÃO DE ENTRADA
 # ==========================

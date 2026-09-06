@@ -7,8 +7,11 @@ from backend.excel_manager import (
     lerMovimentacoes,
     converterData,
     determinarMesFatura,
-    lerAbatimentosFaturas
+    lerAbatimentosFaturas,
+    normalizarMesAno
 )
+from backend.utils import formatarReal, normalizarTexto
+from gui import compromissos
 
 
 # ==========================
@@ -42,9 +45,9 @@ def somarReceitasParaReservaNoMes(mes, ano):
     total = 0
 
     for mov in movimentacoes:
-        natureza = str(mov["natureza"]).strip().lower()
-        categoria = str(mov["categoria"]).strip().lower()
-        
+        natureza = normalizarTexto(mov["natureza"])
+        categoria = normalizarTexto(mov["categoria"]).lower()
+
         if natureza == "receita" and categoria in ["salario", "renda extra"] and mov["data"] is not None:
             data_mov = converterData(mov["data"])
             if data_mov.month == mes and data_mov.year == ano:
@@ -116,6 +119,37 @@ def somarCompromissosMensais():
 
     return total
 
+def somarCompromissosPorMes(mes, ano):
+    compromissos = lerCompromissosMensais()
+
+    total = 0.0
+
+    for compromisso in compromissos:
+        valorAtual = float(compromisso["valor"] or 0)
+        valorAnterior = compromisso["valorAnterior"]
+        ultimaAlteracao = normalizarMesAno(
+            compromisso["ultimaAlteracao"]
+        )
+
+        if ultimaAlteracao is None:
+            total += valorAtual
+            continue
+
+        mesAlteracao, anoAlteracao = map(
+            int,
+            ultimaAlteracao.split("/")
+        )
+
+        periodo = (ano, mes)
+        periodoAlteracao = (anoAlteracao, mesAlteracao)
+
+        if periodo < periodoAlteracao and valorAnterior is not None:
+            total += float(valorAnterior)
+        else:
+            total += valorAtual
+
+    return total
+
 
 def somarReceitas():
     """
@@ -160,8 +194,8 @@ def somarReceitasParaReserva():
 
     for mov in movimentacoes:
 
-      natureza = str(mov["natureza"]).strip().lower()
-      categoria = str(mov["categoria"]).strip().lower()
+      natureza = normalizarTexto(mov["natureza"])
+      categoria = normalizarTexto(mov["categoria"])
 
       if(
           natureza == "receita" and categoria in[
@@ -465,13 +499,55 @@ def calcularValorGuardar():
     return receitaParaReserva * (percentualReserva / 100)
 
 
+
+
+
 # ==========================
 # SALDO
 # ==========================
 
+def calcularSaldoInicial():
+
+    hoje = datetime.today()
+
+
+    if hoje.month == 1:
+        mes_anterior = 12
+        ano_anterior = hoje.year - 1
+
+    else:
+        mes_anterior = hoje.month - 1
+        ano_anterior = hoje.year
+
+    receitas = somarReceitasPorMes(mes_anterior, ano_anterior)
+    reserva = somarReceitasParaReservaNoMes(mes_anterior, ano_anterior)  * (lerConfiguracoes()["percentualReserva"] / 100)
+    compromissos = somarCompromissosPorMes(mes_anterior, ano_anterior)
+    fatura = somarFaturaPorMes(mes_anterior, ano_anterior)
+    despesas = somarDespesasAVista(mes_anterior, ano_anterior)
+
+    abatimentos = lerAbatimentosFaturas()
+    valor_abatido = abatimentos.get(
+        f"{hoje.month:02d}/{hoje.year}",
+        0.0
+    )
+
+    saldo_inicial = (
+        receitas
+        - reserva
+        - compromissos
+        - fatura
+        - despesas
+        - valor_abatido
+    )
+
+
+    return saldo_inicial
+
+
 def calcularSaldoDisponivel():
+
     """
-        Calcula o saldo disponível no mês atual.
+    Calcula o saldo disponível no mês atual.
 
     Considera:
     - saldo inicial;
@@ -482,39 +558,59 @@ def calcularSaldoDisponivel():
     - despesas à vista;
     - abatimentos realizados na próxima fatura.
     """
+
     hoje = datetime.today()
     configuracoes = lerConfiguracoes()
-    
-    saldo_inicial = configuracoes["saldoInicial"]
-    receitas_mes = somarReceitasPorMes(hoje.month, hoje.year)
+
+    saldo_inicial = calcularSaldoInicial()
+
+    receitas_mes = somarReceitasPorMes(
+        hoje.month,
+        hoje.year
+    )
+
     reserva_mes = calcularValorGuardar()
+
     gastos_fixos = somarCompromissosMensais()
-    
+
     # Fatura que vence no mês atual
-    fatura_mes = somarFaturaPorMes(hoje.month, hoje.year)
+    fatura_mes = somarFaturaPorMes(
+        hoje.month,
+        hoje.year
+    )
 
-    
-    
-    # Despesas à vista do mês atual (PIX, Débito, etc)
-    despesas_vista = somarDespesasAVista(hoje.month, hoje.year)
+    # Abatimento já realizado na fatura do mês atual
+    abatimentos = lerAbatimentosFaturas()
 
-    #abatimento realizado na proxima fatura
+    chave_fatura_mes = f"{hoje.month:02d}/{hoje.year}"
+
+    valor_abatido_fatura_mes = abatimentos.get(
+        chave_fatura_mes,
+        0.0
+    )
+
+    fatura_mes -= valor_abatido_fatura_mes
+
+    # Despesas à vista do mês atual (PIX, Débito, etc.)
+    despesas_vista = somarDespesasAVista(
+        hoje.month,
+        hoje.year
+    )
+
+    # Abatimento realizado na próxima fatura
     mes_proxima_fatura, ano_proxima_fatura = determinarMesFatura(
         hoje,
         configuracoes["diaFechamento"]
     )
-    abatimentos = lerAbatimentosFaturas()
 
-    chave_fatura = (
+    chave_fatura_proxima = (
         f"{mes_proxima_fatura:02d}/{ano_proxima_fatura}"
-
     )
 
-    valor_abatido = abatimentos.get(
-        chave_fatura,
+    valor_abatido_proxima_fatura = abatimentos.get(
+        chave_fatura_proxima,
         0.0
     )
-
 
     return (
         saldo_inicial
@@ -523,9 +619,8 @@ def calcularSaldoDisponivel():
         - gastos_fixos
         - fatura_mes
         - despesas_vista
-        -valor_abatido
+        - valor_abatido_proxima_fatura
     )
-
 
 
 # ==========================
